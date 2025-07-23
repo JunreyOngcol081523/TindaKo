@@ -1,4 +1,6 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Maui.Alerts;
+using CommunityToolkit.Maui.Core;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
@@ -26,7 +28,7 @@ namespace TindaKo.ViewModel
         //constructor
         public ProductViewModel()
         {
-            LoadProducts();
+            _ = LoadProducts();
             categories = new ObservableCollection<string>
                             {
                                 "Food and Snacks",
@@ -71,26 +73,52 @@ namespace TindaKo.ViewModel
             {
                 await Application.Current.MainPage.DisplayAlert("Error Adding Product", ex.Message, "OK");
             }
+            finally
+            {
+                ClearTextFields();
+            }
         }
         [RelayCommand]
-        private async Task EditProductAsync()
+        private async Task UpdateProductAsync(Product product)
         {
-
+            if (product == null) return;
+            await DatabaseService.UpdateProductAsync(product);
+            var toast = Toast.Make("Product updated successfully!", ToastDuration.Short, 14);
+            await toast.Show();
         }
         //method for loading products from sqlite
 
         public async Task LoadProducts()
         {
-            Products = new ObservableCollection<Product>();
-            var _products = await DatabaseService.GetProductsAsync();
-            foreach (var product in _products)
+            var allProducts = await DatabaseService.GetProductsAsync() ?? new List<Product>();
+
+            if (string.IsNullOrWhiteSpace(SearchText))
             {
-                Products.Add(product);
+                Products = new ObservableCollection<Product>(allProducts);
+            }
+            else
+            {
+                var filtered = allProducts
+                    .Where(p => (!string.IsNullOrEmpty(p.ProdName) && p.ProdName.Contains(SearchText, StringComparison.OrdinalIgnoreCase)) ||
+                                (!string.IsNullOrEmpty(p.Category) && p.Category.Contains(SearchText, StringComparison.OrdinalIgnoreCase)))
+                    .Take(5)
+                    .ToList();
+
+                Products = new ObservableCollection<Product>(filtered);
             }
         }
 
+
+        partial void OnSearchTextChanged(string value)
+        {
+            _ = LoadProducts(); 
+        }
+
         private void ClearTextFields() { 
-            
+            this.ProductName = string.Empty;
+            this.ProductCategory = string.Empty;
+            this.ProductPrice = 0; 
+            this.StocksIn = 0;
         }
         private bool ValidatedRequireFields()
         {
