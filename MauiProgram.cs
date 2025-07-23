@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
 using TindaKo.ViewModel;
+using TindaKo.Views;
 
 namespace TindaKo
 {
@@ -12,6 +13,7 @@ namespace TindaKo
             builder
                 .UseMauiApp<App>()
                 .UseMauiCommunityToolkit()
+
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -26,8 +28,12 @@ namespace TindaKo
         }
         private static void IncludeViews(MauiAppBuilder builder)
         {
-            builder.Services.AddSingleton<MainViewModel>();
-            builder.Services.AddSingleton<MainPage>(); // if not already registered
+            builder.Services.AddSingleton<LoginViewModel>();
+            builder.Services.AddSingleton<LoginPage>();
+            builder.Services.AddSingleton<MenuViewModel>();
+            builder.Services.AddSingleton<MenuPage>();
+            builder.Services.AddSingleton<ProductViewModel>();
+            builder.Services.AddSingleton<ProductPage>();
         }
     }
 }

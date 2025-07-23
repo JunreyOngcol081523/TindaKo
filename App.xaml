@@ -9,8 +9,11 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
+                <ResourceDictionary Source="Resources/Styles/CardStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <converters:StringEqualsConverter x:Key="StringEqualsConverter" />
         </ResourceDictionary>
     </Application.Resources>
+    
+    
 </Application>

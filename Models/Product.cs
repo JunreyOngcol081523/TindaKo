@@ -22,6 +22,8 @@ namespace TindaKo.Models
         public int StocksIn { get; set; } = 0;
 
         public int StocksOut { get; set; } = 0;
+        [Ignore] // This tells SQLite to ignore this property
+        public int CurrentStock => StocksIn - StocksOut;
     }
 
 }

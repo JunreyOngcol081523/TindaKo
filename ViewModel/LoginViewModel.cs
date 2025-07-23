@@ -1,17 +1,12 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TindaKo.Services;
+using TindaKo.Views;
 
 namespace TindaKo.ViewModel
 {
-    public partial class MainViewModel : ObservableObject
+    public partial class LoginViewModel : ObservableObject
     {
-        DatabaseService databaseService;
 
         [ObservableProperty]
         private string userName;
@@ -22,8 +17,11 @@ namespace TindaKo.ViewModel
         [ObservableProperty]
         private string selectedRole; // "May-ari" or "Tindera"
 
-        public MainViewModel() {
+        [ObservableProperty]
+        private bool rememberUsername;
+        public LoginViewModel() {
             selectedRole = "May-ari";
+            LoadSettings();
         }
 
         //------------user login-------------//
@@ -34,7 +32,7 @@ namespace TindaKo.ViewModel
 
             if (string.IsNullOrWhiteSpace(UserName) || string.IsNullOrWhiteSpace(UserPassword) || string.IsNullOrWhiteSpace(SelectedRole))
             {
-                await Shell.Current.DisplayAlert("Login Failed", "Please fill in all fields.", "OK");
+                await Application.Current.MainPage.DisplayAlert("Login Failed", "Please fill in all fields.", "OK");
                 return;
             }
 
@@ -42,16 +40,21 @@ namespace TindaKo.ViewModel
 
             if (user != null && user.UserRole == SelectedRole)
             {
-                await Shell.Current.DisplayAlert("Login Successful", $"Welcome, {user.UserRole}!", "OK");
-
-                // TODO: Navigate to appropriate page
-                // Example:
-                // await Shell.Current.GoToAsync("///MainPage");
+                await Application.Current.MainPage.DisplayAlert("Login Successful", $"Welcome, {user.UserRole}!", "OK");
+                Application.Current.MainPage = new NavigationPage(new MenuPage(new MenuViewModel()));
+                Preferences.Set("remember", RememberUsername);
+                Preferences.Set("username",UserName);
             }
             else
             {
-                await Shell.Current.DisplayAlert("Login Failed", "Invalid username, password, or role.", "OK");
+                await Application.Current.MainPage.DisplayAlert("Login Failed", "Invalid username, password, or role.", "OK");
             }
+        }
+
+        //-----------load remember user----------//
+        private void LoadSettings() { 
+            RememberUsername = Preferences.Get("remember",false);
+            UserName = Preferences.Get("username",string.Empty);
         }
     }
 }
