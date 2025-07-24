@@ -3,28 +3,31 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="TindaKo.Views.ProductPage"
              xmlns:vm="clr-namespace:TindaKo.ViewModel"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              Title="Products">
     
     <Grid Padding="18"
           RowDefinitions="Auto,*,Auto">
 
         <!-- Search and Add Button -->
-        <Grid 
-            Grid.Row="0"
+        <Border Grid.Row="0" Style="{StaticResource CardStyle}" Margin="5">
+            <Grid 
+            
             ColumnDefinitions="*,*,*,*" 
             RowDefinitions="*,*,*,*"  
             RowSpacing="5">
-            <Label Grid.Row="0" Grid.Column="0" Text="Prod Name:" VerticalOptions="Center" HorizontalOptions="Center"/>
-            <Entry Text="{Binding ProductName}" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" Placeholder="Product Name"/>
-            <Label Grid.Row="1" Grid.Column="0" Text="Category" VerticalOptions="Center"  HorizontalOptions="Center"/>
-            <Picker SelectedItem="{Binding ProductCategory}" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" ItemsSource="{Binding Categories}"/>
-            <Label Grid.Row="2" Grid.Column="0" Text="Price:" VerticalOptions="Center"  HorizontalOptions="Center"/>
-            <Entry Text="{Binding ProductPrice}" Grid.Row="2" Grid.Column="1" Placeholder="price" Keyboard="Numeric"/>
-            <Label Grid.Row="2" Grid.Column="2" Text="Qty In:" VerticalOptions="Center"  HorizontalOptions="Center"/>
-            <Entry Text="{Binding StocksIn}" Grid.Row="2" Grid.Column="3" Keyboard="Numeric"/>
-            <Entry Text="{Binding SearchText}" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Placeholder="search product"/>
-            <Button Command="{Binding AddProductCommand}" Grid.Row="3" Grid.Column="3" ImageSource="add.png" HeightRequest="50" BackgroundColor="Transparent"/>
-        </Grid>
+                <Label Grid.Row="0" Grid.Column="0" Text="Prod Name:" VerticalOptions="Center" HorizontalOptions="Center"/>
+                <Entry Text="{Binding ProductName}" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" Placeholder="Product Name"/>
+                <Label Grid.Row="1" Grid.Column="0" Text="Category" VerticalOptions="Center"  HorizontalOptions="Center"/>
+                <Picker SelectedItem="{Binding ProductCategory}" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" ItemsSource="{Binding Categories}"/>
+                <Label Grid.Row="2" Grid.Column="0" Text="Price:" VerticalOptions="Center"  HorizontalOptions="Center"/>
+                <Entry Text="{Binding ProductPrice}" Grid.Row="2" Grid.Column="1" Placeholder="price" Keyboard="Numeric"/>
+                <Label Grid.Row="2" Grid.Column="2" Text="Qty In:" VerticalOptions="Center"  HorizontalOptions="Center"/>
+                <Entry Text="{Binding StocksIn}" Grid.Row="2" Grid.Column="3" Keyboard="Numeric"/>
+                <Entry Text="{Binding SearchText}" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Placeholder="search product"/>
+                <Button Command="{Binding AddProductCommand}" Grid.Row="3" Grid.Column="3" ImageSource="add.png" HeightRequest="60" BackgroundColor="Transparent"/>
+            </Grid>
+        </Border>
 
 
         <!-- Product List -->
@@ -61,29 +64,27 @@
                                     </Grid.ColumnDefinitions>
 
                                     <!-- Category Entry -->
-                                    <VerticalStackLayout Grid.Column="0" Spacing="2" VerticalOptions="Center">
-                                        <Label Text="Category)"
-                                   FontSize="12"
-                                   TextColor="Gray" />
+                                    <VerticalStackLayout Grid.Column="0" VerticalOptions="Center">
+                                        <Label Text="Category"
+                                               FontSize="12"
+                                               />
                                         <Entry Text="{Binding Category, Mode=TwoWay}"
-                                   FontSize="14"
-                                   Keyboard="Numeric"
-                                   BackgroundColor="Transparent"
-                                           
-                                   Placeholder="Enter price" />
+                                               FontSize="14"
+                                               Keyboard="Numeric"
+                                               BackgroundColor="Transparent"
+                                               Placeholder="Enter price" />
                                     </VerticalStackLayout>
 
                                     <!-- Price Column -->
-                                    <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                                    <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
                                         <Label Text="Price(Pesos)"
-                                   FontSize="12"
-                                   TextColor="Gray" />
+                                               FontSize="12"/>
                                         <Entry Text="{Binding Price, Mode=TwoWay}"
-                                   FontSize="14"
-                                   Keyboard="Numeric"
-                                   BackgroundColor="Transparent"
+                                               FontSize="14"
+                                               Keyboard="Numeric"
+                                               BackgroundColor="Transparent"
                                            
-                                   Placeholder="Enter price" />
+                                               Placeholder="Enter price" />
                                     </VerticalStackLayout>
                                 </Grid>
 
@@ -95,10 +96,10 @@
                                     </Grid.ColumnDefinitions>
 
                                     <!-- Current Stock -->
-                                    <Label Text="{Binding CurrentStock, StringFormat='Stock: {0}'}"
-                               FontSize="14"
-                               VerticalOptions="Center"
-                               Grid.Column="0" />
+                                    <Label Text="{Binding CurrentStock, StringFormat='Remaining Stock: {0}'}"
+                                           FontSize="14"
+                                           VerticalOptions="Center"
+                                           Grid.Column="0" />
 
                                     <!-- Update Button -->
                                     <Button 

@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TindaKo.Views.SellPage"
+             xmlns:viewmodel="clr-namespace:TindaKo.ViewModel"
+             Title="Benta">
+
+    <Grid RowDefinitions="*,*,50">
+        <ScrollView Grid.Row="0">
+            <Grid RowDefinitions="Auto,Auto" 
+              Padding="10"
+              RowSpacing="10">
+                <!--product list-->
+                <Grid Grid.Row="0"
+                  RowDefinitions="Auto,Auto,Auto,Auto,Auto"
+                  RowSpacing="5"
+                  Padding="5">
+                    <Label Grid.Row="0" 
+                       Text="Search Product:" 
+                       FontSize="12" 
+                       FontAttributes="Italic"/>
+                    <Entry Grid.Row="1" Placeholder="Search" 
+                       Text="{Binding SearchText}" 
+                       Margin="0,0,0,10"/>
+
+
+                    <HorizontalStackLayout  Grid.Row="2" 
+                                        Spacing="10" 
+                                        HorizontalOptions="Center">
+                        <Image Source="product.png" 
+                           HeightRequest="30"/>
+                        <Label  
+                       Text="Product List" 
+                       HorizontalTextAlignment="Center"
+                       FontSize="18"
+                       FontAttributes="Bold"/>
+                    </HorizontalStackLayout>
+
+                    <Grid Grid.Row="3" 
+                      ColumnDefinitions="*,*,*,50" 
+                      BackgroundColor="#eee7d7">
+                        <Label Grid.Column="0" Text="Prod Name"/>
+                        <Label Grid.Column="1" Text="Price" HorizontalTextAlignment="Center" HorizontalOptions="Center"/>
+                        <Label Grid.Column="2" Text="Qty" HorizontalTextAlignment="Center"/>
+                        <Label Grid.Column="3" Text="Action" HorizontalTextAlignment="Center"/>
+                    </Grid>
+                    <CollectionView Grid.Row="4" 
+                                ItemsSource="{Binding Products}"
+                                HeightRequest="100"
+                                >
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid ColumnDefinitions="*,*,*,50" 
+                                  ColumnSpacing="5" 
+                                  Padding="2"
+                                  >
+                                    <Label Grid.Column="0" 
+                                       Text="{Binding ProdName}"
+                                       VerticalOptions="Center"
+                                       FontAttributes="Italic"/>
+                                    <Label Grid.Column="1"
+                                       Text="{Binding Price}"
+                                       VerticalOptions="Center"
+                                       HorizontalTextAlignment="Center"
+                                       FontAttributes="Italic"/>
+                                    <Entry Grid.Column="2" Text="{Binding Quantity}" 
+                                       Placeholder="Qty"
+                                       Keyboard="Numeric"
+                                       FontSize="10"
+                                       HorizontalOptions="Center"
+                                       HorizontalTextAlignment="Center"/>
+                                    <Button Grid.Column="3"
+                                        ImageSource="cartblack.png"
+                                        Command="{Binding Source={RelativeSource 
+                                        AncestorType={x:Type viewmodel:SellViewModel}}, 
+                                        Path=AddToCartCommand}" 
+                                        CommandParameter="{Binding .}"
+                                        BackgroundColor="Transparent"/>
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+
+                </Grid>
+
+                <!--cart-->
+                <Grid Grid.Row="1"
+                  RowDefinitions="Auto,Auto,Auto"
+                  Padding="5"
+                  >
+                    <HorizontalStackLayout Grid.Row="0" 
+                                       HorizontalOptions="Center" 
+                                       Spacing="10">
+                        <Image  Source="cartwhite.png" HeightRequest="30"/>
+                        <Label  Text="Cart"
+                       FontSize="15"
+                       VerticalTextAlignment="Center"
+                       HorizontalOptions="Center"/>
+                    </HorizontalStackLayout>
+                    <Grid ColumnDefinitions="*,*,*,*,45"  
+                      Grid.Row="1"
+                      BackgroundColor="#eee7d7">
+                        <Label Grid.Column="0" Text="Prod Name"/>
+                        <Label Grid.Column="1" Text="Price" HorizontalTextAlignment="Center"/>
+                        <Label Grid.Column="2" Text="Qty" HorizontalTextAlignment="Center"/>
+                        <Label Grid.Column="3" Text="Sub Total" HorizontalTextAlignment="Start"/>
+                        <Label Grid.Column="4" Text="Action"/>
+                    </Grid>
+                    <CollectionView Grid.Row="2"
+                                ItemsSource="{Binding CartItems}"
+                                HeightRequest="150">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid RowDefinitions="Auto,Auto"
+                                ColumnDefinitions="*,*,*,*,45" Padding="2">
+                                    <Label Grid.Row="0" Grid.Column="0" 
+                                       Text="{Binding ProdName}"
+                                       VerticalOptions="Center"
+                                       FontAttributes="Italic"/>
+                                    <Label Grid.Row="0" Grid.Column="1"
+                                       Text="{Binding Price}"
+                                       VerticalOptions="Center"
+                                       HorizontalTextAlignment="Center"/>
+                                    <Label Grid.Row="0" Grid.Column="2" 
+                                       Text="{Binding Quantity}" 
+                                       FontSize="12"
+                                       VerticalOptions="Center"
+                                       HorizontalTextAlignment="Center"/>
+                                    <Label Grid.Row="0" Grid.Column="3" 
+                                       Text="{Binding Subtotal}" 
+                                       FontSize="12"
+                                       VerticalOptions="Center"
+                                       HorizontalOptions="Center"/>
+                                    <Button Grid.Row="0" Grid.Column="4"
+                                        ImageSource="delete.png"
+                                        Command="{Binding Source={RelativeSource 
+                                        AncestorType={x:Type viewmodel:SellViewModel}}, 
+                                        Path=RemoveFromCartCommand}" 
+                                        CommandParameter="{Binding .}"
+                                        BackgroundColor="Transparent"/>
+                                    <BoxView Grid.Row="1" 
+                                         Grid.Column="0" 
+                                         Grid.ColumnSpan="5" 
+                                         HeightRequest="1"
+                                         BackgroundColor="Teal"/>
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </Grid>
+            </Grid>
+        </ScrollView>
+        <Grid Grid.Row="1" BackgroundColor="Bisque">
+            <Label Text="Total Payment:"/>
+        </Grid>
+        <Grid Grid.Row="2" BackgroundColor="AliceBlue">
+            <HorizontalStackLayout>
+
+                <Button Text="Finish Transaction"/>
+            </HorizontalStackLayout>
+        </Grid>
+    </Grid>
+
+</ContentPage>

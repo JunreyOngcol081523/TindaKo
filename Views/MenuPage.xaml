@@ -7,11 +7,11 @@
 
     <ScrollView>
         <VerticalStackLayout>
-            <HorizontalStackLayout Padding="10" Spacing="10" >
-                <Image Source="person.png" HeightRequest="50" VerticalOptions="Center"/>
-                <Label Text="{Binding UserName}" VerticalOptions="Center"/>
-                <Button Text="Logout" VerticalOptions="Center" HorizontalOptions="End" Command="{Binding LogoutCommand}"/>
-            </HorizontalStackLayout>
+            <Grid Padding="10" ColumnSpacing="10" ColumnDefinitions="*,200,*" HorizontalOptions="Start">
+                <Image Grid.Column="0" Source="person.png" HeightRequest="50" VerticalOptions="Center"/>
+                <Label Grid.Column="1" Text="{Binding UserName}" VerticalOptions="Center" HorizontalOptions="Start"/>
+                <Button Grid.Column="2" Text="Logout" VerticalOptions="Center" HorizontalOptions="End" Command="{Binding LogoutCommand}"/>
+            </Grid>
             <Grid Margin="20"
                     RowDefinitions="*,*,*,*"
                     ColumnDefinitions="*,*" 

@@ -1,14 +1,15 @@
-﻿using System;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using SQLite;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SQLite;
 namespace TindaKo.Models
 {
    
 
-    public class Product
+    public class Product : ObservableObject
     {
         [PrimaryKey, AutoIncrement]
         public int ProdId { get; set; }
@@ -24,6 +25,16 @@ namespace TindaKo.Models
         public int StocksOut { get; set; } = 0;
         [Ignore] // This tells SQLite to ignore this property
         public int CurrentStock => StocksIn - StocksOut;
+
+
+        private int quantity;
+
+        [Ignore]
+        public int Quantity
+        {
+            get => quantity;
+            set => SetProperty(ref quantity, value);
+        }
     }
 
 }
