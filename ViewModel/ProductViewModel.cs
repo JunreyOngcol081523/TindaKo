@@ -86,7 +86,15 @@ namespace TindaKo.ViewModel
             if (product == null) return;
             await DatabaseService.UpdateProductAsync(product);
             var toast = Toast.Make("Product updated successfully!", ToastDuration.Short, 14);
-            await toast.Show();
+            if (DeviceInfo.Platform == DevicePlatform.WinUI)
+            {
+                await Application.Current.MainPage.DisplayAlert("Notice", "Product updated", "OK");
+            }
+            else
+            {
+                await toast.Show();
+            }
+
         }
         //method for loading products from sqlite
 

@@ -20,11 +20,11 @@ namespace TindaKo.Models
 
         public decimal Price { get; set; }
 
-        public int StocksIn { get; set; } = 0;
+        public decimal StocksIn { get; set; } = 0;
 
-        public int StocksOut { get; set; } = 0;
+        public decimal StocksOut { get; set; } = 0;
         [Ignore] // This tells SQLite to ignore this property
-        public int CurrentStock => StocksIn - StocksOut;
+        public decimal CurrentStock => StocksIn - StocksOut;
 
 
         private decimal quantity;

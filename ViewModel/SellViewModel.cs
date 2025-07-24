@@ -40,10 +40,16 @@ namespace TindaKo.ViewModel
             else
             {
                 var filtered = allProducts
-                    .Where(p => (!string.IsNullOrEmpty(p.ProdName) && p.ProdName.Contains(SearchText, StringComparison.OrdinalIgnoreCase)) ||
-                                (!string.IsNullOrEmpty(p.Category) && p.Category.Contains(SearchText, StringComparison.OrdinalIgnoreCase)))
+                    .Where(p =>
+                        (p.StocksIn - p.StocksOut) > 0 && // ✅ Only products with remaining stock
+                        (
+                            (!string.IsNullOrEmpty(p.ProdName) && p.ProdName.Contains(SearchText, StringComparison.OrdinalIgnoreCase)) ||
+                            (!string.IsNullOrEmpty(p.Category) && p.Category.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
+                        )
+                    )
                     .Take(5)
                     .ToList();
+
                 Products = new ObservableCollection<Product>(filtered);
             }
         }
@@ -67,6 +73,16 @@ namespace TindaKo.ViewModel
                     await Application.Current.MainPage.DisplayAlert("Invalid Quantity", "Please enter quantity greater than zero.", "OK");
                     return;
                 }
+                // 🔒 Check if Quantity exceeds remaining stocks
+                var remainingStocks = product.StocksIn - product.StocksOut;
+                if (product.Quantity > remainingStocks)
+                {
+                    await Application.Current.MainPage.DisplayAlert(
+                        "Insufficient Stock",
+                        $"Only {remainingStocks} left in stock. Please reduce the quantity.",
+                        "OK");
+                    return;
+                }
 
                 var existing = CartItems.FirstOrDefault(c => c.ProdName == product.ProdName);
                 if (existing != null)
@@ -77,6 +93,7 @@ namespace TindaKo.ViewModel
 
                 CartItems.Add(new CartItems
                 {
+                    ProductId = product.ProdId,
                     ProdName = product.ProdName,
                     ProdCategory = product.Category,
                     Price = product.Price,
@@ -118,6 +135,7 @@ namespace TindaKo.ViewModel
         {
             TransactionType = "Credit";
         }
+        //choose buyer nga umutang
         [RelayCommand]
         public async Task OpenBuyerModalAsync()
         {
@@ -132,7 +150,40 @@ namespace TindaKo.ViewModel
 
             buyerPage.BindingContext = buyerViewModel;
             await Application.Current.MainPage.Navigation.PushModalAsync(buyerPage);
+        }
+        //complete transaction method
+        [RelayCommand]
+        private async Task CompleteTransactionAsync()
+        {
+            try
+            {
+                var transaction = new Transaction
+                {
+                    BuyerName = SelectedBuyer?.Name,
+                    TransactionType = IsCashChecked ? "Cash" : "Credit",
+                    DateTimeISO = DateTime.Now.ToString("f"),
+                    TotalAmount = TotalAmount,
+                    Username = Preferences.Get("username", string.Empty)
+                };
 
+                var soldItems = CartItems.Select(ci => new Sell
+                {
+                    ProductID = ci.ProductId,
+                    ProductName = ci.ProdName,
+                    Price = ci.Price,
+                    Qty = ci.Quantity
+                }).ToList();
+
+                await DatabaseService.SaveTransactionWithSalesAsync(transaction, soldItems);
+
+                await Application.Current.MainPage.DisplayAlert("Success", "Transaction completed!", "OK");
+                CartItems.Clear();
+                TotalAmount = 0;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("[Complete Transaction Method:]", ex.Message);
+            }
         }
 
     }

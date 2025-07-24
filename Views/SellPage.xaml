@@ -181,7 +181,8 @@
         </Grid>
         <Grid Grid.Row="2" BackgroundColor="AliceBlue">
             <HorizontalStackLayout HorizontalOptions="Center">
-                <Button Text="Complete Transaction"/>
+                <Button Text="Complete Transaction"
+                        Command="{Binding CompleteTransactionCommand}"/>
             </HorizontalStackLayout>
         </Grid>
     </Grid>

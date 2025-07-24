@@ -15,6 +15,6 @@ namespace TindaKo.Models
         public decimal TotalAmount { get; set; }
         public string Username { get; set; }
         public string TransactionType { get; set; } // "cash", "credit"
-        public int? BuyerId { get; set; } // Nullable, only used for credit
+        public string? BuyerName { get; set; } // Nullable, only used for credit
     }
 }

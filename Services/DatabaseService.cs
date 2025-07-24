@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using SQLite;
 using System.IO;
 using TindaKo.Models;
+using System.Diagnostics;
 namespace TindaKo.Services
 {
 
@@ -77,6 +78,50 @@ namespace TindaKo.Services
         _db.InsertAsync(buyer);
         public static Task<List<Buyer>> GetBuyersAsync() =>
         _db.Table<Buyer>().ToListAsync();
+
+        //------------------transaction----------------//
+        public static async Task SaveTransactionWithSalesAsync(Transaction transaction, List<Sell> soldItems)
+        {
+            try
+            {
+                // Insert Transaction first to get the ID
+                await _db.InsertAsync(transaction);
+
+                foreach (var sell in soldItems)
+                {
+                    sell.TransactionId = transaction.TransactionId; // Set FK
+                    await _db.InsertAsync(sell);
+
+                    // Update StocksOut
+                    if (sell.ProductID == 0)
+                    {
+                        Debug.WriteLine("Warning: sell.ProductID is 0. Cannot fetch product.");
+                        continue;
+                    }
+                    var product = await _db.Table<Product>().FirstOrDefaultAsync(p => p.ProdId == sell.ProductID);
+                    Debug.WriteLine($"Product prodID: {product.ProdId}\n sell prodID: {sell.ProductID}");
+                    if (product != null)
+                    {
+                        product.StocksOut += sell.Qty;
+                        await _db.UpdateAsync(product);
+                    }
+                    else
+                    {
+                        Debug.WriteLine($"Warning: No product found with ProdId = {sell.ProductID}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.StackTrace);
+                await Application.Current.MainPage.DisplayAlert("Error", ex.Message, "OK");
+            }
+        }
+
+
+
+        //---------------sell----------------------------//
+        public static Task<int> AddSellAsync(Sell sell) => _db.InsertAsync(sell);
     }
 
 }
