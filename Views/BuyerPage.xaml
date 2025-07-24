@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodel="clr-namespace:TindaKo.ViewModel"
+             x:Class="TindaKo.Views.BuyerPage"
+             Title="Select Buyer">
+
+    <ContentPage.BindingContext>
+        <viewmodel:BuyerViewModel />
+    </ContentPage.BindingContext>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="15">
+
+            <!-- New Buyer Fields -->
+            <Label Text="Add New Buyer" FontAttributes="Bold" />
+            <Entry Placeholder="Name" Text="{Binding NewBuyerName}" />
+            <Entry Placeholder="Contact Number" Text="{Binding NewBuyerContact}" Keyboard="Telephone" />
+            <Entry Placeholder="Address" Text="{Binding NewBuyerAddress}" />
+            <Button Text="Add Buyer" Command="{Binding AddBuyerCommand}" />
+
+            <BoxView HeightRequest="1" BackgroundColor="Gray" />
+
+            <!-- List of Existing Buyers -->
+            <Label Text="Existing Buyers" FontAttributes="Bold" />
+            <Entry Text="{Binding SearchText}" Placeholder="Search name"/>
+            <CollectionView ItemsSource="{Binding Buyers}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Padding="5" ColumnDefinitions="*,*,Auto">
+                            <VerticalStackLayout Grid.Column="0" Grid.ColumnSpan="2">
+                                <Label Text="{Binding Name}" FontAttributes="Bold" />
+                                <Label Text="{Binding ContactNumber}" FontSize="12" />
+                                <Label Text="{Binding Address}" FontSize="12" />
+                            </VerticalStackLayout>
+                            <Button Grid.Column="2"
+                                    Text="Choose"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:BuyerViewModel}}, Path=SelectBuyerCommand}"
+                                    CommandParameter="{Binding .}" />
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <!-- Selected Buyer Info -->
+            <Label Text="Selected Buyer:" />
+            <Entry Text="{Binding SelectedBuyerName}" IsReadOnly="True" />
+
+            <Button Text="Select this Buyer" 
+                    Command="{Binding ConfirmSelectionCommand}" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

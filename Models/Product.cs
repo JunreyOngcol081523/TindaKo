@@ -27,10 +27,10 @@ namespace TindaKo.Models
         public int CurrentStock => StocksIn - StocksOut;
 
 
-        private int quantity;
+        private decimal quantity;
 
         [Ignore]
-        public int Quantity
+        public decimal Quantity
         {
             get => quantity;
             set => SetProperty(ref quantity, value);

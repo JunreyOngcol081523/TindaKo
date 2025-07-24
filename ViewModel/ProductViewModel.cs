@@ -22,6 +22,7 @@ namespace TindaKo.ViewModel
         [ObservableProperty] private int stocksIn;
         [ObservableProperty] private int stocksOut=0;
         [ObservableProperty] private int stocks;
+        [ObservableProperty] private int maxResults;
         [ObservableProperty] private string searchText;
         [ObservableProperty] private ObservableCollection<Product> products;
         [ObservableProperty] private ObservableCollection<string> categories;
@@ -40,9 +41,10 @@ namespace TindaKo.ViewModel
                                 "School Supplies",
                                 "Mobile and Load",
                                 "Cigarettes and Alcohol",
+                                "Medicines",
                                 "Others"
                             };
-
+            MaxResults = Preferences.Get(nameof(MaxResults), 20);
         }
 
         [RelayCommand]
@@ -90,23 +92,20 @@ namespace TindaKo.ViewModel
 
         public async Task LoadProducts()
         {
-            var allProducts = await DatabaseService.GetProductsAsync() ?? new List<Product>();
+            List<Product> results;
 
             if (string.IsNullOrWhiteSpace(SearchText))
             {
-                Products = new ObservableCollection<Product>(allProducts);
+                results = await DatabaseService.GetProductsAsync(MaxResults); // Loads all (optionally paginate)
             }
             else
             {
-                var filtered = allProducts
-                    .Where(p => (!string.IsNullOrEmpty(p.ProdName) && p.ProdName.Contains(SearchText, StringComparison.OrdinalIgnoreCase)) ||
-                                (!string.IsNullOrEmpty(p.Category) && p.Category.Contains(SearchText, StringComparison.OrdinalIgnoreCase)))
-                    .Take(5)
-                    .ToList();
-
-                Products = new ObservableCollection<Product>(filtered);
+                results = await DatabaseService.SearchProductsAsync(SearchText, MaxResults); // Filter at DB level
             }
+
+            Products = new ObservableCollection<Product>(results);
         }
+
 
 
         partial void OnSearchTextChanged(string value)
@@ -133,6 +132,12 @@ namespace TindaKo.ViewModel
                 return false;
             }
             return true;
+        }
+        [RelayCommand]
+        private async Task RefreshProductsAsync()
+        {
+            Preferences.Set(nameof(MaxResults), MaxResults);
+            await LoadProducts();
         }
     }
 }

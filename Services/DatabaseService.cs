@@ -25,7 +25,9 @@ namespace TindaKo.Services
             // Create tables
             await _db.CreateTableAsync<Product>();
             await _db.CreateTableAsync<Users>();
-
+            await _db.CreateTableAsync<Sell>();
+            await _db.CreateTableAsync<Transaction>();
+            await _db.CreateTableAsync<Buyer>();
             //-------Users------------//
             // Check if Users table is empty
             var userCount = await _db.Table<Users>().CountAsync();
@@ -43,8 +45,17 @@ namespace TindaKo.Services
         }
 
         // CRUD Example
-        public static Task<List<Product>> GetProductsAsync() =>
-            _db.Table<Product>().ToListAsync();
+        public static Task<List<Product>> GetProductsAsync(int maxResults) =>
+            _db.Table<Product>().Take(maxResults).ToListAsync();
+        public static Task<List<Product>> SearchProductsAsync(string keyword, int maxResults)
+        {
+            return _db.Table<Product>()
+                      .Where(p =>
+                          (!string.IsNullOrEmpty(p.ProdName) && p.ProdName.ToLower().Contains(keyword.ToLower())) ||
+                          (!string.IsNullOrEmpty(p.Category) && p.Category.ToLower().Contains(keyword.ToLower())))
+                      .Take(maxResults)
+                      .ToListAsync();
+        }
 
         public static Task<int> AddProductAsync(Product product) =>
             _db.InsertAsync(product);
@@ -61,6 +72,11 @@ namespace TindaKo.Services
                       .FirstOrDefaultAsync();
         }
 
+        //--------------buyer--------------------//
+        public static Task<int> AddBuyerAsync(Buyer buyer) =>
+        _db.InsertAsync(buyer);
+        public static Task<List<Buyer>> GetBuyersAsync() =>
+        _db.Table<Buyer>().ToListAsync();
     }
 
 }

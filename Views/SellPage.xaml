@@ -5,7 +5,7 @@
              xmlns:viewmodel="clr-namespace:TindaKo.ViewModel"
              Title="Benta">
 
-    <Grid RowDefinitions="*,*,50">
+    <Grid RowDefinitions="*,Auto,50">
         <ScrollView Grid.Row="0">
             <Grid RowDefinitions="Auto,Auto" 
               Padding="10"
@@ -30,10 +30,10 @@
                         <Image Source="product.png" 
                            HeightRequest="30"/>
                         <Label  
-                       Text="Product List" 
-                       HorizontalTextAlignment="Center"
-                       FontSize="18"
-                       FontAttributes="Bold"/>
+                           Text="Product List" 
+                           HorizontalTextAlignment="Center"
+                           FontSize="18"
+                           FontAttributes="Bold"/>
                     </HorizontalStackLayout>
 
                     <Grid Grid.Row="3" 
@@ -45,9 +45,7 @@
                         <Label Grid.Column="3" Text="Action" HorizontalTextAlignment="Center"/>
                     </Grid>
                     <CollectionView Grid.Row="4" 
-                                ItemsSource="{Binding Products}"
-                                HeightRequest="100"
-                                >
+                                ItemsSource="{Binding Products}">
                         <CollectionView.ItemTemplate>
                             <DataTemplate>
                                 <Grid ColumnDefinitions="*,*,*,50" 
@@ -85,21 +83,20 @@
 
                 <!--cart-->
                 <Grid Grid.Row="1"
-                  RowDefinitions="Auto,Auto,Auto"
-                  Padding="5"
-                  >
+                      RowDefinitions="Auto,Auto,Auto"
+                      Padding="5">
                     <HorizontalStackLayout Grid.Row="0" 
                                        HorizontalOptions="Center" 
                                        Spacing="10">
                         <Image  Source="cartwhite.png" HeightRequest="30"/>
                         <Label  Text="Cart"
-                       FontSize="15"
-                       VerticalTextAlignment="Center"
-                       HorizontalOptions="Center"/>
+                           FontSize="15"
+                           VerticalTextAlignment="Center"
+                           HorizontalOptions="Center"/>
                     </HorizontalStackLayout>
                     <Grid ColumnDefinitions="*,*,*,*,45"  
-                      Grid.Row="1"
-                      BackgroundColor="#eee7d7">
+                          Grid.Row="1"
+                          BackgroundColor="#eee7d7">
                         <Label Grid.Column="0" Text="Prod Name"/>
                         <Label Grid.Column="1" Text="Price" HorizontalTextAlignment="Center"/>
                         <Label Grid.Column="2" Text="Qty" HorizontalTextAlignment="Center"/>
@@ -107,8 +104,7 @@
                         <Label Grid.Column="4" Text="Action"/>
                     </Grid>
                     <CollectionView Grid.Row="2"
-                                ItemsSource="{Binding CartItems}"
-                                HeightRequest="150">
+                                ItemsSource="{Binding CartItems}">
                         <CollectionView.ItemTemplate>
                             <DataTemplate>
                                 <Grid RowDefinitions="Auto,Auto"
@@ -150,13 +146,42 @@
                 </Grid>
             </Grid>
         </ScrollView>
-        <Grid Grid.Row="1" BackgroundColor="Bisque">
-            <Label Text="Total Payment:"/>
+        <Grid Grid.Row="1" BackgroundColor="Bisque" Padding="10">
+            <Grid RowDefinitions="*,*" 
+                  HorizontalOptions="Start">
+                <Grid Grid.Row="0" ColumnDefinitions="Auto,Auto,Auto" ColumnSpacing="5">
+                    <RadioButton Grid.Column="0" 
+                             Content="Cash" 
+                             IsChecked="{Binding IsCashChecked}"
+                             GroupName="transaction"/>
+                    <RadioButton Grid.Column="1" 
+                             Content="Utang" 
+                             IsChecked="{Binding IsCreditChecked}"
+                             GroupName="transaction"/>
+                    <Button Grid.Column="2" 
+                            Text="Pumili"
+                            HeightRequest="15"
+                            IsVisible="{Binding IsCreditChecked}"
+                            Command="{Binding OpenBuyerModalCommand}"/>
+                </Grid>
+                <HorizontalStackLayout Grid.Row="1" Spacing="5">
+                    <Label Text="Pangalan sa umutang:" 
+                           IsVisible="{Binding IsCreditChecked}"/>
+                    <Label Text="{Binding SelectedBuyerName}"
+                           IsVisible="{Binding IsCreditChecked}"
+                           FontAttributes="Bold"/>
+
+                </HorizontalStackLayout>
+            </Grid>
+            <VerticalStackLayout HorizontalOptions="End">
+                <Label Text="Total Payment: " FontSize="18"/>
+                <Label Text="{Binding TotalAmount, StringFormat='₱{0:F2}'}"
+                       FontSize="18"/>
+            </VerticalStackLayout>
         </Grid>
         <Grid Grid.Row="2" BackgroundColor="AliceBlue">
-            <HorizontalStackLayout>
-
-                <Button Text="Finish Transaction"/>
+            <HorizontalStackLayout HorizontalOptions="Center">
+                <Button Text="Complete Transaction"/>
             </HorizontalStackLayout>
         </Grid>
     </Grid>

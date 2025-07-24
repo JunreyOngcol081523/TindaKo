@@ -36,6 +36,8 @@ namespace TindaKo
             builder.Services.AddSingleton<ProductPage>();
             builder.Services.AddSingleton<SellViewModel>();
             builder.Services.AddSingleton<SellPage>();
+            builder.Services.AddSingleton<BuyerViewModel>();
+            builder.Services.AddSingleton<BuyerPage>();
         }
     }
 }

@@ -10,6 +10,7 @@ namespace TindaKo
             InitializeComponent();
             Navigator = new NavigationPage(new LoginPage(new LoginViewModel()));
             MainPage = Navigator;
+            Application.Current.UserAppTheme = AppTheme.Light;
         }
 
     }
