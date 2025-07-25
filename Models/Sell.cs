@@ -15,7 +15,5 @@ namespace TindaKo.Models
         public decimal Qty { get; set; }
         [Ignore] // This tells SQLite to ignore this property
         public decimal SoldSubtotal => Price * Qty;
-
-
     }
 }

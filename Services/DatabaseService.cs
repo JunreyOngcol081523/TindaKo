@@ -161,7 +161,13 @@ namespace TindaKo.Services
                 })
                 .ToList();
         }
-
+        //---------------------Sell-----------------------//
+        public static async Task<List<Sell>> GetSellsAsync(int transactionId)
+        {
+            var allSells = await _db.Table<Sell>().ToListAsync();
+            return allSells
+                .Where(s=>s.TransactionId == transactionId).ToList();
+        }
 
     }
 }

@@ -7,6 +7,7 @@
     x:Class="TindaKo.Views.ProductStockAdjustPopup">
 
     <VerticalStackLayout Padding="20" Spacing="10">
+        
         <Label Text="{Binding _product.ProdName, StringFormat='Product: {0}'}"
                FontSize="16" FontAttributes="Bold"/>
 
@@ -18,5 +19,6 @@
 
         <Button Text="Confirm Adjust" 
                 Command="{Binding AdjustProductStocksCommand}" />
+        <Label Text="{Binding ReadMe}" FontAttributes="Italic"/>
     </VerticalStackLayout>
 </ContentPage>

@@ -170,6 +170,7 @@ namespace TindaKo.ViewModel
                 {
                     ProductID = ci.ProductId,
                     ProductName = ci.ProdName,
+                    Category = ci.ProdCategory,
                     Price = ci.Price,
                     Qty = ci.Quantity
                 }).ToList();

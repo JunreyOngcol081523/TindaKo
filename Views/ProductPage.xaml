@@ -101,11 +101,22 @@
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
 
-                                    <!-- Current Stock -->
-                                    <Label Text="{Binding CurrentStock, StringFormat='Remaining Stock: {0}'}"
+                                    <VerticalStackLayout Grid.Column="0" >
+                                        <Label Text="{Binding StocksIn, StringFormat='Stocks In: {0}'}"/>
+                                        <Label Text="{Binding StocksOut, StringFormat='Stocks Out: {0}'}"/>
+                                        <!-- Current Stock -->
+                                        <Label Text="{Binding CurrentStock, StringFormat='Remaining Stock: {0}'}"
                                            FontSize="14"
                                            VerticalOptions="Center"
-                                           Grid.Column="0" />
+                                           >
+                                            <Label.Triggers>
+                                                <DataTrigger TargetType="Label" Binding="{Binding CurrentStock}" Value="0">
+                                                    <Setter Property="TextColor" Value="#C0392B" />
+                                                    <Setter Property="FontAttributes" Value="Bold" />
+                                                </DataTrigger>
+                                            </Label.Triggers>
+                                        </Label>
+                                    </VerticalStackLayout>
                                     <!-- adjust Button -->
                                     <Button 
                                             ImageSource="squarepen.png"

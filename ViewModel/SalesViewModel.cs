@@ -1,13 +1,17 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Maui.Extensions;
+using CommunityToolkit.Maui.Views;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TindaKo.Services;
 using TindaKo.Models;
+using TindaKo.Services;
+using TindaKo.Views;
 using static SQLite.SQLite3;
 
 namespace TindaKo.ViewModel
@@ -68,6 +72,20 @@ namespace TindaKo.ViewModel
             }
 
             TransactionDisplay = new ObservableCollection<TransactionDisplay>(displayList);
+        }
+
+        [RelayCommand]
+        private async Task ItemTapped(TransactionDisplay selectedTransaction)
+        {
+            if (selectedTransaction == null)
+            {
+                Debug.WriteLine("[ItemTapped:SalesPage] selectedTransaction null");
+                return;
+            }
+                
+            SalesDetailsViewModel vm = new SalesDetailsViewModel(selectedTransaction);
+            SalesDetailsPage salesDetailsPage = new SalesDetailsPage(vm);
+            await Application.Current.MainPage.Navigation.PushModalAsync(salesDetailsPage);
         }
     }
 }

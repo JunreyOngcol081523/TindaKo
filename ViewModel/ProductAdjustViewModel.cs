@@ -12,6 +12,7 @@ namespace TindaKo.Views
         public ProductAdjustViewModel(Product product)
         {
             _product = product ?? throw new ArgumentNullException(nameof(product));
+            ReadMe = "StocksIn – Items added to inventory (restocks, returns)\r\nStocksOut – Items manually removed (damaged, lost, expired)";
         }
 
         public Product _product { get; }
@@ -21,6 +22,8 @@ namespace TindaKo.Views
 
         [ObservableProperty]
         private int newStocksOut = 0;
+
+        [ObservableProperty] private string readMe;
         [RelayCommand]
         private async Task AdjustProductStocksAsync()
         {
