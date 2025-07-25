@@ -13,7 +13,7 @@
                 <Button Grid.Column="2" Text="Logout" VerticalOptions="Center" HorizontalOptions="End" Command="{Binding LogoutCommand}"/>
             </Grid>
             <Grid Margin="20"
-                    RowDefinitions="*,*,*,*"
+                    RowDefinitions="*,*,*,*,*"
                     ColumnDefinitions="*,*" 
                     ColumnSpacing="16" 
                     RowSpacing="16">
@@ -71,9 +71,17 @@
                         <Label Text="Settings" HorizontalTextAlignment="Center"/>
                     </StackLayout>
                 </Border>
-                
-                
                 <Border Grid.Row="2" Grid.Column="1" Style="{StaticResource CardStyle}">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding NavigateReportsCommand}" />
+                    </Border.GestureRecognizers>
+                    <StackLayout HorizontalOptions="Center">
+                        <Image Source="notebook.png" HeightRequest="40"/>
+                        <Label Text="Credits/Utang" HorizontalTextAlignment="Center"/>
+                    </StackLayout>
+                </Border>
+
+                <Border Grid.Row="3" Grid.Column="0" Style="{StaticResource CardStyle}">
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding NavigateReportsCommand}" />
                     </Border.GestureRecognizers>

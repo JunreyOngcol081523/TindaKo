@@ -175,7 +175,6 @@ namespace TindaKo.ViewModel
                 }).ToList();
 
                 await DatabaseService.SaveTransactionWithSalesAsync(transaction, soldItems);
-
                 await Application.Current.MainPage.DisplayAlert("Success", "Transaction completed!", "OK");
                 CartItems.Clear();
                 TotalAmount = 0;

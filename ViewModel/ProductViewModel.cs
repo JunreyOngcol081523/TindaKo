@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
+using CommunityToolkit.Maui.Extensions;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
@@ -11,11 +12,13 @@ using System.Text;
 using System.Threading.Tasks;
 using TindaKo.Models;
 using TindaKo.Services;
+using TindaKo.Views;
 
 namespace TindaKo.ViewModel
 {
     public partial class ProductViewModel:ObservableObject
     {
+        [ObservableProperty] private string password;
         [ObservableProperty] private string productName;
         [ObservableProperty] private string productCategory;
         [ObservableProperty] private decimal productPrice;
@@ -26,6 +29,8 @@ namespace TindaKo.ViewModel
         [ObservableProperty] private string searchText;
         [ObservableProperty] private ObservableCollection<Product> products;
         [ObservableProperty] private ObservableCollection<string> categories;
+        [ObservableProperty] private int newStocksIn;
+        [ObservableProperty] private int newStocksOut;
         //constructor
         public ProductViewModel()
         {
@@ -114,7 +119,23 @@ namespace TindaKo.ViewModel
             Products = new ObservableCollection<Product>(results);
         }
 
-
+        //method for updating product's stocks in and stocks out
+        [RelayCommand]
+        private async Task OpenProductStocksAdjustAsync(Product product)
+        {
+            if (product == null)
+            {
+                await Shell.Current.DisplayAlert("Error", "No product selected.", "OK");
+                return;
+            }
+            else
+            {
+                var vm = new ProductAdjustViewModel(product);
+                var popup = new ProductStockAdjustPopup(vm);
+                await Application.Current.MainPage.Navigation.PushModalAsync(popup);
+                await LoadProducts(); // refresh 
+            }
+        }
 
         partial void OnSearchTextChanged(string value)
         {

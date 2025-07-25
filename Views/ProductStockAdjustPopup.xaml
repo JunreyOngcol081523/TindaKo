@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:viewmodel="clr-namespace:TindaKo.ViewModel"
+    x:Class="TindaKo.Views.ProductStockAdjustPopup">
+
+    <VerticalStackLayout Padding="20" Spacing="10">
+        <Label Text="{Binding _product.ProdName, StringFormat='Product: {0}'}"
+               FontSize="16" FontAttributes="Bold"/>
+
+        <Label Text="Add Stocks In:" />
+        <Entry Text="{Binding NewStocksIn}" Keyboard="Numeric" />
+
+        <Label Text="Add Stocks Out:" />
+        <Entry Text="{Binding NewStocksOut}" Keyboard="Numeric" />
+
+        <Button Text="Confirm Adjust" 
+                Command="{Binding AdjustProductStocksCommand}" />
+    </VerticalStackLayout>
+</ContentPage>

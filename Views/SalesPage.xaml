@@ -26,6 +26,7 @@
                             IsEnabled="{Binding IsFilterEnabled}"/>
                 <Picker Title="Select Transaction Type"
                         FontSize="12"
+                        IsEnabled="{Binding IsFilterEnabled}"
                         ItemsSource="{Binding TransactionType}"
                         SelectedItem="{Binding SelectedTransactionType}" />
                 <HorizontalStackLayout>

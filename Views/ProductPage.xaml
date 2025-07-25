@@ -97,7 +97,8 @@
                                 <Grid Grid.Row="2">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
 
                                     <!-- Current Stock -->
@@ -105,18 +106,28 @@
                                            FontSize="14"
                                            VerticalOptions="Center"
                                            Grid.Column="0" />
-
+                                    <!-- adjust Button -->
+                                    <Button 
+                                            ImageSource="squarepen.png"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ProductViewModel}}, Path=OpenProductStocksAdjustCommand}"
+                                            CommandParameter="{Binding .}"
+                                            BackgroundColor="Transparent"
+                                            TextColor="White"
+                                            CornerRadius="6"
+                                            Padding="6,2"
+                                            HorizontalOptions="End"
+                                            Grid.Column="1" />
                                     <!-- Update Button -->
                                     <Button 
-                                    ImageSource="save.png"
-                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ProductViewModel}}, Path=UpdateProductCommand}"
-                                    CommandParameter="{Binding .}"
-                                    BackgroundColor="Transparent"
-                                    TextColor="White"
-                                    CornerRadius="6"
-                                    Padding="6,2"
-                                    HorizontalOptions="End"
-                                    Grid.Column="1" />
+                                            ImageSource="save.png"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ProductViewModel}}, Path=UpdateProductCommand}"
+                                            CommandParameter="{Binding .}"
+                                            BackgroundColor="Transparent"
+                                            TextColor="White"
+                                            CornerRadius="6"
+                                            Padding="6,2"
+                                            HorizontalOptions="End"
+                                            Grid.Column="2" />
                                 </Grid>
                             </Grid>
                         </Border>
