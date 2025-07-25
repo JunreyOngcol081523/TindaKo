@@ -159,9 +159,9 @@ namespace TindaKo.ViewModel
             {
                 var transaction = new Transaction
                 {
-                    BuyerName = SelectedBuyer?.Name,
+                    BuyerID = SelectedBuyer?.BuyerId,
                     TransactionType = IsCashChecked ? "Cash" : "Credit",
-                    DateTimeISO = DateTime.Now.ToString("f"),
+                    DateTimeTransacted = DateTime.Now.ToString("MMM dd, yyyy h:mm tt"),
                     TotalAmount = TotalAmount,
                     Username = Preferences.Get("username", string.Empty)
                 };
@@ -179,6 +179,7 @@ namespace TindaKo.ViewModel
                 await Application.Current.MainPage.DisplayAlert("Success", "Transaction completed!", "OK");
                 CartItems.Clear();
                 TotalAmount = 0;
+                IsCashChecked = true;
             }
             catch (Exception ex)
             {

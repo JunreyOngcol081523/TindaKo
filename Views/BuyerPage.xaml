@@ -48,6 +48,9 @@
 
             <Button Text="Select this Buyer" 
                     Command="{Binding ConfirmSelectionCommand}" />
+            <Button Text="Cancel"
+                    BackgroundColor="#e74c3c"
+                    Command="{Binding CloseBuyerCommand}"/>
 
         </VerticalStackLayout>
     </ScrollView>

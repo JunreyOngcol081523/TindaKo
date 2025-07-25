@@ -44,6 +44,10 @@ namespace TindaKo.ViewModel
 
             Buyers = new ObservableCollection<Buyer>(result);
         }
+        partial void OnSearchTextChanged(string value)
+        {
+            _ = LoadBuyers();
+        }
 
         [RelayCommand]
         private void AddBuyer()
@@ -82,6 +86,11 @@ namespace TindaKo.ViewModel
             OnBuyerSelected?.Invoke(SelectedBuyer);
             await Application.Current.MainPage.Navigation.PopModalAsync();
 
+        }
+        [RelayCommand]
+        private async Task CloseBuyerAsync()
+        {
+            await Application.Current.MainPage.Navigation.PopModalAsync();
         }
     }
 

@@ -38,6 +38,8 @@ namespace TindaKo
             builder.Services.AddSingleton<SellPage>();
             builder.Services.AddSingleton<BuyerViewModel>();
             builder.Services.AddSingleton<BuyerPage>();
+            builder.Services.AddSingleton<SalesViewModel>();
+            builder.Services.AddSingleton<SalesPage>();
         }
     }
 }

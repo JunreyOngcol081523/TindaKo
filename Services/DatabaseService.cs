@@ -29,6 +29,10 @@ namespace TindaKo.Services
             await _db.CreateTableAsync<Sell>();
             await _db.CreateTableAsync<Transaction>();
             await _db.CreateTableAsync<Buyer>();
+            //await _db.DropTableAsync<Buyer>();
+            //await _db.DropTableAsync<Sell>();
+            //await _db.DropTableAsync<Transaction>();
+            //await _db.DropTableAsync<Product>();
             //-------Users------------//
             // Check if Users table is empty
             var userCount = await _db.Table<Users>().CountAsync();
@@ -78,6 +82,10 @@ namespace TindaKo.Services
         _db.InsertAsync(buyer);
         public static Task<List<Buyer>> GetBuyersAsync() =>
         _db.Table<Buyer>().ToListAsync();
+        public static Task<Buyer> GetBuyerAsync(int? buyerId)
+        {
+            return _db.Table<Buyer>().Where(b => b.BuyerId == buyerId).FirstOrDefaultAsync();
+        }
 
         //------------------transaction----------------//
         public static async Task SaveTransactionWithSalesAsync(Transaction transaction, List<Sell> soldItems)
@@ -117,11 +125,42 @@ namespace TindaKo.Services
                 await Application.Current.MainPage.DisplayAlert("Error", ex.Message, "OK");
             }
         }
+        //------------load transaction----------------//
+        public static async Task<List<Transaction>> GetFilteredTransactionsAsync(
+            bool isFilter,
+            DateTime fromDate,
+            DateTime toDate,
+            string transactionType)
+        {
+            var allTransactions = await _db.Table<Transaction>().ToListAsync();
 
+            return allTransactions
+                .Where(t =>
+                {
+                    // Try to parse the string to DateTime using your format
+                    bool parsed = DateTime.TryParseExact(
+                        t.DateTimeTransacted,
+                        "MMM dd, yyyy h:mm tt",
+                        System.Globalization.CultureInfo.InvariantCulture,
+                        System.Globalization.DateTimeStyles.None,
+                        out DateTime transDate);
 
+                    if (!parsed)
+                        return false;
 
-        //---------------sell----------------------------//
-        public static Task<int> AddSellAsync(Sell sell) => _db.InsertAsync(sell);
+                    // If filtering is enabled, apply both filters
+                    if (isFilter)
+                    {
+                        bool isInDateRange = transDate.Date >= fromDate.Date && transDate.Date <= toDate.Date;
+                        bool matchesType = string.IsNullOrEmpty(transactionType) || t.TransactionType == transactionType;
+                        return isInDateRange && matchesType;
+                    }
+
+                    // No filter, return all
+                    return true;
+                })
+                .ToList();
+        }
+
     }
-
 }

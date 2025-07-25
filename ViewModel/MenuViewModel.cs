@@ -28,7 +28,7 @@ namespace TindaKo.ViewModel
         [RelayCommand]
         private async Task NavigateSalesAsync()
         {
-
+            await Application.Current.MainPage.Navigation.PushAsync(new SalesPage(new SalesViewModel()));
         }
         [RelayCommand]
         private async Task NavigateInventoryAsync()

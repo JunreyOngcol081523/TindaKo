@@ -1,0 +1,88 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodel="clr-namespace:TindaKo.ViewModel"
+             xmlns:local="clr-namespace:TindaKo.Converters"
+             x:Class="TindaKo.Views.SalesPage"
+             Title="Sales">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <local:TransactionTypeToImageConverter x:Key="TransactionTypeToImageConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="Auto,*,Auto" Padding="5">
+
+        <!-- Filters (NOT scrollable) -->
+        <Border Grid.Row="0" Padding="10" Margin="0,0,0,15">
+            <VerticalStackLayout>
+                <Label FontSize="12" Text="From:" VerticalTextAlignment="Center"/>
+                <DatePicker FontSize="12"
+                            Date="{Binding DateFrom}"
+                            IsEnabled="{Binding IsFilterEnabled}"/>
+                <Label FontSize="12" Text="To:" VerticalTextAlignment="Center"/>
+                <DatePicker FontSize="12"
+                            Date="{Binding DateTo}"
+                            IsEnabled="{Binding IsFilterEnabled}"/>
+                <Picker Title="Select Transaction Type"
+                        FontSize="12"
+                        ItemsSource="{Binding TransactionType}"
+                        SelectedItem="{Binding SelectedTransactionType}" />
+                <HorizontalStackLayout>
+                    <CheckBox IsChecked="{Binding IsFilterEnabled}" />
+                    <Label Text="Enable Filter"
+                           VerticalOptions="Center" />
+                </HorizontalStackLayout>
+                <Button Text="Show Transactions"
+                        Command="{Binding LoadTransactionCommand}"/>
+            </VerticalStackLayout>
+        </Border>
+
+        <!-- SCROLLABLE transaction list -->
+        <CollectionView Grid.Row="1"
+                        ItemsSource="{Binding TransactionDisplay}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border Style="{StaticResource CardStyle}" Padding="10">
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                            <Image Grid.Column="0"
+                                   Source="{Binding TransactionType, Converter={StaticResource TransactionTypeToImageConverter}}"
+                                   HeightRequest="30"
+                                   WidthRequest="30" />
+
+                            <Grid Grid.Column="1"
+                                  ColumnDefinitions="Auto,*,*"
+                                  RowDefinitions="Auto,Auto,*">
+                                <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"
+                                       Text="{Binding DateTimeTransacted}"
+                                       FontSize="12"
+                                       FontAttributes="Italic"
+                                       TextColor="#455A64"/>
+                                <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                                       Text="{Binding TotalAmount, StringFormat='₱{0:N2}'}"
+                                       FontSize="20"
+                                       FontAttributes="Bold"
+                                       TextColor="#004D40"/>
+                                <Label Grid.Row="1" Grid.Column="2"
+                                       Text="{Binding TransactionType}"
+                                       FontSize="20"
+                                       HorizontalOptions="End"
+                                       TextColor="#16A085"/>
+                                <Label Grid.Row="2" Grid.Column="0"
+                                       Text="{Binding BuyerName, StringFormat='Umutang: {0}'}"
+                                       FontSize="20"
+                                       HorizontalOptions="End"
+                                       TextColor="#16A085"/>
+                            </Grid>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- Fixed bottom total -->
+        <Grid Grid.Row="2" Padding="10" BackgroundColor="#eee7d7">
+            <Label Text="{Binding SalesAmount, StringFormat='Total Sales: ₱{0:N2}'}" FontSize="18" FontAttributes="Bold" />
+        </Grid>
+    </Grid>
+</ContentPage>

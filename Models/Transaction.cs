@@ -11,10 +11,10 @@ namespace TindaKo.Models
     {
         [PrimaryKey, AutoIncrement]
         public int TransactionId { get; set; }
-        public string DateTimeISO { get; set; } // ISO 8601 timestamp: 2025-07-22T16:30:00
+        public string DateTimeTransacted { get; set; } 
         public decimal TotalAmount { get; set; }
         public string Username { get; set; }
         public string TransactionType { get; set; } // "cash", "credit"
-        public string? BuyerName { get; set; } // Nullable, only used for credit
+        public int? BuyerID { get; set; } // Nullable, only used for credit
     }
 }
