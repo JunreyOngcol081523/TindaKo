@@ -43,6 +43,11 @@ namespace TindaKo.Views
             }
 
         }
+        [RelayCommand]
+        private async Task CloseAdjustAsync()
+        {
+            await Application.Current.MainPage.Navigation.PopModalAsync();
+        }
     }
 
 }

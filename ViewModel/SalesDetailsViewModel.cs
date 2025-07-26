@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using SQLite;
 using System;
 using System.Collections.Generic;
@@ -32,6 +33,11 @@ namespace TindaKo.ViewModel
             foreach (Sell sell in sellItems) { 
                 SoldItems.Add(sell);
             }
+        }
+        [RelayCommand]
+        private async Task CloseDetailsAsync()
+        {
+            await Application.Current.MainPage.Navigation.PopModalAsync();
         }
     }
 }

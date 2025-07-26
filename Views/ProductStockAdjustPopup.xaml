@@ -16,9 +16,10 @@
 
         <Label Text="Add Stocks Out:" />
         <Entry Text="{Binding NewStocksOut}" Keyboard="Numeric" />
-
+        <Label Text="{Binding ReadMe}" FontAttributes="Italic"/>
         <Button Text="Confirm Adjust" 
                 Command="{Binding AdjustProductStocksCommand}" />
-        <Label Text="{Binding ReadMe}" FontAttributes="Italic"/>
+
+        <Button Text="Cancel Adjusting Stocks" Command="{Binding CloseAdjustCommand}" BackgroundColor="#C0392B"/>
     </VerticalStackLayout>
 </ContentPage>
