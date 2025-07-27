@@ -93,8 +93,11 @@
         </CollectionView>
 
         <!-- Fixed bottom total -->
-        <Grid Grid.Row="2" Padding="10" BackgroundColor="#eee7d7">
-            <Label Text="{Binding SalesAmount, StringFormat='Total Sales: ₱{0:N2}'}" FontSize="18" FontAttributes="Bold" />
+        <Grid Grid.Row="2" Padding="10" BackgroundColor="{StaticResource PrimaryDark}">
+            <Label Text="{Binding SalesAmount, StringFormat='Total Sales: ₱{0:N2}'}" 
+                   FontSize="18" 
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource White}"/>
         </Grid>
     </Grid>
 </ContentPage>

@@ -20,6 +20,6 @@
         <Button Text="Confirm Adjust" 
                 Command="{Binding AdjustProductStocksCommand}" />
 
-        <Button Text="Cancel Adjusting Stocks" Command="{Binding CloseAdjustCommand}" BackgroundColor="#C0392B"/>
+        <Button Text="Cancel Adjusting Stocks" Command="{Binding CloseAdjustCommand}" BackgroundColor="{StaticResource CancelButton}"/>
     </VerticalStackLayout>
 </ContentPage>

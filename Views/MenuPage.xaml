@@ -6,93 +6,113 @@
              Title="TindaKo App">
 
     <ScrollView>
-        <VerticalStackLayout>
-            <Grid Padding="10" ColumnSpacing="10" ColumnDefinitions="*,200,*" HorizontalOptions="Start">
-                <Image Grid.Column="0" Source="person.png" HeightRequest="50" VerticalOptions="Center"/>
-                <Label Grid.Column="1" Text="{Binding UserName}" VerticalOptions="Center" HorizontalOptions="Start"/>
-                <Button Grid.Column="2" Text="Logout" VerticalOptions="Center" HorizontalOptions="End" Command="{Binding LogoutCommand}"/>
-            </Grid>
-            <Grid Margin="20"
+        <Grid RowDefinitions="*,Auto">
+            <VerticalStackLayout Grid.Row="0">
+                <Grid Padding="10" ColumnSpacing="10" ColumnDefinitions="Auto,*,*" >
+                    <Image Grid.Column="0" Source="person.png" HeightRequest="50" VerticalOptions="Center" HorizontalOptions="Start"/>
+                    <Label Grid.Column="1" Text="{Binding UserName}" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                    <Button ImageSource="logout.png" 
+                        Grid.Column="2" 
+                        VerticalOptions="Center" 
+                        HorizontalOptions="End" 
+                        Command="{Binding LogoutCommand}"
+                        BackgroundColor="Transparent"/>
+                </Grid>
+                <Grid Margin="20"
                     RowDefinitions="*,*,*,*,*"
                     ColumnDefinitions="*,*" 
                     ColumnSpacing="16" 
                     RowSpacing="16">
 
-                <Border Grid.Row="0" Grid.Column="0"  Style="{StaticResource CardStyle}">
-                    <Border.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding NavigateSellCommand}" />
-                    </Border.GestureRecognizers>
-                    <StackLayout HorizontalOptions="Center">
-                        <Image Source="tag.png" HeightRequest="40"/>
-                        <Label Text="Sell" HorizontalTextAlignment="Center"/>
-                    </StackLayout>
-                </Border>
-                
-                
-                <Border Grid.Row="0" Grid.Column="1" Style="{StaticResource CardStyle}">
-                    <Border.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding NavigateProductCommand}" />
-                    </Border.GestureRecognizers>
-                    <StackLayout HorizontalOptions="Center">
-                        <Image Source="product.png" HeightRequest="40"/>
-                        <Label Text="Products" HorizontalTextAlignment="Center"/>
-                    </StackLayout>
-                </Border>
-                
-                
-                <Border Grid.Row="1" Grid.Column="0" Style="{StaticResource CardStyle}">
-                    <Border.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding NavigateSalesCommand}" />
-                    </Border.GestureRecognizers>
-                    <StackLayout HorizontalOptions="Center">
-                        <Image Source="peso.png" HeightRequest="40"/>
-                        <Label Text="Sales" HorizontalTextAlignment="Center"/>
-                    </StackLayout>
-                </Border>
-                
-                
-                <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource CardStyle}">
-                    <Border.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding NavigateInventoryCommand}" />
-                    </Border.GestureRecognizers>
-                    <StackLayout HorizontalOptions="Center">
-                        <Image Source="inventory.png" HeightRequest="40"/>
-                        <Label Text="Inventory" HorizontalTextAlignment="Center"/>
-                    </StackLayout>
-                </Border>
-                
-                
-                <Border Grid.Row="2" Grid.Column="0" Style="{StaticResource CardStyle}">
-                    <Border.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding NavigateSettingsCommand}" />
-                    </Border.GestureRecognizers>
-                    <StackLayout HorizontalOptions="Center">
-                        <Image Source="settings.png" HeightRequest="40"/>
-                        <Label Text="Settings" HorizontalTextAlignment="Center"/>
-                    </StackLayout>
-                </Border>
-                <Border Grid.Row="2" Grid.Column="1" Style="{StaticResource CardStyle}">
-                    <Border.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding NavigateReportsCommand}" />
-                    </Border.GestureRecognizers>
-                    <StackLayout HorizontalOptions="Center">
-                        <Image Source="notebook.png" HeightRequest="40"/>
-                        <Label Text="Credits/Utang" HorizontalTextAlignment="Center"/>
-                    </StackLayout>
-                </Border>
+                    <Border Grid.Row="0" Grid.Column="0"  
+                        Style="{StaticResource CardStyle}"
+                        >
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding NavigateSellCommand}" />
+                        </Border.GestureRecognizers>
+                        <StackLayout HorizontalOptions="Center">
+                            <Image Source="tag.png" HeightRequest="40"/>
+                            <Label Text="Sell" HorizontalTextAlignment="Center"/>
+                        </StackLayout>
+                    </Border>
 
-                <Border Grid.Row="3" Grid.Column="0" Style="{StaticResource CardStyle}">
-                    <Border.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding NavigateReportsCommand}" />
-                    </Border.GestureRecognizers>
-                    <StackLayout HorizontalOptions="Center">
-                        <Image Source="reports.png" HeightRequest="40"/>
-                        <Label Text="Reports" HorizontalTextAlignment="Center"/>
-                    </StackLayout>
-                </Border>
+
+                    <Border Grid.Row="0" Grid.Column="1" Style="{StaticResource CardStyle}">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding NavigateProductCommand}" />
+                        </Border.GestureRecognizers>
+                        <StackLayout HorizontalOptions="Center">
+                            <Image Source="product.png" HeightRequest="40"/>
+                            <Label Text="Products" HorizontalTextAlignment="Center"/>
+                        </StackLayout>
+                    </Border>
+
+
+                    <Border Grid.Row="1" Grid.Column="0" Style="{StaticResource CardStyle}">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding NavigateSalesCommand}" />
+                        </Border.GestureRecognizers>
+                        <StackLayout HorizontalOptions="Center">
+                            <Image Source="peso.png" HeightRequest="40"/>
+                            <Label Text="Sales" HorizontalTextAlignment="Center"/>
+                        </StackLayout>
+                    </Border>
+
+
+                    <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource CardStyle}">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding NavigateInventoryCommand}" />
+                        </Border.GestureRecognizers>
+                        <StackLayout HorizontalOptions="Center">
+                            <Image Source="inventory.png" HeightRequest="40"/>
+                            <Label Text="Inventory" HorizontalTextAlignment="Center"/>
+                        </StackLayout>
+                    </Border>
+
+                    <Border Grid.Row="2" Grid.Column="0" Style="{StaticResource CardStyle}">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding NavigateReportsCommand}" />
+                        </Border.GestureRecognizers>
+                        <StackLayout HorizontalOptions="Center">
+                            <Image Source="reports.png" HeightRequest="40"/>
+                            <Label Text="Reports" HorizontalTextAlignment="Center"/>
+                        </StackLayout>
+                    </Border>
+
+                    <Border Grid.Row="3" Grid.Column="0" Style="{StaticResource CardStyle}">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding NavigateSettingsCommand}" />
+                        </Border.GestureRecognizers>
+                        <StackLayout HorizontalOptions="Center">
+                            <Image Source="settings.png" HeightRequest="40"/>
+                            <Label Text="Settings" HorizontalTextAlignment="Center"/>
+                        </StackLayout>
+                    </Border>
+                    <Border Grid.Row="2" Grid.Column="1" Style="{StaticResource CardStyle} ">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding NavigateReportsCommand}" />
+                        </Border.GestureRecognizers>
+                        <StackLayout HorizontalOptions="Center">
+                            <Image Source="notebook.png" HeightRequest="40"/>
+                            <Label Text="Listahan ng Utang" HorizontalTextAlignment="Center"/>
+                        </StackLayout>
+                    </Border>
+
+                    <Border Grid.Row="3" Grid.Column="1" Style="{StaticResource CardStyle}">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding NavigateReportsCommand}" />
+                        </Border.GestureRecognizers>
+                        <StackLayout HorizontalOptions="Center">
+                            <Image Source="database.png" HeightRequest="40"/>
+                            <Label Text="Database Backup/Restore" HorizontalTextAlignment="Center"/>
+                        </StackLayout>
+                    </Border>
+                </Grid>
+            </VerticalStackLayout>
+            <Grid Grid.Row="1">
+                <BoxView BackgroundColor="{StaticResource Primary}" HeightRequest="50"/>
             </Grid>
-
-        </VerticalStackLayout>
+        </Grid>
         
     </ScrollView>
 </ContentPage>

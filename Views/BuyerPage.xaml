@@ -49,7 +49,7 @@
             <Button Text="Select this Buyer" 
                     Command="{Binding ConfirmSelectionCommand}" />
             <Button Text="Cancel"
-                    BackgroundColor="#C0392B"
+                    BackgroundColor="{StaticResource CancelButton}"
                     Command="{Binding CloseBuyerCommand}"/>
 
         </VerticalStackLayout>

@@ -1,8 +1,12 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Maui.Alerts;
+using CommunityToolkit.Maui.Core;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,12 +27,18 @@ namespace TindaKo.ViewModel
         [ObservableProperty] private string transactionType;
         public Buyer SelectedBuyer { get; set; } // in SellViewModel
         [ObservableProperty] private string selectedBuyerName;
+        [ObservableProperty] private bool isCartHasItems;
         public SellViewModel()
         {
             _ = LoadProducts();
             CartItems = new ObservableCollection<CartItems>();
             IsCashChecked = true;
+            CartItems.CollectionChanged += CartItems_CollectionChanged;
+            IsCartHasItems = false;
         }
+
+
+
         public async Task LoadProducts()
         {
             var allProducts = await DatabaseService.GetProductsAsync(20) ?? new List<Product>();
@@ -55,7 +65,7 @@ namespace TindaKo.ViewModel
         }
         partial void OnSearchTextChanged(string value)
         {
-            _=LoadProducts();
+            _ = LoadProducts();
         }
         [RelayCommand]
         public async Task AddToCart(Product product)
@@ -70,7 +80,7 @@ namespace TindaKo.ViewModel
 
                 if (product.Quantity <= 0)
                 {
-                    await Application.Current.MainPage.DisplayAlert("Invalid Quantity", "Please enter quantity greater than zero.", "OK");
+                    await Toast.Make("Please enter quantity greater than zero.", ToastDuration.Short).Show();
                     return;
                 }
                 // 🔒 Check if Quantity exceeds remaining stocks
@@ -87,7 +97,7 @@ namespace TindaKo.ViewModel
                 var existing = CartItems.FirstOrDefault(c => c.ProdName == product.ProdName);
                 if (existing != null)
                 {
-                    await Application.Current.MainPage.DisplayAlert("Already Added", $"{product.ProdName} is already in the cart.", "OK");
+                    await Toast.Make($"{product.ProdName} is already in the cart.", ToastDuration.Short).Show();
                     return;
                 }
 
@@ -127,13 +137,21 @@ namespace TindaKo.ViewModel
 
         partial void OnIsCashCheckedChanged(bool value)
         {
-            TransactionType = "Cash";
-            SelectedBuyer = null;
-            SelectedBuyerName = string.Empty;
+            if (value)
+            {
+                TransactionType = "Cash";
+                IsCreditChecked = false;
+                SelectedBuyer = null;
+                SelectedBuyerName = string.Empty;
+            }
         }
         partial void OnIsCreditCheckedChanged(bool value)
         {
-            TransactionType = "Credit";
+            if (value)
+            {
+                TransactionType = "Credit";
+                IsCashChecked = false;
+            }
         }
         //choose buyer nga umutang
         [RelayCommand]
@@ -155,6 +173,50 @@ namespace TindaKo.ViewModel
         [RelayCommand]
         private async Task CompleteTransactionAsync()
         {
+
+            // Check if buyer is required
+            if (IsCreditChecked && SelectedBuyer == null)
+            {
+                await Toast.Make("Pakilagay ang pangalan ng umutang.", ToastDuration.Short).Show();
+            }
+            else
+            {
+                bool confirm = await Application.Current.MainPage.DisplayAlert("Kompiramahin", $"Review your cart items:\n\n {BuildCartSummary()}", "Tama lahat", "Hindi");
+
+                if (confirm)
+                {
+                    SaveTransaction();
+                    bool again = await Application.Current.MainPage.DisplayAlert("Tagumpay", "Tapos na and transaction!\n Gusto mo bang gumawa ulit?", "Oo", "Hindi");
+
+                    if (again)
+                    {
+                        ClearForm();
+                    }
+                    else
+                    {
+                        await Application.Current.MainPage.Navigation.PopAsync();
+                    }
+                }
+                else
+                {
+                    return;
+                }
+
+            }
+        }
+
+        private void ClearForm()
+        {
+            CartItems.Clear();
+            TotalAmount = 0;
+            IsCashChecked = true;
+            SelectedBuyer = null;
+            SelectedBuyerName = null;
+        }
+
+        private async void SaveTransaction()
+        {
+
             try
             {
                 var transaction = new Transaction
@@ -176,15 +238,78 @@ namespace TindaKo.ViewModel
                 }).ToList();
 
                 await DatabaseService.SaveTransactionWithSalesAsync(transaction, soldItems);
-                await Application.Current.MainPage.DisplayAlert("Success", "Transaction completed!", "OK");
-                CartItems.Clear();
-                TotalAmount = 0;
-                IsCashChecked = true;
+
             }
             catch (Exception ex)
             {
-                Console.WriteLine("[Complete Transaction Method:]", ex.Message);
+
+                Debug.WriteLine($"[Complete Sell transaction] {ex.Message}");
             }
+            
+        }
+        [RelayCommand]
+        private async Task CloseSellAsync()
+        {
+            bool answer = await Application.Current.MainPage.DisplayAlert(
+                "Kumpirmasyon",
+                "Gusto mo bang kanselahin ang kasalukuyang transaksyon ng pagbebenta?",
+                "Oo", "Hindi");
+
+
+            if (answer)
+            {
+                await Application.Current.MainPage.Navigation.PopAsync();
+            }
+        }
+        private void CartItems_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action == NotifyCollectionChangedAction.Add)
+            {
+                foreach (var newItem in e.NewItems)
+                {
+                    CheckCartItems();
+                }
+            }
+            else if (e.Action == NotifyCollectionChangedAction.Remove)
+            {
+                foreach (var oldItem in e.OldItems)
+                {
+                    CheckCartItems();
+                }
+            }
+        }
+        private void CheckCartItems()
+        {
+            if (CartItems.Count <= 0)
+            {
+                IsCartHasItems = false;
+            }
+            else
+            {
+                IsCartHasItems = true;
+            }
+        }
+        private string BuildCartSummary()
+        {
+            var sb = new StringBuilder();
+            decimal grandTotal = 0;
+
+            sb.AppendLine("Product Name       |  Price  | Qty | Subtotal");
+
+            foreach (var item in CartItems)
+            {
+                grandTotal += item.Subtotal;
+
+                sb.AppendLine(
+                    $"{item.ProdName.PadRight(20)}| {item.Price,7} | {item.Quantity,3} | {item.Subtotal,8}");
+            }
+
+            sb.AppendLine(new string('-', 50));
+            sb.AppendLine($"Total:{"".PadLeft(35)}| {grandTotal,8}");
+            sb.AppendLine();
+            sb.AppendLine("Review the items above before you confirm.");
+
+            return sb.ToString();
         }
 
     }

@@ -180,11 +180,36 @@
             </VerticalStackLayout>
         </Grid>
         <Grid Grid.Row="2" BackgroundColor="AliceBlue">
-            <HorizontalStackLayout HorizontalOptions="Center">
-                <Button Text="Complete Transaction"
-                        Command="{Binding CompleteTransactionCommand}"/>
-            </HorizontalStackLayout>
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="2">
+                <!-- Complete Transaction Area -->
+                <Grid Grid.Column="0"
+                      IsEnabled="{Binding IsCartHasItems}"
+                        BackgroundColor="{StaticResource Primary}">
+                    <Grid.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding CompleteTransactionCommand}" />
+                    </Grid.GestureRecognizers>
+                    <Label Text="Complete Transaction"
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center"
+                            TextColor="White"
+                            />
+                </Grid>
+
+                <!-- Cancel Transaction Area -->
+                <Grid Grid.Column="1"
+              BackgroundColor="{StaticResource CancelButton}">
+                    <Grid.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding CloseSellCommand}" />
+                    </Grid.GestureRecognizers>
+                    <Label Text="Cancel Transaction"
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center"
+                            TextColor="White" />
+                </Grid>
+            </Grid>
         </Grid>
+
+
     </Grid>
 
 </ContentPage>

@@ -79,6 +79,6 @@
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
-        <Button Text="Close" Command="{Binding CloseDetailsCommand}" BackgroundColor="#C0392B"/>
+        <Button Text="Close" Command="{Binding CloseDetailsCommand}" BackgroundColor="{StaticResource CancelButton}"/>
     </VerticalStackLayout>
 </ContentPage>
