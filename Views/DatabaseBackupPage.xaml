@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TindaKo.Views.DatabaseBackupPage"
+             xmlns:viewmodel="clr-namespace:TindaKo.ViewModel"
+             Title="Database Backup Page">
+    <VerticalStackLayout>
+        <Label 
+            Text="Backup Database"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center" />
+        <Button Text="Backup" Command="{Binding BackupCommand}"/>
+        <Button Text="Restore" Command="{Binding RestoreCommand}"/>
+        <Button Text="Send to Email" Command="{Binding SendToEmailCommand}"/>
+        <Button Text="Share via" Command="{Binding ShareViaCommand}"/>
+    </VerticalStackLayout>
+</ContentPage>

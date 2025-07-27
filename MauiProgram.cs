@@ -44,6 +44,8 @@ namespace TindaKo
             builder.Services.AddSingleton<ProductStockAdjustPopup>();
             builder.Services.AddSingleton<SalesDetailsViewModel>();
             builder.Services.AddSingleton<SalesDetailsPage>();
+            builder.Services.AddSingleton<DatabaseBackupPage>();
+            builder.Services.AddSingleton<DBViewModel>();
         }
     }
 }

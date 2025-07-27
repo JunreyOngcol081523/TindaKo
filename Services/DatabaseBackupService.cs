@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Maui.ApplicationModel.Communication;
+using System.IO;
 
 namespace TindaKo.Services
 {
@@ -70,6 +72,66 @@ namespace TindaKo.Services
                 return false;
             }
         }
+
+        public static async Task EmailAllDbBackupsAsync()
+        {
+            var folder = FileSystem.AppDataDirectory;
+
+            // Filter: starts with "tindako" and ends with ".db"
+            var dbFiles = Directory.GetFiles(folder)
+                                   .Where(f => Path.GetFileName(f).StartsWith("tindako", StringComparison.OrdinalIgnoreCase) &&
+                                               Path.GetFileName(f).EndsWith(".db", StringComparison.OrdinalIgnoreCase))
+                                   .ToList();
+
+            if (dbFiles.Count == 0)
+            {
+                await Application.Current.MainPage.DisplayAlert("No Files", "No tindako database files found.", "OK");
+                return;
+            }
+
+            var message = new EmailMessage
+            {
+                Subject = "TindaKo Backup Files",
+                Body = "Attached are your TindaKo backup database files.",
+                To = new List<string>() // Optional: add default recipient
+            };
+
+            foreach (var file in dbFiles)
+            {
+                message.Attachments.Add(new EmailAttachment(file));
+            }
+
+            await Email.ComposeAsync(message);
+        }
+        public static async Task ShareAllDbBackupsAsync()
+        {
+            var folder = FileSystem.AppDataDirectory;
+
+            // Get matching files
+            var dbFiles = Directory.GetFiles(folder)
+                                   .Where(f => Path.GetFileName(f).StartsWith("tindako", StringComparison.OrdinalIgnoreCase) &&
+                                               Path.GetFileName(f).EndsWith(".db", StringComparison.OrdinalIgnoreCase))
+                                   .ToList();
+
+            if (dbFiles.Count == 0)
+            {
+                await Application.Current.MainPage.DisplayAlert("No Files", "No tindako database files found.", "OK");
+                return;
+            }
+
+            // On most platforms (especially iOS), Share only supports one file at a time.
+            // So if you want to share all files, you can zip them OR share one-by-one.
+
+            foreach (var file in dbFiles)
+            {
+                await Share.RequestAsync(new ShareFileRequest
+                {
+                    Title = "Share TindaKo DB",
+                    File = new ShareFile(file)
+                });
+            }
+        }
+
     }
 
 }
