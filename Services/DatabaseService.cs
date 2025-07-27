@@ -76,6 +76,8 @@ namespace TindaKo.Services
                       .Where(u => u.UserName == username && u.UserPassword == password)
                       .FirstOrDefaultAsync();
         }
+        public static Task<List<Users>> GetUsersAsync() =>
+            _db.Table<Users>().ToListAsync();
 
         //--------------buyer--------------------//
         public static Task<int> AddBuyerAsync(Buyer buyer) =>

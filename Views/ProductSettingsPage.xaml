@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TindaKo.Views.ProductSettingsPage"
+             Title="Product Settings">
+
+    <VerticalStackLayout Padding="10" Spacing="10">
+        <Label Text="For easier and faster product registration, fill up the downloaded spreadsheet template." />
+
+        <Button Text="Download Template" Command="{Binding DownloadTemplateCommand}" />
+        <Button Text="Import Spreadsheet Template" Command="{Binding ImportTemplateCommand}" />
+
+        <!-- Loading Modal / ActivityIndicator -->
+        <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+    </VerticalStackLayout>
+</ContentPage>

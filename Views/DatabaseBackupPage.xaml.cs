@@ -7,6 +7,6 @@ public partial class DatabaseBackupPage : ContentPage
 	public DatabaseBackupPage(DBViewModel vm)
 	{
 		InitializeComponent();
-		BindingContext = vm
+		BindingContext = vm;
 	}
 }

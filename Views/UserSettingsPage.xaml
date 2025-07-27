@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TindaKo.Views.UserSettingsPage"
+             xmlns:viewmodel="clr-namespace:TindaKo.ViewModel"
+             x:Name="UserSettingsPageRef"
+             Title="User Settings">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+
+            <!-- Section: Add/Edit User -->
+            <Border Style="{StaticResource CardStyle}" Padding="15">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Add / Edit User" FontAttributes="Bold" FontSize="18" />
+
+
+                    <Picker 
+                        Title="Select Role"
+                        ItemsSource="{Binding UserRoles}"
+                        SelectedItem="{Binding SelectedUser.UserRole}" />
+
+                    <Entry Placeholder="Username" Text="{Binding SelectedUser.UserName}" />
+                    <Entry Placeholder="Full Name" Text="{Binding SelectedUser.UserFullName}" />
+                    <Entry Placeholder="Password" Text="{Binding NewUserPassword}" IsPassword="True" />
+                    <Entry Placeholder="Confirm Password" Text="{Binding ConfirmPassword}" IsPassword="True" />
+
+
+                    <HorizontalStackLayout Spacing="10">
+                        <Button Text="Add New User"
+                                Command="{Binding AddNewUserCommand}" />
+                        <Button Text="{Binding SaveButtonText}"
+                                Command="{Binding SaveUserCommand}" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+
+            <!-- Section: Existing Users List -->
+            <Label Text="Registered Users" FontSize="18" FontAttributes="Bold" />
+
+            <CollectionView ItemsSource="{Binding Users}"
+                        EmptyView="No users found.">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border Padding="10" Margin="0,0,0,10" Style="{StaticResource CardStyle}">
+                            <Grid ColumnDefinitions="*,*,*,*,Auto"
+                              RowDefinitions="Auto"
+                              ColumnSpacing="10">
+                                <Label Text="{Binding UserFullName}" Grid.Column="0" VerticalOptions="Center" />
+                                <Label Text="{Binding UserRole}" Grid.Column="1" VerticalOptions="Center" />
+                                <Label Text="{Binding Username}" Grid.Column="2" VerticalOptions="Center" />
+                                <Label Text="{Binding UserPassword}" Grid.Column="3" VerticalOptions="Center" />
+                                <Button Text="Edit"
+                                        Grid.Column="4"
+                                        Command="{Binding BindingContext.EditNewUserCommand, Source={x:Reference UserSettingsPageRef}}"
+                                        CommandParameter="{Binding .}" />
+
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

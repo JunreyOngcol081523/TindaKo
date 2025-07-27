@@ -38,13 +38,19 @@ namespace TindaKo.ViewModel
         [RelayCommand]
         private async Task NavigateSettingsAsync()
         {
-
+            await Application.Current.MainPage.Navigation.PushAsync(new SettingsPage());
         }
         [RelayCommand]
         private async Task NavigateReportsAsync()
         {
 
         }
+        [RelayCommand]
+        private async Task NavigateDatabaseAsync()
+        {
+            await Application.Current.MainPage.Navigation.PushAsync(new DatabaseBackupPage(new DBViewModel()));
+        }
+
         [RelayCommand]
         private async Task LogoutAsync()
         {

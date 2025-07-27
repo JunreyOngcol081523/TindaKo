@@ -10,6 +10,7 @@
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
                 <ResourceDictionary Source="Resources/Styles/CardStyles.xaml" />
+
             </ResourceDictionary.MergedDictionaries>
 
             <!-- Global NavigationPage App Bar Styling -->
@@ -17,7 +18,7 @@
                 <Setter Property="BarBackgroundColor" Value="{StaticResource Primary}" />
                 <Setter Property="BarTextColor" Value="White" />
             </Style>
-
+            <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
             <converters:StringEqualsConverter x:Key="StringEqualsConverter" />
         </ResourceDictionary>
     </Application.Resources>

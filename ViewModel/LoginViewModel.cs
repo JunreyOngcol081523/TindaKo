@@ -40,7 +40,7 @@ namespace TindaKo.ViewModel
 
             if (user != null && user.UserRole == SelectedRole)
             {
-                await Application.Current.MainPage.DisplayAlert("Login Successful", $"Welcome, {user.UserRole}!", "OK");
+                await Application.Current.MainPage.DisplayAlert("Login Successful", $"Welcome, {user.UserName}!", "OK");
                 Application.Current.MainPage = new NavigationPage(new MenuPage(new MenuViewModel()));
                 Preferences.Set("remember", RememberUsername);
                 Preferences.Set("username",UserName);

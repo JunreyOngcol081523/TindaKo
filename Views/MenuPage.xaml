@@ -100,7 +100,7 @@
 
                     <Border Grid.Row="3" Grid.Column="1" Style="{StaticResource CardStyle}">
                         <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding NavigateReportsCommand}" />
+                            <TapGestureRecognizer Command="{Binding NavigateDatabaseCommand}" />
                         </Border.GestureRecognizers>
                         <StackLayout HorizontalOptions="Center">
                             <Image Source="database.png" HeightRequest="40"/>

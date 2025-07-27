@@ -46,6 +46,12 @@ namespace TindaKo
             builder.Services.AddSingleton<SalesDetailsPage>();
             builder.Services.AddSingleton<DatabaseBackupPage>();
             builder.Services.AddSingleton<DBViewModel>();
+            builder.Services.AddSingleton<SettingsPage>();
+            builder.Services.AddSingleton<UserSettingsPage>();
+            builder.Services.AddSingleton<ProductSettingsPage>();
+            builder.Services.AddSingleton<UserSettingsViewModel>();
+            builder.Services.AddSingleton<ProductSettingsViewModel>();
+            
         }
     }
 }
