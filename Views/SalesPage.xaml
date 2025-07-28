@@ -72,17 +72,17 @@
                                        TextColor="#455A64"/>
                                 <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
                                        Text="{Binding TotalAmount, StringFormat='₱{0:N2}'}"
-                                       FontSize="20"
+
                                        FontAttributes="Bold"
                                        TextColor="#004D40"/>
                                 <Label Grid.Row="1" Grid.Column="2"
                                        Text="{Binding TransactionType}"
-                                       FontSize="20"
+
                                        HorizontalOptions="End"
                                        TextColor="#16A085"/>
                                 <Label Grid.Row="2" Grid.Column="0"
-                                       Text="{Binding BuyerName, StringFormat='Umutang: {0}'}"
-                                       FontSize="20"
+                                       Text="{Binding BuyerName}"
+
                                        HorizontalOptions="End"
                                        TextColor="#16A085"/>
                             </Grid>

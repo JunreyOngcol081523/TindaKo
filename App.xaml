@@ -18,8 +18,10 @@
                 <Setter Property="BarBackgroundColor" Value="{StaticResource Primary}" />
                 <Setter Property="BarTextColor" Value="White" />
             </Style>
+            <converters:BoolToStatusConverter x:Key="BoolToStatusConverter" />
             <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
             <converters:StringEqualsConverter x:Key="StringEqualsConverter" />
+            <converters:DueDateToColorConverter x:Key="DueDateToColorConverter"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

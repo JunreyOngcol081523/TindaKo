@@ -9,29 +9,33 @@
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="20">
 
+            <HorizontalStackLayout Spacing="8">
+                <Button ImageSource="add.png"
+                        HeightRequest="50"
+                        BackgroundColor="Transparent"
+                                Command="{Binding AddNewUserCommand}" />
+                <Button ImageSource="close.png"
+                        HeightRequest="50"
+                        BackgroundColor="Transparent"
+                                Command="{Binding CloseUserFormCommand}" />
+            </HorizontalStackLayout>
             <!-- Section: Add/Edit User -->
-            <Border Style="{StaticResource CardStyle}" Padding="15">
-                <VerticalStackLayout Spacing="12">
+            <Border Style="{StaticResource CardStyle}" Padding="15"  IsVisible="{Binding UserFormVisible}">
+                <VerticalStackLayout Spacing="5">
                     <Label Text="Add / Edit User" FontAttributes="Bold" FontSize="18" />
 
 
                     <Picker 
                         Title="Select Role"
                         ItemsSource="{Binding UserRoles}"
-                        SelectedItem="{Binding SelectedUser.UserRole}" />
+                        SelectedItem="{Binding SelectedUser.UserRole, Mode=TwoWay}" />
 
-                    <Entry Placeholder="Username" Text="{Binding SelectedUser.UserName}" />
-                    <Entry Placeholder="Full Name" Text="{Binding SelectedUser.UserFullName}" />
-                    <Entry Placeholder="Password" Text="{Binding NewUserPassword}" IsPassword="True" />
-                    <Entry Placeholder="Confirm Password" Text="{Binding ConfirmPassword}" IsPassword="True" />
-
-
-                    <HorizontalStackLayout Spacing="10">
-                        <Button Text="Add New User"
-                                Command="{Binding AddNewUserCommand}" />
-                        <Button Text="{Binding SaveButtonText}"
-                                Command="{Binding SaveUserCommand}" />
-                    </HorizontalStackLayout>
+                    <Entry Placeholder="Username" Text="{Binding SelectedUser.UserName, Mode=TwoWay}" />
+                    <Entry Placeholder="Full Name" Text="{Binding SelectedUser.UserFullName, Mode=TwoWay}" />
+                    <Entry Placeholder="Password" Text="{Binding NewUserPassword, Mode=TwoWay}" IsPassword="True" />
+                    <Entry Placeholder="Confirm Password" Text="{Binding ConfirmPassword, Mode=TwoWay}" IsPassword="True" />
+                    <Button Text="{Binding SaveButtonText}"
+                            Command="{Binding SaveUserCommand}" />
                 </VerticalStackLayout>
             </Border>
 
@@ -40,27 +44,44 @@
             <Label Text="Registered Users" FontSize="18" FontAttributes="Bold" />
 
             <CollectionView ItemsSource="{Binding Users}"
-                        EmptyView="No users found.">
+                EmptyView="No users found.">
+
+                <!-- 👇 Header definition -->
+                <CollectionView.Header>
+                    <Grid ColumnDefinitions="Auto,*,*,*,*,Auto"
+                        Padding="10"
+                          ColumnSpacing="10"
+                        BackgroundColor="{StaticResource PrimaryDark}">
+                        <Label TextColor="{StaticResource WhiteText}" Text="#" FontAttributes="Bold" Grid.Column="0" />
+                        <Label TextColor="{StaticResource WhiteText}" Text="Full Name" FontAttributes="Bold" Grid.Column="1" />
+                        <Label TextColor="{StaticResource WhiteText}" Text="Role" FontAttributes="Bold" Grid.Column="2" />
+                        <Label TextColor="{StaticResource WhiteText}" Text="Username" FontAttributes="Bold" Grid.Column="3" />
+                        <Label TextColor="{StaticResource WhiteText}" Text="Password" FontAttributes="Bold" Grid.Column="4" />
+                        <Label TextColor="{StaticResource WhiteText}" Text="Action" FontAttributes="Bold" Grid.Column="5" />
+                    </Grid>
+                </CollectionView.Header>
+
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <Border Padding="10" Margin="0,0,0,10" Style="{StaticResource CardStyle}">
-                            <Grid ColumnDefinitions="*,*,*,*,Auto"
-                              RowDefinitions="Auto"
-                              ColumnSpacing="10">
-                                <Label Text="{Binding UserFullName}" Grid.Column="0" VerticalOptions="Center" />
-                                <Label Text="{Binding UserRole}" Grid.Column="1" VerticalOptions="Center" />
-                                <Label Text="{Binding Username}" Grid.Column="2" VerticalOptions="Center" />
-                                <Label Text="{Binding UserPassword}" Grid.Column="3" VerticalOptions="Center" />
+                            <Grid ColumnDefinitions="Auto,*,*,*,*,Auto"
+                                  RowDefinitions="Auto"
+                                  ColumnSpacing="10">
+                                <Label Text="{Binding Id}" Grid.Column="0" VerticalOptions="Center"/>
+                                <Label Text="{Binding UserFullName}" Grid.Column="1" VerticalOptions="Center" />
+                                <Label Text="{Binding UserRole}" Grid.Column="2" VerticalOptions="Center" />
+                                <Label Text="{Binding UserName}" Grid.Column="3" VerticalOptions="Center" />
+                                <Label Text="{Binding UserPassword}" Grid.Column="4" VerticalOptions="Center" />
                                 <Button Text="Edit"
-                                        Grid.Column="4"
+                                        Grid.Column="5"
                                         Command="{Binding BindingContext.EditNewUserCommand, Source={x:Reference UserSettingsPageRef}}"
                                         CommandParameter="{Binding .}" />
-
                             </Grid>
                         </Border>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
+
 
         </VerticalStackLayout>
     </ScrollView>

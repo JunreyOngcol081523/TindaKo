@@ -51,7 +51,8 @@ namespace TindaKo
             builder.Services.AddSingleton<ProductSettingsPage>();
             builder.Services.AddSingleton<UserSettingsViewModel>();
             builder.Services.AddSingleton<ProductSettingsViewModel>();
-            
+            builder.Services.AddSingleton<CreditorPage>();
+            builder.Services.AddSingleton<CreditorViewModel>();
         }
     }
 }

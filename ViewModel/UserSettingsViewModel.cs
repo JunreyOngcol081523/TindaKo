@@ -12,7 +12,7 @@ using TindaKo.Services;
 
 namespace TindaKo.ViewModel
 {
-    public partial class UserSettingsViewModel:ObservableObject
+    public partial class UserSettingsViewModel : ObservableObject
     {
         [ObservableProperty] private ObservableCollection<Users> users;
         [ObservableProperty] private string newUsername;
@@ -23,6 +23,7 @@ namespace TindaKo.ViewModel
         [ObservableProperty] private string saveButtonText;
         [ObservableProperty] private List<string> userRoles;
         [ObservableProperty] private bool isAddCommand;
+        [ObservableProperty] private bool userFormVisible;
         private Users selectedUser;
         public Users SelectedUser
         {
@@ -32,6 +33,7 @@ namespace TindaKo.ViewModel
 
         public UserSettingsViewModel() {
             LoadUsers();
+            UserFormVisible = false;
         }
         private async void LoadUsers()
         {
@@ -51,19 +53,66 @@ namespace TindaKo.ViewModel
             NewUserPassword = string.Empty;
             ConfirmPassword = string.Empty;
             SaveButtonText = "Save New";
+            UserFormVisible = true;
         }
 
         [RelayCommand]
         private void EditNewUser(Users user)
         {
-            
+
             IsAddCommand = false;
             SelectedUser = user; // This fills the form
             NewUserPassword = string.Empty;
             ConfirmPassword = string.Empty;
             SaveButtonText = "Save Changes";
+            SelectedUser = user;
+            UserFormVisible = true;
         }
+        [RelayCommand]
+        private async Task SaveUserAsync()
+        {
+            if (!NewUserPassword.Equals(ConfirmPassword))
+            {
+                await Application.Current.MainPage.DisplayAlert("Error", $"Password not match", "ok");
+                return;
+            }
 
+            try
+            {
+                if (IsAddCommand)
+                {
+                    var newuser = new Users
+                    {
+                        UserName = SelectedUser.UserName,
+                        UserFullName = SelectedUser.UserFullName,
+                        UserPassword = NewUserPassword,
+                        UserRole = SelectedUser.UserRole
+                    };
 
+                    await DatabaseService.AddNewUserAsync(newuser);
+                }
+                else
+                {
+                    // Directly update SelectedUser (includes correct UserId)
+                    SelectedUser.UserPassword = NewUserPassword;
+                    await DatabaseService.UpdateUserAsync(SelectedUser);
+                }
+
+                await Application.Current.MainPage.DisplayAlert("Success", IsAddCommand ? "User added." : "User updated.", "OK");
+
+                // Refresh list and hide form
+                LoadUsers();
+                UserFormVisible = false;
+            }
+            catch (Exception ex)
+            {
+                await Application.Current.MainPage.DisplayAlert("Error", $"Saving user: {ex.Message}", "ok");
+            }
+        }
+        [RelayCommand]
+        private async Task CloseUserFormAsync()
+        {
+            UserFormVisible = false;
+        }
     }
 }

@@ -22,16 +22,19 @@ namespace TindaKo.Services
 
             var dbPath = Path.Combine(FileSystem.AppDataDirectory, "tindako.db");
             _db = new SQLiteAsyncConnection(dbPath);
-
+            //dropping for testing only
+            //await _db.DropTableAsync<Sell>();
+            //await _db.DropTableAsync<Transaction>();
+            
             // Create tables
             await _db.CreateTableAsync<Product>();
             await _db.CreateTableAsync<Users>();
             await _db.CreateTableAsync<Sell>();
             await _db.CreateTableAsync<Transaction>();
             await _db.CreateTableAsync<Buyer>();
-            //await _db.DropTableAsync<Buyer>();
-            //await _db.DropTableAsync<Sell>();
-            //await _db.DropTableAsync<Transaction>();
+            await _db.CreateTableAsync<Creditor>();
+
+
             //await _db.DropTableAsync<Product>();
             //-------Users------------//
             // Check if Users table is empty
@@ -70,14 +73,7 @@ namespace TindaKo.Services
 
         public static Task<int> DeleteProductAsync(Product product) =>
             _db.DeleteAsync(product);
-        public static Task<Users> GetUserAsync(string username, string password)
-        {
-            return _db.Table<Users>()
-                      .Where(u => u.UserName == username && u.UserPassword == password)
-                      .FirstOrDefaultAsync();
-        }
-        public static Task<List<Users>> GetUsersAsync() =>
-            _db.Table<Users>().ToListAsync();
+
 
         //--------------buyer--------------------//
         public static Task<int> AddBuyerAsync(Buyer buyer) =>
@@ -127,6 +123,10 @@ namespace TindaKo.Services
                 await Application.Current.MainPage.DisplayAlert("Error", ex.Message, "OK");
             }
         }
+        public static async Task SaveCreditorAsync(Creditor creditor)
+        {
+            await _db.InsertAsync(creditor);
+        }
         //------------load transaction----------------//
         public static async Task<List<Transaction>> GetFilteredTransactionsAsync(
             bool isFilter,
@@ -139,30 +139,30 @@ namespace TindaKo.Services
             return allTransactions
                 .Where(t =>
                 {
-                    // Try to parse the string to DateTime using your format
-                    bool parsed = DateTime.TryParseExact(
-                        t.DateTimeTransacted,
-                        "MMM dd, yyyy h:mm tt",
-                        System.Globalization.CultureInfo.InvariantCulture,
-                        System.Globalization.DateTimeStyles.None,
-                        out DateTime transDate);
-
-                    if (!parsed)
-                        return false;
-
-                    // If filtering is enabled, apply both filters
                     if (isFilter)
                     {
+                        bool parsed = DateTime.TryParseExact(
+                            t.DateTimeTransacted,
+                            "MMM dd, yyyy h:mm tt",
+                            System.Globalization.CultureInfo.InvariantCulture,
+                            System.Globalization.DateTimeStyles.None,
+                            out DateTime transDate);
+
+                        if (!parsed)
+                            return false;
+
                         bool isInDateRange = transDate.Date >= fromDate.Date && transDate.Date <= toDate.Date;
                         bool matchesType = string.IsNullOrEmpty(transactionType) || t.TransactionType == transactionType;
                         return isInDateRange && matchesType;
                     }
 
-                    // No filter, return all
                     return true;
                 })
+                .OrderByDescending(t => t.TransactionId)
                 .ToList();
         }
+
+
         //---------------------Sell-----------------------//
         public static async Task<List<Sell>> GetSellsAsync(int transactionId)
         {
@@ -170,6 +170,30 @@ namespace TindaKo.Services
             return allSells
                 .Where(s=>s.TransactionId == transactionId).ToList();
         }
+        //-------------------Users-----------------------//
+        public static Task<Users> GetUserAsync(string username, string password)
+        {
+            return _db.Table<Users>()
+                      .Where(u => u.UserName == username && u.UserPassword == password)
+                      .FirstOrDefaultAsync();
+        }
+        public static Task<List<Users>> GetUsersAsync() =>
+            _db.Table<Users>().ToListAsync();
+        public static async Task<int> UpdateUserAsync(Users user) {
+
+            return  await _db.UpdateAsync(user);
+        }
+        public static Task<int> AddNewUserAsync(Users user) {
+            return _db.InsertAsync(user);
+        }
+         //--------------------creditor--------------------------//
+         public static async Task<List<Creditor>> GetCreditorsAsync()
+        {
+            return await _db.Table<Creditor>().ToListAsync();
+        }
+        public static async Task<int> UpdateCreditorAsync(Creditor creditor) =>
+           await _db.UpdateAsync(creditor);
+        
 
     }
 }

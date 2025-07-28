@@ -17,7 +17,7 @@
     <!-- Deep Green -->
     <Color x:Key="Tertiary">#FFC107</Color>
     <!-- Amber Accent -->
-
+    <Color x:Key="WhiteText">#f5f6fa</Color>
 
     <Color x:Key="White">White</Color>
     <Color x:Key="Black">Black</Color>

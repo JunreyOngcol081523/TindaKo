@@ -10,6 +10,8 @@ namespace TindaKo.ViewModel
 
         [ObservableProperty]
         private string userName;
+        [ObservableProperty]
+        private string userFullName;
 
         [ObservableProperty]
         private string userPassword;
@@ -37,13 +39,16 @@ namespace TindaKo.ViewModel
             }
 
             var user = await DatabaseService.GetUserAsync(UserName, UserPassword);
-
+            
             if (user != null && user.UserRole == SelectedRole)
             {
                 await Application.Current.MainPage.DisplayAlert("Login Successful", $"Welcome, {user.UserName}!", "OK");
                 Application.Current.MainPage = new NavigationPage(new MenuPage(new MenuViewModel()));
+                UserFullName = user.UserFullName;
                 Preferences.Set("remember", RememberUsername);
                 Preferences.Set("username",UserName);
+                Preferences.Set("password",UserPassword);
+                Preferences.Set("userfullname", UserFullName);
             }
             else
             {
@@ -56,5 +61,6 @@ namespace TindaKo.ViewModel
             RememberUsername = Preferences.Get("remember",false);
             UserName = Preferences.Get("username",string.Empty);
         }
+        //--------------get all User by username------------//
     }
 }

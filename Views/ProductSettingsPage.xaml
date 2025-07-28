@@ -3,14 +3,20 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="TindaKo.Views.ProductSettingsPage"
              Title="Product Settings">
-
     <VerticalStackLayout Padding="10" Spacing="10">
-        <Label Text="For easier and faster product registration, fill up the downloaded spreadsheet template." />
 
-        <Button Text="Download Template" Command="{Binding DownloadTemplateCommand}" />
-        <Button Text="Import Spreadsheet Template" Command="{Binding ImportTemplateCommand}" />
+        <!-- Border wrapping Label and Buttons -->
+        <Border Padding="15" Margin="0,0,0,10" Style="{StaticResource CardStyle}">
+            <VerticalStackLayout Spacing="10">
+                <Label Text="For easier and faster product registration, fill up the downloaded spreadsheet template." />
+                <Button Text="Download Template" Command="{Binding DownloadTemplateCommand}" ImageSource="download.png" />
+                <Button Text="Import Spreadsheet Template" Command="{Binding ImportTemplateCommand}" ImageSource="upload.png"/>
+            </VerticalStackLayout>
+        </Border>
 
         <!-- Loading Modal / ActivityIndicator -->
         <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+
     </VerticalStackLayout>
+
 </ContentPage>

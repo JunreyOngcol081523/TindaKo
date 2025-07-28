@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage 
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="TindaKo.Views.CreditorPage"
+    xmlns:viewmodel="clr-namespace:TindaKo.ViewModel"
+    xmlns:converters="clr-namespace:TindaKo.Converters"
+    Title="Listahan ng Utang">
+
+    <ContentPage.BindingContext>
+        <viewmodel:CreditorViewModel />
+    </ContentPage.BindingContext>
+
+    <Grid RowDefinitions="Auto, * , Auto" Padding="10">
+        <!-- Filters and Search - Row 0 -->
+        <VerticalStackLayout Grid.Row="0" Spacing="10">
+            <!-- Filter -->
+            <HorizontalStackLayout Spacing="20" HorizontalOptions="Center">
+                <RadioButton Content="All" Value="All" GroupName="CreditFilter" IsChecked="{Binding IsAllChecked}" />
+                <RadioButton Content="Past Due" Value="PastDue" GroupName="CreditFilter" IsChecked="{Binding IsPastDueChecked}" />
+                <RadioButton Content="Paid" Value="Paid" GroupName="CreditFilter" IsChecked="{Binding IsPaidChecked}" />
+                <RadioButton Content="Unpaid" Value="Unpaid" GroupName="CreditFilter" IsChecked="{Binding IsUnpaidChecked}" />
+            </HorizontalStackLayout>
+
+            <HorizontalStackLayout>
+                <Label Text="{Binding TotalAmount, StringFormat='Total Amount: ₱{0:N2}'}"/>
+            </HorizontalStackLayout>
+
+            <!-- Search -->
+            <SearchBar Placeholder="Search creditor..." Text="{Binding SearchText}" />
+        </VerticalStackLayout>
+
+        <!-- CollectionView Data - Row 1 -->
+        <CollectionView Grid.Row="1" ItemsSource="{Binding FilteredCreditors}" Margin="0,10">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border Stroke="Gray" StrokeThickness="1" Padding="10" Margin="5" StrokeShape="RoundRectangle 10">
+                        <VerticalStackLayout Spacing="5">
+                            <!-- First row: Credit Date and Status -->
+                            <Grid ColumnDefinitions="*, Auto">
+                                <Label Text="{Binding CreditDate, StringFormat='Date: {0:MMM dd, yyyy}'}"
+                                       FontAttributes="Bold" TextColor="Black" Grid.Column="0"/>
+                                <Label Text="{Binding IsPaid, Converter={StaticResource BoolToStatusConverter}}" Grid.Column="1" />
+                            </Grid>
+
+                            <!-- Second row: Creditor Name, Amount, Due Date -->
+                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                <Label Text="{Binding CreditorName}" FontSize="16" Grid.Column="0" />
+                                <Label Text="{Binding CreditAmount, StringFormat='₱{0:N2}'}" FontSize="15"
+                                       HorizontalTextAlignment="Center" Grid.Column="1"/>
+                                <Label Text="{Binding DueDate, StringFormat='Due: {0:MMM dd, yyyy}'}"
+                                       TextColor="{Binding DueDate, Converter={StaticResource DueDateToColorConverter}}"
+                                       HorizontalTextAlignment="End" Grid.Column="2"/>
+                            </Grid>
+
+                            <!-- Third row: Paid Date (if paid) + Button -->
+                            <Grid ColumnDefinitions="*, Auto">
+                                <Label Text="{Binding PaidDate, StringFormat='Paid on: {0:MMM dd, yyyy}'}"
+                                       IsVisible="{Binding IsPaid}" TextColor="Green" FontAttributes="Italic" Grid.Column="0"/>
+                                <Button Text="Mark as Paid"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:CreditorViewModel}}, Path=MarkAsPaidCommand}"
+                                        CommandParameter="{Binding .}"
+                                        IsVisible="{Binding IsPaid, Converter={StaticResource InverseBoolConverter}}"
+                                        Grid.Column="1" />
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- Fixed Footer - Row 2 -->
+        <BoxView Grid.Row="2" HeightRequest="40" BackgroundColor="{StaticResource PrimaryDark}" />
+    </Grid>
+</ContentPage>

@@ -90,7 +90,7 @@
                     </Border>
                     <Border Grid.Row="2" Grid.Column="1" Style="{StaticResource CardStyle} ">
                         <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding NavigateReportsCommand}" />
+                            <TapGestureRecognizer Command="{Binding NavigateCreditsCommand}" />
                         </Border.GestureRecognizers>
                         <StackLayout HorizontalOptions="Center">
                             <Image Source="notebook.png" HeightRequest="40"/>

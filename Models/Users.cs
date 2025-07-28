@@ -10,7 +10,9 @@ namespace TindaKo.Models
 {
     public class Users : ObservableObject
     {
-        [PrimaryKey]
+        [PrimaryKey, AutoIncrement]
+        public int Id { get; set; }
+
         public string UserName { get; set; }
         public string UserFullName { get; set; }
         public string UserPassword { get; set; }

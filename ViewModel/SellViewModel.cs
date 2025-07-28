@@ -236,9 +236,20 @@ namespace TindaKo.ViewModel
                     Price = ci.Price,
                     Qty = ci.Quantity
                 }).ToList();
-
+                
                 await DatabaseService.SaveTransactionWithSalesAsync(transaction, soldItems);
-
+                if (IsCreditChecked)
+                {
+                    var creditor = new Creditor
+                    {
+                        CreditorName = SelectedBuyer.Name,
+                        CreditAmount = TotalAmount,
+                        CreditDate = DateTime.Now,
+                        DueDate = DateTime.Now.AddMonths(1),
+                        IsPaid = false
+                    };
+                    await DatabaseService.SaveCreditorAsync(creditor);
+                }
             }
             catch (Exception ex)
             {

@@ -2,9 +2,11 @@
 using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TindaKo.Services;
 using TindaKo.Views;
 
 namespace TindaKo.ViewModel
@@ -13,7 +15,7 @@ namespace TindaKo.ViewModel
     {
         [ObservableProperty] private string userName;
         public MenuViewModel() { 
-            UserName =$"Welcome! {Preferences.Get("username",string.Empty)}";
+            UserName =$"Welcome! {Preferences.Get("userfullname", string.Empty)}";
         }
         [RelayCommand]
         private async Task NavigateSellAsync()
@@ -50,11 +52,17 @@ namespace TindaKo.ViewModel
         {
             await Application.Current.MainPage.Navigation.PushAsync(new DatabaseBackupPage(new DBViewModel()));
         }
+        [RelayCommand]
+        private async Task NavigateCreditsAsync()
+        {
+            await Application.Current.MainPage.Navigation.PushAsync(new CreditorPage());
+        }
 
         [RelayCommand]
         private async Task LogoutAsync()
         {
             Application.Current.MainPage = new NavigationPage(new LoginPage(new LoginViewModel()));
         }
+
     }
 }
