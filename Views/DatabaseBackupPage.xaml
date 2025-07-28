@@ -32,29 +32,7 @@
                     <Label Text="Show Backup Files" HorizontalTextAlignment="Center"/>
                 </StackLayout>
             </Border>
-
-
-            <Border Grid.Row="1" Grid.Column="0" Style="{StaticResource CardStyle}">
-                <Border.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding SendToEmailCommand}" />
-                </Border.GestureRecognizers>
-                <StackLayout HorizontalOptions="Center">
-                    <Image Source="mail.png" HeightRequest="40"/>
-                    <Label Text="Send all to Email" HorizontalTextAlignment="Center"/>
-                </StackLayout>
-            </Border>
-
-
-            <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource CardStyle}">
-                <Border.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding ShareViaCommand}" />
-                </Border.GestureRecognizers>
-                <StackLayout HorizontalOptions="Center">
-                    <Image Source="share.png" HeightRequest="40"/>
-                    <Label Text="Share All" HorizontalTextAlignment="Center"/>
-                </StackLayout>
-            </Border>
-            <Grid Grid.Row="2" 
+            <Grid Grid.Row="1" 
                   Grid.Column="0" 
                   Grid.ColumnSpan="2"
                   RowDefinitions="Auto,*">
@@ -103,6 +81,9 @@
                     </CollectionView.ItemTemplate>
                 </CollectionView>
 
+            </Grid>
+            <Grid Grid.Row="2">
+                <BoxView BackgroundColor="{StaticResource Primary}" HeightRequest="40"/>
             </Grid>
 
         </Grid>

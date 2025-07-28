@@ -23,7 +23,7 @@
 
             <!-- List of Existing Buyers -->
             <Label Text="Existing Buyers" FontAttributes="Bold" />
-            <Entry Text="{Binding SearchText}" Placeholder="Search name"/>
+            <SearchBar Text="{Binding SearchText}" Placeholder="Search name"/>
             <CollectionView ItemsSource="{Binding Buyers}">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>

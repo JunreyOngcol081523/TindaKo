@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TindaKo.Helpers;
 using TindaKo.Models;
 using TindaKo.Services;
 
@@ -73,7 +74,7 @@ namespace TindaKo.ViewModel
         {
             if (!NewUserPassword.Equals(ConfirmPassword))
             {
-                await Application.Current.MainPage.DisplayAlert("Error", $"Password not match", "ok");
+                await ToastHelper.ShowError($"Password not match");
                 return;
             }
 
@@ -98,7 +99,7 @@ namespace TindaKo.ViewModel
                     await DatabaseService.UpdateUserAsync(SelectedUser);
                 }
 
-                await Application.Current.MainPage.DisplayAlert("Success", IsAddCommand ? "User added." : "User updated.", "OK");
+                await ToastHelper.ShowError(IsAddCommand ? "User added." : "User updated.");
 
                 // Refresh list and hide form
                 LoadUsers();
@@ -106,7 +107,7 @@ namespace TindaKo.ViewModel
             }
             catch (Exception ex)
             {
-                await Application.Current.MainPage.DisplayAlert("Error", $"Saving user: {ex.Message}", "ok");
+                await ToastHelper.ShowError($"Saving user: {ex.Message}");
             }
         }
         [RelayCommand]

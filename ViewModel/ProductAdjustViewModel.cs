@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using TindaKo.Helpers;
 using TindaKo.Models;
 using TindaKo.Services;
 
@@ -29,7 +30,7 @@ namespace TindaKo.Views
         {
             if (_product == null)
             {
-                await Application.Current.MainPage.DisplayAlert("Error", "No Selected Product to Adjust.", "OK");
+                await ToastHelper.ShowError("No Selected Product to Adjust.");
             }
             else
             {
@@ -37,7 +38,7 @@ namespace TindaKo.Views
                 _product.StocksOut += NewStocksOut;
                 await DatabaseService.UpdateProductAsync(_product);
                 // Optionally: save to DB
-                await Application.Current.MainPage.DisplayAlert("Success", "Stocks adjusted.", "OK");
+                await ToastHelper.ShowError("Stocks adjusted.");
 
                 await Application.Current.MainPage.Navigation.PopModalAsync();
             }

@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TindaKo.Helpers;
 using TindaKo.Models;
 
 namespace TindaKo.Services
@@ -27,7 +28,7 @@ namespace TindaKo.Services
 
                 if (!File.Exists(dbPath))
                 {
-                    await Application.Current.MainPage.DisplayAlert("Error", "Database file not found.", "OK");
+                    await ToastHelper.ShowError("Database file not found.");
                     return false;
                 }
 
@@ -37,7 +38,7 @@ namespace TindaKo.Services
             catch (Exception ex)
             {
                 Debug.WriteLine($"Backup failed: {ex.Message}");
-                await Application.Current.MainPage.DisplayAlert("Backup Error", ex.Message, "OK");
+                await ToastHelper.ShowError(ex.Message);
                 return false;
             }
         }
@@ -48,7 +49,7 @@ namespace TindaKo.Services
             {
                 if (!File.Exists(backupFilePath))
                 {
-                    await Application.Current.MainPage.DisplayAlert("Error", "Backup file not found.", "OK");
+                    await ToastHelper.ShowError("Backup file not found.");
                     return false;
                 }
 
@@ -71,7 +72,7 @@ namespace TindaKo.Services
             catch (Exception ex)
             {
                 Debug.WriteLine($"Restore failed: {ex.Message}");
-                await Application.Current.MainPage.DisplayAlert("Restore Error", ex.Message, "OK");
+                await ToastHelper.ShowError(ex.Message);
                 return false;
             }
         }
@@ -88,7 +89,7 @@ namespace TindaKo.Services
 
             if (dbFiles.Count == 0)
             {
-                await Application.Current.MainPage.DisplayAlert("No Files", "No tindako database files found.", "OK");
+                await ToastHelper.ShowError("No tindako database files found.");
                 return;
             }
 
@@ -120,7 +121,7 @@ namespace TindaKo.Services
 
                 if (dbFiles.Count == 0)
                 {
-                    await Application.Current.MainPage.DisplayAlert("No Files", "No tindako database files found.", "OK");
+                    await ToastHelper.ShowError("No tindako database files found.");
                     return;
                 }
 

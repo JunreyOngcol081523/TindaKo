@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TindaKo.Helpers;
 using TindaKo.Models;
 using TindaKo.Services;
 using TindaKo.Views;
@@ -119,7 +120,7 @@ namespace TindaKo.ViewModel
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"❌ AddToCart Exception: {ex}");
-                await Application.Current.MainPage.DisplayAlert("Error", "Something went wrong while adding to cart.", "OK");
+                await ToastHelper.ShowError("Something went wrong while adding to cart.");
             }
         }
         //remove items from cart

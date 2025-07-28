@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
+using TindaKo.Helpers;
 using TindaKo.Models;
 using TindaKo.Services;
 using static SQLite.SQLite3;
@@ -79,7 +80,7 @@ namespace TindaKo.ViewModel
         {
             if (SelectedBuyer is null)
             {
-                await Application.Current.MainPage.DisplayAlert("Notice", "Please select a buyer.", "OK");
+                await ToastHelper.ShowError("Please select a buyer.");
                 return;
             }
 

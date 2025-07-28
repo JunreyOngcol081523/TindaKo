@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using TindaKo.Helpers;
 using TindaKo.Services;
 using TindaKo.Views;
 
@@ -34,7 +35,7 @@ namespace TindaKo.ViewModel
 
             if (string.IsNullOrWhiteSpace(UserName) || string.IsNullOrWhiteSpace(UserPassword) || string.IsNullOrWhiteSpace(SelectedRole))
             {
-                await Application.Current.MainPage.DisplayAlert("Login Failed", "Please fill in all fields.", "OK");
+                await ToastHelper.ShowError("Please fill in all fields.");
                 return;
             }
 
@@ -42,7 +43,7 @@ namespace TindaKo.ViewModel
             
             if (user != null && user.UserRole == SelectedRole)
             {
-                await Application.Current.MainPage.DisplayAlert("Login Successful", $"Welcome, {user.UserName}!", "OK");
+                await ToastHelper.ShowError($"Welcome, {user.UserName}!");
                 Application.Current.MainPage = new NavigationPage(new MenuPage(new MenuViewModel()));
                 UserFullName = user.UserFullName;
                 Preferences.Set("remember", RememberUsername);
@@ -52,7 +53,7 @@ namespace TindaKo.ViewModel
             }
             else
             {
-                await Application.Current.MainPage.DisplayAlert("Login Failed", "Invalid username, password, or role.", "OK");
+                await ToastHelper.ShowError("Invalid username, password, or role.");
             }
         }
 

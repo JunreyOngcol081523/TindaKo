@@ -10,6 +10,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TindaKo.Helpers;
 using TindaKo.Models;
 using TindaKo.Services;
 using TindaKo.Views;
@@ -68,17 +69,17 @@ namespace TindaKo.ViewModel
                         StocksOut = StocksOut
                     };
                     await DatabaseService.AddProductAsync(product);
-                    await Application.Current.MainPage.DisplayAlert("Info", "Product Added", "ok");
+                    await ToastHelper.ShowError("Product Added");
                     await LoadProducts();
                 }
                 else
                 {
-                    await Application.Current.MainPage.DisplayAlert("Warning","Required fields are empty", "OK");
+                    await ToastHelper.ShowError("Required fields are empty");
                 }
             }
             catch (Exception ex)
             {
-                await Application.Current.MainPage.DisplayAlert("Error Adding Product", ex.Message, "OK");
+                await ToastHelper.ShowError(ex.Message);
             }
             finally
             {
@@ -93,7 +94,7 @@ namespace TindaKo.ViewModel
             var toast = Toast.Make("Product updated successfully!", ToastDuration.Short, 14);
             if (DeviceInfo.Platform == DevicePlatform.WinUI)
             {
-                await Application.Current.MainPage.DisplayAlert("Notice", "Product updated", "OK");
+                await ToastHelper.ShowError("Product updated");
             }
             else
             {
@@ -125,7 +126,8 @@ namespace TindaKo.ViewModel
         {
             if (product == null)
             {
-                await Shell.Current.DisplayAlert("Error", "No product selected.", "OK");
+               
+                await ToastHelper.ShowError("No Product selected.");
                 return;
             }
             else

@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TindaKo.Helpers;
 using TindaKo.Models;
 using TindaKo.Services;
 
@@ -112,26 +113,36 @@ namespace TindaKo.ViewModel
         private async Task EmailBackup(BackupFileItem file)
         {
             var filePath = file.FullPath;
-            if (File.Exists(filePath))
+            if (!File.Exists(filePath))
+                return;
+
+            try
             {
                 var message = new EmailMessage
                 {
                     Subject = "TindaKo Backup File",
                     Body = "Attached is a backup file from TindaKo.",
-                    To = new List<string> { "example@example.com" } // Optional default recipient
+                    To = new List<string> { "jhezavellvelonomansueto@gmail.com" }
                 };
-                message.Attachments.Add(new EmailAttachment(filePath));
 
-                try
-                {
-                    await Email.ComposeAsync(message);
-                }
-                catch (FeatureNotSupportedException)
-                {
-                    await Application.Current.MainPage.DisplayAlert("Not Supported", "Email is not supported on this device.", "OK");
-                }
+                message.Attachments.Add(new EmailAttachment(filePath));
+                await Email.Default.ComposeAsync(message);
+            }
+            catch (FeatureNotSupportedException)
+            {
+#if WINDOWS || MACCATALYST
+        // Fallback: Open file location and ask user to email manually
+        await ToastHelper.ShowMessage("Email not supported on this platform. Please manually send the file.");
+        await Launcher.Default.OpenAsync(new OpenFileRequest
+        {
+            File = new ReadOnlyFile(filePath)
+        });
+#else
+                await ToastHelper.ShowError("Email is not supported on this device.");
+#endif
             }
         }
+
 
         [RelayCommand]
         private async Task ShareBackup(BackupFileItem file)

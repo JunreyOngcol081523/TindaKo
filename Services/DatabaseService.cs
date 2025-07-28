@@ -23,7 +23,7 @@ namespace TindaKo.Services
             var dbPath = Path.Combine(FileSystem.AppDataDirectory, "tindako.db");
             _db = new SQLiteAsyncConnection(dbPath);
             //dropping for testing only
-            //await _db.DropTableAsync<Sell>();
+            //await _db.DropTableAsync<Product>();
             //await _db.DropTableAsync<Transaction>();
             
             // Create tables
@@ -34,8 +34,6 @@ namespace TindaKo.Services
             await _db.CreateTableAsync<Buyer>();
             await _db.CreateTableAsync<Creditor>();
 
-
-            //await _db.DropTableAsync<Product>();
             //-------Users------------//
             // Check if Users table is empty
             var userCount = await _db.Table<Users>().CountAsync();
