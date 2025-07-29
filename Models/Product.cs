@@ -37,4 +37,46 @@ namespace TindaKo.Models
         }
     }
 
+    public class ProductDisplay : ObservableObject
+    {
+        public int ProdId { get; set; }
+
+        public string ProdName { get; set; }
+
+        private decimal supplierPrice;
+        public decimal SupplierPrice
+        {
+            get => supplierPrice;
+            set
+            {
+                SetProperty(ref supplierPrice, value);
+                RecalculateSubtotal();
+            }
+        }
+
+        private decimal newStocksQty;
+        public decimal NewStocksQty
+        {
+            get => newStocksQty;
+            set
+            {
+                SetProperty(ref newStocksQty, value);
+                RecalculateSubtotal();
+            }
+        }
+
+        private decimal subtotal;
+        public decimal Subtotal
+        {
+            get => subtotal;
+            private set => SetProperty(ref subtotal, value);
+        }
+
+        private void RecalculateSubtotal()
+        {
+            Subtotal = SupplierPrice * NewStocksQty;
+        }
+    }
+
+
 }

@@ -17,8 +17,12 @@ namespace TindaKo.ViewModel
 {
     public partial class DBViewModel : ObservableObject
     {
+        [ObservableProperty] private string emailAd;
         string destinationPath = Path.Combine(FileSystem.AppDataDirectory, $"tindako_backup_{DateTime.Now:yyyyMMdd_HHmmss}.db");
-
+        public DBViewModel() {
+            _ = LoadBackupFilesAsync();
+            _=RestoreEmailAsync();
+        }
         [RelayCommand]
         private async Task Backup() { 
            bool success= await DatabaseBackupService.BackupDatabaseAsync(destinationPath);
@@ -31,24 +35,24 @@ namespace TindaKo.ViewModel
                 }
                 else
                 {
-                    await Toast.Make("Backup save.").Show();
+                    await ToastHelper.ShowMessage("Backup saved.");
                 }
                 _=LoadBackupFilesAsync();
             }
         }
+        [RelayCommand]
+        private async Task SaveEmailAsync()
+        {
+            Preferences.Set("emailad",EmailAd);
+            await ToastHelper.ShowMessage("Email saved"); 
+        }
+        private async Task RestoreEmailAsync() {
+            EmailAd = Preferences.Get("emailad", string.Empty);
+        }
 
-        //[RelayCommand]
-        //private async Task Restore() {
-        //   bool success = await DatabaseBackupService.RestoreDatabaseAsync(destinationPath);
-        //    if (success)
-        //    {
-        //        //  show a toast or log success
-        //        await Toast.Make("Restoration Done.", ToastDuration.Short).Show();
-        //    }
-        //} 
 
         [RelayCommand]
-        private async Task SendToEmail() => await DatabaseBackupService.EmailAllDbBackupsAsync();
+        private async Task SendToEmail() => await DatabaseBackupService.EmailAllDbBackupsAsync(EmailAd);
 
         [RelayCommand]
         private async Task ShareVia() => await DatabaseBackupService.ShareAllDbBackupsAsync();
@@ -82,14 +86,7 @@ namespace TindaKo.ViewModel
             {
                 File.Delete(file.FullPath);
                 BackupFiles.Remove(file);
-                if (DeviceInfo.Platform == DevicePlatform.WinUI)
-                {
-                    await Application.Current.MainPage.DisplayAlert("Backup Deleted", "Backup deleted.", "OK");
-                }
-                else
-                {
-                    await Toast.Make("Backup deleted.").Show();
-                }
+                await ToastHelper.ShowMessage("Database deleted.");
 
             }
         }
@@ -99,14 +96,7 @@ namespace TindaKo.ViewModel
         {
             var success = await DatabaseBackupService.RestoreDatabaseAsync(file.FullPath);
             if (success)
-                if (DeviceInfo.Platform == DevicePlatform.WinUI)
-                {
-                    await Application.Current.MainPage.DisplayAlert("Info", "Backup restored.", "OK");
-                }
-                else
-                {
-                    await Toast.Make("Backup restored.").Show();
-                }
+                await ToastHelper.ShowMessage("DB restored");
 
         }
         [RelayCommand]

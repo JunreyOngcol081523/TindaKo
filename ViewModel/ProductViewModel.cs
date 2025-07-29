@@ -36,23 +36,14 @@ namespace TindaKo.ViewModel
         public ProductViewModel()
         {
             _ = LoadProducts();
-            categories = new ObservableCollection<string>
-                            {
-                                "Food and Snacks",
-                                "Beverages",
-                                "Cooking Essentials",
-                                "Personal Care",
-                                "Laundry and Cleaning",
-                                "Household Items",
-                                "School Supplies",
-                                "Mobile and Load",
-                                "Cigarettes and Alcohol",
-                                "Medicines",
-                                "Others"
-                            };
+
+            _ = LoadCategories();
             MaxResults = Preferences.Get(nameof(MaxResults), 20);
         }
-
+        public async Task LoadCategories()
+        {
+           Categories = await CategoriesHelper.LoadCategoriesFromJsonAsync();    
+        }
         [RelayCommand]
         private async Task AddProductAsync()
         {
@@ -91,15 +82,8 @@ namespace TindaKo.ViewModel
         {
             if (product == null) return;
             await DatabaseService.UpdateProductAsync(product);
-            var toast = Toast.Make("Product updated successfully!", ToastDuration.Short, 14);
-            if (DeviceInfo.Platform == DevicePlatform.WinUI)
-            {
-                await ToastHelper.ShowError("Product updated");
-            }
-            else
-            {
-                await toast.Show();
-            }
+            //var toast = Toast.Make("Product updated successfully!", ToastDuration.Short, 14);
+            await ToastHelper.ShowMessage("Product Updated");
 
         }
         //method for loading products from sqlite

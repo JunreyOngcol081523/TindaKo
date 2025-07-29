@@ -1,17 +1,32 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using ClosedXML.Excel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Text.Json;
 using System.Threading.Tasks;
-using ClosedXML.Excel;
+using TindaKo.Helpers;
 using TindaKo.Models;
 using TindaKo.Services;
-using System.Diagnostics;
-using TindaKo.Helpers;
 namespace TindaKo
 {
     public partial class ProductSettingsViewModel : ObservableObject
     {
+        private CancellationTokenSource _categorySaveDebounceToken;
+
+        public ProductSettingsViewModel() {
+            _ = LoadCategoriesIntoEditorAsync();
+        }
+        [ObservableProperty]
+        private string categoriesText;
+
+        [ObservableProperty]
+        private ObservableCollection<string> categoryList;
+
+
+        [ObservableProperty] private bool isBusy;
         [RelayCommand]
         private async Task DownloadTemplateAsync()
         {
@@ -54,15 +69,16 @@ namespace TindaKo
         [RelayCommand]
         private async Task ImportTemplateAsync()
         {
+            IsBusy = true;
             try
             {
                 var customFileTypes = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
-        {
-            { DevicePlatform.WinUI, new[] { ".xlsx" } },
-            { DevicePlatform.Android, new[] { "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" } },
-            { DevicePlatform.iOS, new[] { "com.microsoft.excel.xlsx" } },
-            { DevicePlatform.MacCatalyst, new[] { "com.microsoft.excel.xlsx" } },
-        });
+                {
+                    { DevicePlatform.WinUI, new[] { ".xlsx" } },
+                    { DevicePlatform.Android, new[] { "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" } },
+                    { DevicePlatform.iOS, new[] { "com.microsoft.excel.xlsx" } },
+                    { DevicePlatform.MacCatalyst, new[] { "com.microsoft.excel.xlsx" } },
+                });
 
                 var result = await FilePicker.PickAsync(new PickOptions
                 {
@@ -118,12 +134,75 @@ namespace TindaKo
                     await DatabaseService.AddProductAsync(product);
                 }
 
-                await ToastHelper.ShowError("Products imported successfully.");
+                await ToastHelper.ShowMessage("Products imported successfully.");
             }
             catch (Exception ex)
             {
                 await ToastHelper.ShowError(ex.Message);
             }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+        [RelayCommand]
+        public async Task SaveCategoriesToJsonAsync()
+        {
+
+            try
+            {
+                    var categories = CategoriesText?
+                .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Distinct()
+                .ToList();
+
+                if (categories is null || categories.Count == 0)
+                    return;
+
+                var json = JsonSerializer.Serialize(categories);
+
+                var filePath = Path.Combine(FileSystem.AppDataDirectory, "categories.json");
+                await File.WriteAllTextAsync(filePath, json);
+            }
+            catch (Exception ex)
+            {
+                await ToastHelper.ShowError(ex.Message);
+            }
+        }
+        public async Task LoadCategoriesIntoEditorAsync()
+        {
+            var filePath = Path.Combine(FileSystem.AppDataDirectory, "categories.json");
+
+            if (File.Exists(filePath))
+            {
+                var json = await File.ReadAllTextAsync(filePath);
+                var categories = JsonSerializer.Deserialize<List<string>>(json);
+                CategoriesText = string.Join(", ", categories ?? []);
+            }
+        }
+        partial void OnCategoriesTextChanged(string value)
+        {
+            _categorySaveDebounceToken?.Cancel(); // Cancel any previous pending save
+            _categorySaveDebounceToken = new CancellationTokenSource();
+
+            var token = _categorySaveDebounceToken.Token;
+
+            Task.Run(async () =>
+            {
+                try
+                {
+                    await Task.Delay(1500, token); // Wait 1.5 seconds
+
+                    if (!token.IsCancellationRequested)
+                    {
+                        await MainThread.InvokeOnMainThreadAsync(SaveCategoriesToJsonAsync);
+                    }
+                }
+                catch (TaskCanceledException)
+                {
+                    // Expected if typing continued before timeout
+                }
+            });
         }
 
     }

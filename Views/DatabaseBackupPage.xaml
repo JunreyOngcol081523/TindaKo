@@ -4,14 +4,13 @@
              x:Class="TindaKo.Views.DatabaseBackupPage"
              xmlns:viewmodel="clr-namespace:TindaKo.ViewModel"
              Title="TindaKo Database Backup">
-    <VerticalStackLayout>
+
         <Grid Margin="20"
-                    RowDefinitions="*,*,*"
-                    ColumnDefinitions="*,*" 
-                    ColumnSpacing="16" 
+                    RowDefinitions="Auto,Auto,Auto,*"
                     RowSpacing="16">
-            <Border Grid.Row="0" Grid.Column="0"  
+            <Border Grid.Row="0" 
                         Style="{StaticResource CardStyle}"
+                    WidthRequest="100"
                         >
                 <Border.GestureRecognizers>
                     <TapGestureRecognizer Command="{Binding BackupCommand}" />
@@ -22,25 +21,36 @@
                 </StackLayout>
             </Border>
 
+        <VerticalStackLayout Grid.Row="1">
+            <Label Text="Email address to send backup:" FontAttributes="Bold"/>
+            <Grid ColumnDefinitions="*,Auto">
+                <Entry Grid.Column="0"
+                       Keyboard="Email"
+                       Text="{Binding EmailAd}"
+                       Placeholder="example.email@gmail.com"
+                       VerticalOptions="Center"
+                       HorizontalOptions="Fill"
+           />
 
-            <Border Grid.Row="0" Grid.Column="1" Style="{StaticResource CardStyle}">
-                <Border.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding LoadBackupFilesCommand}" />
-                </Border.GestureRecognizers>
-                <StackLayout HorizontalOptions="Center">
-                    <Image Source="product.png" HeightRequest="40"/>
-                    <Label Text="Show Backup Files" HorizontalTextAlignment="Center"/>
-                </StackLayout>
-            </Border>
-            <Grid Grid.Row="1" 
-                  Grid.Column="0" 
-                  Grid.ColumnSpan="2"
+                <Button Grid.Column="1"
+                        ImageSource="save.png"
+                        HeightRequest="40"
+                        WidthRequest="40"
+                        BackgroundColor="Transparent"
+                        Command="{Binding SaveEmailCommand}"
+                        VerticalOptions="Center" />
+            </Grid>
+
+        </VerticalStackLayout>
+
+        <Grid Grid.Row="2" 
                   RowDefinitions="Auto,*">
                 <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Padding="10">
                     <Label FontAttributes="Bold" Grid.Column="0" Text="Filename"/>
                     <Label FontAttributes="Bold" Grid.Column="1" Text="Restore | Delete | Email | Share" HorizontalOptions="End" HorizontalTextAlignment="End"/>
                 </Grid>
-                <CollectionView Grid.Row="1" ItemsSource="{Binding BackupFiles}">
+            <ScrollView Grid.Row="1">
+                <CollectionView  ItemsSource="{Binding BackupFiles}">
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
                             <Grid Padding="10" ColumnDefinitions="*, Auto" RowDefinitions="Auto">
@@ -80,12 +90,16 @@
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
+            </ScrollView>
 
-            </Grid>
-            <Grid Grid.Row="2">
+        </Grid>
+            <Grid Grid.Row="3" 
+                  Grid.Column="0" 
+                  Grid.ColumnSpan="2"
+                  VerticalOptions="End">
                 <BoxView BackgroundColor="{StaticResource Primary}" HeightRequest="40"/>
             </Grid>
 
         </Grid>
-    </VerticalStackLayout>
+
 </ContentPage>

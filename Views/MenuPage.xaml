@@ -24,9 +24,10 @@
                     ColumnSpacing="16" 
                     RowSpacing="16">
 
-                    <Border Grid.Row="0" Grid.Column="0"  
-                        Style="{StaticResource CardStyle}"
-                        >
+                    <Border Grid.Row="0" 
+                            Grid.Column="0"  
+                            Style="{StaticResource CardStyle}">
+
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding NavigateSellCommand}" />
                         </Border.GestureRecognizers>
@@ -37,7 +38,10 @@
                     </Border>
 
 
-                    <Border Grid.Row="0" Grid.Column="1" Style="{StaticResource CardStyle}">
+                    <Border Grid.Row="0" 
+                            Grid.Column="1" 
+                            Style="{StaticResource CardStyle}"
+                            IsEnabled="{Binding IsAdmin}">
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding NavigateProductCommand}" />
                         </Border.GestureRecognizers>
@@ -48,7 +52,9 @@
                     </Border>
 
 
-                    <Border Grid.Row="1" Grid.Column="0" Style="{StaticResource CardStyle}">
+                    <Border Grid.Row="1" Grid.Column="0" 
+                            Style="{StaticResource CardStyle}"
+                            >
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding NavigateSalesCommand}" />
                         </Border.GestureRecognizers>
@@ -59,17 +65,23 @@
                     </Border>
 
 
-                    <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource CardStyle}">
+                    <Border Grid.Row="1" 
+                            Grid.Column="1" 
+                            Style="{StaticResource CardStyle}"
+                            IsEnabled="{Binding IsAdmin}">
                         <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding NavigateInventoryCommand}" />
+                            <TapGestureRecognizer Command="{Binding NavigateIncomingStocksCommand}" />
                         </Border.GestureRecognizers>
                         <StackLayout HorizontalOptions="Center">
                             <Image Source="inventory.png" HeightRequest="40"/>
-                            <Label Text="Inventory" HorizontalTextAlignment="Center"/>
+                            <Label Text="Incoming Stocks" HorizontalTextAlignment="Center"/>
                         </StackLayout>
                     </Border>
 
-                    <Border Grid.Row="2" Grid.Column="0" Style="{StaticResource CardStyle}">
+                    <Border Grid.Row="2" 
+                            Grid.Column="0" 
+                            Style="{StaticResource CardStyle}"
+                            IsEnabled="{Binding IsAdmin}">
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding NavigateReportsCommand}" />
                         </Border.GestureRecognizers>
@@ -79,7 +91,10 @@
                         </StackLayout>
                     </Border>
 
-                    <Border Grid.Row="3" Grid.Column="0" Style="{StaticResource CardStyle}">
+                    <Border Grid.Row="3" 
+                            Grid.Column="0" 
+                            Style="{StaticResource CardStyle}"
+                            IsEnabled="{Binding IsAdmin}">
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding NavigateSettingsCommand}" />
                         </Border.GestureRecognizers>
@@ -88,7 +103,10 @@
                             <Label Text="Settings" HorizontalTextAlignment="Center"/>
                         </StackLayout>
                     </Border>
-                    <Border Grid.Row="2" Grid.Column="1" Style="{StaticResource CardStyle} ">
+                    <Border Grid.Row="2" 
+                            Grid.Column="1" 
+                            Style="{StaticResource CardStyle} "
+                            >
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding NavigateCreditsCommand}" />
                         </Border.GestureRecognizers>
@@ -98,7 +116,11 @@
                         </StackLayout>
                     </Border>
 
-                    <Border Grid.Row="3" Grid.Column="1" Style="{StaticResource CardStyle}">
+                    <Border Grid.Row="3" 
+                            Grid.Column="1" 
+                            Style="{StaticResource CardStyle}"
+                            IsEnabled="{Binding IsAdmin}">
+                            
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding NavigateDatabaseCommand}" />
                         </Border.GestureRecognizers>

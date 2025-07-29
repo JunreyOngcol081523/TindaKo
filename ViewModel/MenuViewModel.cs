@@ -1,11 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using SQLitePCL;
 using TindaKo.Services;
 using TindaKo.Views;
 
@@ -13,9 +8,25 @@ namespace TindaKo.ViewModel
 {
     public partial class MenuViewModel:ObservableObject
     {
+        [ObservableProperty] private bool isAdmin;
         [ObservableProperty] private string userName;
+        [ObservableProperty] private string userRole;
+
         public MenuViewModel() { 
-            UserName =$"Welcome! {Preferences.Get("userfullname", string.Empty)}";
+            UserName =Preferences.Get("userfullname", string.Empty);
+            UserRole = Preferences.Get("userrole","unkown");
+            _=GetUserRole();
+        }
+        public async Task GetUserRole()
+        {
+            if (UserRole.Equals("May-ari"))
+            {
+                IsAdmin = true;
+            }
+            else
+            {
+                IsAdmin = false;
+            }
         }
         [RelayCommand]
         private async Task NavigateSellAsync()
@@ -33,9 +44,9 @@ namespace TindaKo.ViewModel
             await Application.Current.MainPage.Navigation.PushAsync(new SalesPage(new SalesViewModel()));
         }
         [RelayCommand]
-        private async Task NavigateInventoryAsync()
+        private async Task NavigateIncomingStocksAsync()
         {
-
+            await Application.Current.MainPage.Navigation.PushAsync(new IncomingStocksPage(new IncomingStocksViewModel()));
         }
         [RelayCommand]
         private async Task NavigateSettingsAsync()
@@ -61,6 +72,10 @@ namespace TindaKo.ViewModel
         [RelayCommand]
         private async Task LogoutAsync()
         {
+            Preferences.Set("remember",false);
+            Preferences.Set("username",string.Empty);
+            Preferences.Set("password",string.Empty);
+            Preferences.Set("userfullname", string.Empty);
             Application.Current.MainPage = new NavigationPage(new LoginPage(new LoginViewModel()));
         }
 

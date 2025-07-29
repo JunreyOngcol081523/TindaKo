@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TindaKo.Views.IncomingStocksPage"
+             xmlns:viewmodel="clr-namespace:TindaKo.ViewModel"
+             xmlns:inputLayout="clr-namespace:Syncfusion.Maui.Toolkit.TextInputLayout;assembly=Syncfusion.Maui.Toolkit"
+             Title="Incoming Stocks">
+    
+    <Grid RowDefinitions="Auto, *">
+        <!-- Cart icon and badge -->
+        <Border Grid.Row="0"
+                Padding="10"
+                HorizontalOptions="End" 
+                Margin="10"
+                Style="{StaticResource CardStyle}">
+            <!--GestureRecognizers="{Binding ShowCartCommand}"-->
+            <Grid>
+                <Image Source="cartblack.png" HeightRequest="50" WidthRequest="50"/>
+                <Label Text="{Binding CartCount}" 
+                       BackgroundColor="{StaticResource CancelButton}"
+                       TextColor="{StaticResource WhiteText}"
+                       FontSize="12"
+                       HorizontalOptions="End"
+                       VerticalOptions="Start"
+                       Padding="5"
+                       IsVisible="{Binding CartCount, Converter={StaticResource GreaterThanZeroConverter}}"/>
+            </Grid>
+        </Border>
+
+        <!-- Product List -->
+        <CollectionView ItemsSource="{Binding ProductList}" Grid.Row="1">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border Margin="10" Padding="10" Stroke="LightGray" StrokeThickness="1">
+                        <VerticalStackLayout Spacing="5">
+                            <Label Text="{Binding ProdName}" FontAttributes="Bold"/>
+                            <HorizontalStackLayout Spacing="10">
+                                <inputLayout:SfTextInputLayout Hint="Supplier Price" VerticalOptions="Center">
+                                    <Entry
+                                       Keyboard="Numeric"
+                                       WidthRequest="70"
+                                       Text="{Binding SupplierPrice, Mode=TwoWay}" />
+                                </inputLayout:SfTextInputLayout>
+                                <inputLayout:SfTextInputLayout Hint="New Stocks In" VerticalOptions="Center">
+                                    <Entry
+                                       Keyboard="Numeric"
+                                       WidthRequest="75"
+                                       Text="{Binding NewStocksQty, Mode=TwoWay}" />
+                                </inputLayout:SfTextInputLayout>
+                                <Button ImageSource="add.png"
+                                        BackgroundColor="Transparent"
+                                        VerticalOptions="Center"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:IncomingStocksViewModel}}, Path=AddToCartCommand}"
+                                        CommandParameter="{Binding}"/>
+                            </HorizontalStackLayout>
+                            <Label Text="{Binding Subtotal, StringFormat='Subtotal: ₱{0:N}'}" FontSize="12" TextColor="Gray"/>
+                        </VerticalStackLayout>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentPage>

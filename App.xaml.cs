@@ -2,6 +2,7 @@
 using TindaKo.Models;
 using TindaKo.Services;
 using TindaKo.ViewModel;
+using TindaKo.Views;
 
 namespace TindaKo
 {
@@ -11,8 +12,21 @@ namespace TindaKo
         public App()
         {
             InitializeComponent();
-            Navigator = new NavigationPage(new LoginPage(new LoginViewModel()));
+            bool isRemembered = Preferences.Get("remember", false);
+
+            if (isRemembered)
+            {
+                // Auto-login
+                Navigator = new NavigationPage(new MenuPage(new MenuViewModel()));
+            }
+            else
+            {
+                Navigator = new NavigationPage(new LoginPage(new LoginViewModel()));
+            }
+            
             MainPage = Navigator;
+
+
             Application.Current.UserAppTheme = AppTheme.Light;
             
         }

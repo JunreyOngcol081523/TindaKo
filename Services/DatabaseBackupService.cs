@@ -77,7 +77,7 @@ namespace TindaKo.Services
             }
         }
 
-        public static async Task EmailAllDbBackupsAsync()
+        public static async Task EmailAllDbBackupsAsync(string email)
         {
             var folder = FileSystem.AppDataDirectory;
 
@@ -97,7 +97,7 @@ namespace TindaKo.Services
             {
                 Subject = "TindaKo Backup Files",
                 Body = "Attached are your TindaKo backup database files.",
-                To = new List<string> { "junreyongcol@gmail.com"}// Optional: add default recipient
+                To = new List<string> { email }// Optional: add default recipient
             };
 
             foreach (var file in dbFiles)

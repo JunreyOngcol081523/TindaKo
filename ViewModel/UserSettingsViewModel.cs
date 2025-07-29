@@ -72,6 +72,30 @@ namespace TindaKo.ViewModel
         [RelayCommand]
         private async Task SaveUserAsync()
         {
+            if (string.IsNullOrWhiteSpace(SelectedUser?.UserName))
+            {
+                await ToastHelper.ShowError("Username is required.");
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(SelectedUser?.UserFullName))
+            {
+                await ToastHelper.ShowError("Full name is required.");
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(SelectedUser?.UserRole))
+            {
+                await ToastHelper.ShowError("User role is required.");
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(NewUserPassword))
+            {
+                await ToastHelper.ShowError("Password is required.");
+                return;
+            }
+
             if (!NewUserPassword.Equals(ConfirmPassword))
             {
                 await ToastHelper.ShowError($"Password not match");
@@ -99,7 +123,7 @@ namespace TindaKo.ViewModel
                     await DatabaseService.UpdateUserAsync(SelectedUser);
                 }
 
-                await ToastHelper.ShowError(IsAddCommand ? "User added." : "User updated.");
+                await ToastHelper.ShowMessage(IsAddCommand ? "User added." : "User updated.");
 
                 // Refresh list and hide form
                 LoadUsers();

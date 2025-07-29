@@ -21,7 +21,7 @@ namespace TindaKo.ViewModel
         private string selectedRole; // "May-ari" or "Tindera"
 
         [ObservableProperty]
-        private bool rememberUsername;
+        private bool rememberLogin;
         public LoginViewModel() {
             selectedRole = "May-ari";
             LoadSettings();
@@ -43,13 +43,15 @@ namespace TindaKo.ViewModel
             
             if (user != null && user.UserRole == SelectedRole)
             {
-                await ToastHelper.ShowError($"Welcome, {user.UserName}!");
-                Application.Current.MainPage = new NavigationPage(new MenuPage(new MenuViewModel()));
                 UserFullName = user.UserFullName;
-                Preferences.Set("remember", RememberUsername);
-                Preferences.Set("username",UserName);
-                Preferences.Set("password",UserPassword);
+                Preferences.Set("userrole", user.UserRole);
+                Preferences.Set("remember", RememberLogin);
+                Preferences.Set("username", UserName);
+                Preferences.Set("password", UserPassword);
                 Preferences.Set("userfullname", UserFullName);
+                await ToastHelper.ShowMessage($"Welcome, {user.UserName}!");
+                Application.Current.MainPage = new NavigationPage(new MenuPage(new MenuViewModel()));
+                
             }
             else
             {
@@ -58,8 +60,8 @@ namespace TindaKo.ViewModel
         }
 
         //-----------load remember user----------//
-        private void LoadSettings() { 
-            RememberUsername = Preferences.Get("remember",false);
+        private void LoadSettings() {
+            RememberLogin = Preferences.Get("remember",false);
             UserName = Preferences.Get("username",string.Empty);
         }
         //--------------get all User by username------------//

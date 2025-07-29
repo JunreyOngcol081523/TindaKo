@@ -42,7 +42,7 @@ namespace TindaKo.ViewModel
 
         public async Task LoadProducts()
         {
-            var allProducts = await DatabaseService.GetProductsAsync(20) ?? new List<Product>();
+            var allProducts = await DatabaseService.GetProductsAsync(10) ?? new List<Product>();
 
             if (string.IsNullOrWhiteSpace(SearchText))
             {

@@ -1,18 +1,30 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodel="clr-namespace:TindaKo.ViewModel"
              x:Class="TindaKo.Views.ProductSettingsPage"
              Title="Product Settings">
+    <ContentPage.BindingContext>
+        <viewmodel:ProductViewModel/>
+    </ContentPage.BindingContext>
     <VerticalStackLayout Padding="10" Spacing="10">
 
         <!-- Border wrapping Label and Buttons -->
         <Border Padding="15" Margin="0,0,0,10" Style="{StaticResource CardStyle}">
             <VerticalStackLayout Spacing="10">
-                <Label Text="For easier and faster product registration, fill up the downloaded spreadsheet template." />
-                <Button Text="Download Template" Command="{Binding DownloadTemplateCommand}" ImageSource="download.png" />
+                <Label Text="Para sa mabilis na paglipat ng produkto, punan ang na-download na template." />
+                <Button Text="I-download ang Template" Command="{Binding DownloadTemplateCommand}" ImageSource="download.png" />
                 <Button Text="Import Spreadsheet Template" Command="{Binding ImportTemplateCommand}" ImageSource="upload.png"/>
             </VerticalStackLayout>
         </Border>
+        <Border Padding="15" Style="{StaticResource CardStyle}">
+            <VerticalStackLayout>
+                <Label FontAttributes="Bold" Text="Add Category"/>
+                <Label FontAttributes="Italic" Text="Separate by Comma (,)"/>
+                <Editor Text="{Binding CategoriesText}" AutoSize="TextChanges" />
+            </VerticalStackLayout>
+        </Border>
+
 
         <!-- Loading Modal / ActivityIndicator -->
         <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />

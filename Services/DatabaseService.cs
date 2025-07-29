@@ -25,7 +25,11 @@ namespace TindaKo.Services
             //dropping for testing only
             //await _db.DropTableAsync<Product>();
             //await _db.DropTableAsync<Transaction>();
-            
+            //await _db.DropTableAsync<Users>();
+            //await _db.DropTableAsync<Sell>();
+            //await _db.DropTableAsync<Buyer>();
+            //await _db.DropTableAsync<Creditor>();
+
             // Create tables
             await _db.CreateTableAsync<Product>();
             await _db.CreateTableAsync<Users>();
@@ -42,6 +46,7 @@ namespace TindaKo.Services
                 var defaultUser = new Users
                 {
                     UserName = "admin",
+                    UserFullName= "Administrator",
                     UserPassword = "admin123", // You can hash this later
                     UserRole = "May-ari"
                 };
@@ -51,8 +56,11 @@ namespace TindaKo.Services
         }
 
         // CRUD Example
-        public static Task<List<Product>> GetProductsAsync(int maxResults) =>
-            _db.Table<Product>().Take(maxResults).ToListAsync();
+        public static Task<List<Product>> GetProductsAsync(int maxResults)
+        {
+            _ = DatabaseService.InitAsync();
+            return _db.Table<Product>().Take(maxResults).ToListAsync();
+        }
         public static Task<List<Product>> SearchProductsAsync(string keyword, int maxResults)
         {
             return _db.Table<Product>()
@@ -187,11 +195,12 @@ namespace TindaKo.Services
          //--------------------creditor--------------------------//
          public static async Task<List<Creditor>> GetCreditorsAsync()
         {
+            DatabaseService.InitAsync();
             return await _db.Table<Creditor>().ToListAsync();
         }
         public static async Task<int> UpdateCreditorAsync(Creditor creditor) =>
            await _db.UpdateAsync(creditor);
         
-
+        //---------------------incoming stocks-----------------------//
     }
 }

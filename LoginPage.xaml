@@ -2,61 +2,80 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodel="clr-namespace:TindaKo.ViewModel"
+             xmlns:inputLayout="clr-namespace:Syncfusion.Maui.Toolkit.TextInputLayout;assembly=Syncfusion.Maui.Toolkit"
              x:Class="TindaKo.LoginPage">
 
     <ScrollView>
-        <VerticalStackLayout Padding="30" Spacing="20">
+        <VerticalStackLayout Padding="30" Spacing="25" VerticalOptions="Center">
 
-            <!-- Welcome & App Info -->
-            <Label Text="Welcome to TindaKo!" 
-                   FontSize="20"
-                   FontAttributes="Bold"
-                   HorizontalOptions="Center" />
+            <!-- App Header -->
+            <VerticalStackLayout Spacing="5" HorizontalOptions="Center">
+                <Label Text="Welcome to TindaKo!" 
+                       FontSize="24"
+                       FontAttributes="Bold"
+                       TextColor="#212121"
+                       HorizontalTextAlignment="Center" />
+                <Label Text="Offline POS app for small sari-sari store"
+                       FontSize="14"
+                       TextColor="#616161"
+                       HorizontalTextAlignment="Center" />
+                <Label Text="Developed by JunreyDev"
+                       FontSize="12"
+                       TextColor="#9E9E9E"
+                       HorizontalTextAlignment="Center" />
+            </VerticalStackLayout>
 
-            <Label Text="An offline app for small retail store"
-                   FontSize="14"
-                   HorizontalOptions="Center"
-                   HorizontalTextAlignment="Center" />
+            <!-- Card-style Login Container -->
+            <Border Style="{StaticResource CardStyle}" Padding="20" StrokeShape="RoundRectangle 12">
+                <VerticalStackLayout Spacing="18">
 
-            <Label Text="Developed by JunreyDev"
-                   FontSize="12"
-                   TextColor="Gray"
-                   HorizontalOptions="Center" />
+                    <!-- User Role Selection -->
+                    <Label Text="Pumili ng Role" FontSize="16" FontAttributes="Bold" TextColor="#424242" />
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                        <RadioButton Content="May-ari"
+                                     GroupName="UserRole"
+                                     Grid.Column="0"
+                                     IsChecked="{Binding SelectedRole, 
+                                    Converter={StaticResource StringEqualsConverter}, 
+                                    ConverterParameter=May-ari}" />
+                        <RadioButton Content="Tindera"
+                                     GroupName="UserRole"
+                                     Grid.Column="1"
+                                     IsChecked="{Binding SelectedRole, 
+                                    Converter={StaticResource StringEqualsConverter}, 
+                                    ConverterParameter=Tindera}" /> 
+                    </Grid>
 
-            <StackLayout Spacing="10">
-                <!-- User Role Selection -->
-                <Label Text="Pumili ng Role:" FontSize="16" />
-                <Grid ColumnDefinitions="Auto,Auto" ColumnSpacing="10" HorizontalOptions="Center">
-                    <RadioButton Grid.Column="0" Content="May-ari" 
-                     GroupName="UserRole"
-                     IsChecked="{Binding SelectedRole, Converter={StaticResource StringEqualsConverter}, ConverterParameter=May-ari}" />
-                    <RadioButton Grid.Column="1" Content="Tindera" 
-                    GroupName="UserRole"
-                    IsChecked="{Binding SelectedRole, Converter={StaticResource StringEqualsConverter}, ConverterParameter=Tindera}" />
-                </Grid>
+                    <!-- Username -->
 
-                <!-- Username -->
-                <Entry Text="{Binding UserName}"
-                   Placeholder="Username"
-                   Keyboard="Default" />
+                    <inputLayout:SfTextInputLayout Hint="Username">
+                        <Entry Text="{Binding UserName}" />
+                    </inputLayout:SfTextInputLayout>
+                    <inputLayout:SfTextInputLayout Hint="Password">
+                        <!-- Password -->
+                        <Entry Text="{Binding UserPassword}"
+                           Placeholder="Password"
+                           IsPassword="True"
+                           HeightRequest="45"
+                           />
+                    </inputLayout:SfTextInputLayout>
 
-                <!-- Password -->
-                <Entry Text="{Binding UserPassword}"
-                   Placeholder="Password"
-                   IsPassword="True" />
 
-                <!--keep me login checkbox-->
-                <HorizontalStackLayout>
-                    <CheckBox IsChecked="{Binding RememberUsername}" VerticalOptions="Center" />
-                    <Label Text="Remember Username" VerticalOptions="Center"/>
-                </HorizontalStackLayout>
-                <!-- Login Button -->
-                <Button Text="Login"
-                    CornerRadius="8"
-                    StyleClass="FilledButton"
-                    Command="{Binding LoginCommand}"/>
-            </StackLayout>
 
+                    <!-- Remember me -->
+                    <HorizontalStackLayout Spacing="10">
+                        <CheckBox IsChecked="{Binding RememberLogin}" VerticalOptions="Center"/>
+                        <Label Text="Remember Login" VerticalOptions="Center" TextColor="#616161"/>
+                    </HorizontalStackLayout>
+
+                    <!-- Login Button -->
+                    <Button Text="Login"
+                            HeightRequest="45"
+                            CornerRadius="10"
+                            StyleClass="FilledButton"
+                            Command="{Binding LoginCommand}" />
+                </VerticalStackLayout>
+            </Border>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>
