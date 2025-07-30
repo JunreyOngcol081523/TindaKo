@@ -9,4 +9,5 @@ public partial class IncomingStocksPage : ContentPage
 		InitializeComponent();
 		BindingContext = vm;
 	}
+
 }

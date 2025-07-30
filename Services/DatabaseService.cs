@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.Maui.Storage;
 using SQLite;
-using System.IO;
-using TindaKo.Models;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
+using TindaKo.Models;
 namespace TindaKo.Services
 {
 
@@ -22,14 +18,6 @@ namespace TindaKo.Services
 
             var dbPath = Path.Combine(FileSystem.AppDataDirectory, "tindako.db");
             _db = new SQLiteAsyncConnection(dbPath);
-            //dropping for testing only
-            //await _db.DropTableAsync<Product>();
-            //await _db.DropTableAsync<Transaction>();
-            //await _db.DropTableAsync<Users>();
-            //await _db.DropTableAsync<Sell>();
-            //await _db.DropTableAsync<Buyer>();
-            //await _db.DropTableAsync<Creditor>();
-
             // Create tables
             await _db.CreateTableAsync<Product>();
             await _db.CreateTableAsync<Users>();
@@ -37,7 +25,8 @@ namespace TindaKo.Services
             await _db.CreateTableAsync<Transaction>();
             await _db.CreateTableAsync<Buyer>();
             await _db.CreateTableAsync<Creditor>();
-
+            await _db.CreateTableAsync<IncomingStocks>();
+            await _db.CreateTableAsync<IncomingStocksProductsList>();
             //-------Users------------//
             // Check if Users table is empty
             var userCount = await _db.Table<Users>().CountAsync();
@@ -54,6 +43,23 @@ namespace TindaKo.Services
                 await _db.InsertAsync(defaultUser);
             }
         }
+
+
+        public static async Task<SQLiteAsyncConnection> GetConnectionAsync()
+        {
+            
+            if (_db == null)
+            {
+                var dbPath = Path.Combine(FileSystem.AppDataDirectory, "tindako.db");
+                _db = new SQLiteAsyncConnection(dbPath);
+                await _db.CreateTableAsync<Product>();
+                await _db.CreateTableAsync<IncomingStocks>();
+                await _db.CreateTableAsync<IncomingStocksProductsList>();
+                // Add other table creations here
+            }
+            return _db;
+        }
+        
 
         // CRUD Example
         public static Task<List<Product>> GetProductsAsync(int maxResults)
@@ -172,6 +178,7 @@ namespace TindaKo.Services
         //---------------------Sell-----------------------//
         public static async Task<List<Sell>> GetSellsAsync(int transactionId)
         {
+            InitAsync();
             var allSells = await _db.Table<Sell>().ToListAsync();
             return allSells
                 .Where(s=>s.TransactionId == transactionId).ToList();
@@ -183,23 +190,30 @@ namespace TindaKo.Services
                       .Where(u => u.UserName == username && u.UserPassword == password)
                       .FirstOrDefaultAsync();
         }
-        public static Task<List<Users>> GetUsersAsync() =>
-            _db.Table<Users>().ToListAsync();
+        public static Task<List<Users>> GetUsersAsync() { 
+            InitAsync();
+            return _db.Table<Users>().ToListAsync();
+        }
+            
         public static async Task<int> UpdateUserAsync(Users user) {
-
+            InitAsync();
             return  await _db.UpdateAsync(user);
         }
         public static Task<int> AddNewUserAsync(Users user) {
+            InitAsync();
             return _db.InsertAsync(user);
         }
          //--------------------creditor--------------------------//
          public static async Task<List<Creditor>> GetCreditorsAsync()
         {
-            DatabaseService.InitAsync();
+            InitAsync();
             return await _db.Table<Creditor>().ToListAsync();
         }
-        public static async Task<int> UpdateCreditorAsync(Creditor creditor) =>
-           await _db.UpdateAsync(creditor);
+        public static async Task<int> UpdateCreditorAsync(Creditor creditor) {
+            InitAsync();
+            return await _db.UpdateAsync(creditor);
+        }
+           
         
         //---------------------incoming stocks-----------------------//
     }

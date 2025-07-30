@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<sfPopup:SfPopup  xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                xmlns:sfPopup="clr-namespace:Syncfusion.Maui.Toolkit.Popup;assembly=Syncfusion.Maui.Toolkit"
+                xmlns:viewmodel="clr-namespace:TindaKo.ViewModel"  
+                AutoSizeMode="Height"
+                ShowFooter="True"
+                ShowCloseButton="True"
+                x:Class="TindaKo.Views.SellPageCartPopup"
+                xmlns:model="clr-namespace:TindaKo.Models"
+                x:Name="SellPageCartSfPopup">
+    <sfPopup:SfPopup.HeaderTemplate>
+        <DataTemplate>
+            <HorizontalStackLayout HorizontalOptions="Center">
+                <Image Source="shoppingbasket.png" HeightRequest="40"/>
+                <Label Text="Cart Preview" 
+                       TextColor="{StaticResource PrimaryDark}"
+                       FontAttributes="Bold"
+                       VerticalOptions="Center"
+                   HorizontalTextAlignment="Center" />
+            </HorizontalStackLayout>
+        </DataTemplate>
+    </sfPopup:SfPopup.HeaderTemplate>
+
+    <sfPopup:SfPopup.ContentTemplate>
+        <DataTemplate>
+            <ScrollView>
+                <VerticalStackLayout Spacing="10" Padding="10">
+
+                    <CollectionView ItemsSource="{Binding CartList}">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="model:CartItems">
+                                <Border Padding="15" Stroke="Transparent">
+                                    <VerticalStackLayout Spacing="2">
+                                        <Label Text="{Binding ProdName}" FontAttributes="Bold"/>
+                                        <Label Text="{Binding ProdCategory}"/>
+                                        <Label Text="{Binding Price, StringFormat='Price: ₱{0:N2}'}"/>
+                                        <Label Text="{Binding Quantity, StringFormat='Quantity: {0}'}"/>
+                                        <Label Text="{Binding Subtotal, StringFormat='Subtotal: ₱{0:N2}'}" 
+                                               TextColor="Gray" FontSize="12"/>
+                                        <Label Text="Remove Product" 
+                                               TextDecorations="Underline" 
+                                               FontAttributes="Bold"
+                                               TextColor="{StaticResource PrimaryDark}">
+                                            <Label.GestureRecognizers>
+                                                <TapGestureRecognizer
+                                                    Command="{Binding BindingContext.RemoveItemCommand, 
+                                                                      Source={x:Reference SellPageCartSfPopup}}"
+                                                    CommandParameter="{Binding .}" />
+                                            </Label.GestureRecognizers>
+                                        </Label>
+                                        <BoxView HeightRequest="1" BackgroundColor="{StaticResource Gray300}"/>
+                                    </VerticalStackLayout>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+
+                    <!-- Total Expense -->
+                    <Label Text="{Binding TotalAmount, StringFormat='Total: ₱{0:N2}'}"
+                       FontAttributes="Bold"
+                       TextColor="{StaticResource Primary}"
+                       
+                       FontSize="18"
+                       HorizontalOptions="End"
+                       Margin="0,10,0,0"/>
+                </VerticalStackLayout>
+            </ScrollView>
+        </DataTemplate>
+    </sfPopup:SfPopup.ContentTemplate>
+</sfPopup:SfPopup>

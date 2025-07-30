@@ -9,6 +9,12 @@ public partial class SellPage : ContentPage
 		InitializeComponent();
 		BindingContext = vm;
 	}
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+        await (BindingContext as SellViewModel)?.InitializeAsync();
+    }
+
     protected override bool OnBackButtonPressed()
     {
         MainThread.BeginInvokeOnMainThread(async () =>

@@ -2,26 +2,35 @@
 using CommunityToolkit.Maui.Core;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using TindaKo.Helpers;
 using TindaKo.Models;
 using TindaKo.Services;
 using TindaKo.Views;
-
+using Timer = System.Timers.Timer;
 namespace TindaKo.ViewModel
 {
     public partial class SellViewModel : ObservableObject
     {
-        [ObservableProperty] private ObservableCollection<Product> products;
-        [ObservableProperty] private string searchText;
-        [ObservableProperty] private ObservableCollection<CartItems> cartItems;
+        [ObservableProperty]
+        private ObservableCollection<Product> productList = new();
+
+        [ObservableProperty]
+        private ObservableCollection<CartItems> cartList = new();
+        private List<Product> _allProducts;
+
+        [ObservableProperty]
+        private int cartCount;
+        [ObservableProperty]
+        private string searchText;
+        private Timer _debounceTimer;
+
+        
+
+
         [ObservableProperty] private decimal totalAmount;
         [ObservableProperty] private bool isCreditChecked;
         [ObservableProperty] private bool isCashChecked;
@@ -31,110 +40,116 @@ namespace TindaKo.ViewModel
         [ObservableProperty] private bool isCartHasItems;
         public SellViewModel()
         {
-            _ = LoadProducts();
-            CartItems = new ObservableCollection<CartItems>();
+            CartList.CollectionChanged += CartList_CollectionChanged;
             IsCashChecked = true;
-            CartItems.CollectionChanged += CartItems_CollectionChanged;
             IsCartHasItems = false;
+        }
+
+        private void CartList_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action == NotifyCollectionChangedAction.Add)
+            {
+                foreach (var newItem in e.NewItems)
+                {
+                    CheckCartItems();
+                }
+            }
+            else if (e.Action == NotifyCollectionChangedAction.Remove)
+            {
+                foreach (var oldItem in e.OldItems)
+                {
+                    CheckCartItems();
+                }
+            }
+        }
+
+        public async Task InitializeAsync()
+        {
+            await LoadProductsAsync();
         }
 
 
 
-        public async Task LoadProducts()
+        private async Task LoadProductsAsync()
         {
-            var allProducts = await DatabaseService.GetProductsAsync(10) ?? new List<Product>();
-
-            if (string.IsNullOrWhiteSpace(SearchText))
+            try
             {
-                Products = new ObservableCollection<Product>(allProducts);
+                var products = await DatabaseService.GetProductsAsync(100);
+                _allProducts = products.ToList();
+                // You should have this service
+                ProductList = new ObservableCollection<Product>(products);
             }
-            else
+            catch (Exception ex)
             {
-                var filtered = allProducts
-                    .Where(p =>
-                        (p.StocksIn - p.StocksOut) > 0 && // ✅ Only products with remaining stock
-                        (
-                            (!string.IsNullOrEmpty(p.ProdName) && p.ProdName.Contains(SearchText, StringComparison.OrdinalIgnoreCase)) ||
-                            (!string.IsNullOrEmpty(p.Category) && p.Category.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
-                        )
-                    )
-                    .Take(5)
-                    .ToList();
-
-                Products = new ObservableCollection<Product>(filtered);
+                Debug.WriteLine($"error loading products: {ex.Message}");
             }
         }
         partial void OnSearchTextChanged(string value)
         {
-            _ = LoadProducts();
+            _ = LoadProductsAsync();
         }
         [RelayCommand]
-        public async Task AddToCart(Product product)
+        private async Task AddToCart(Product product)
         {
-            try
+            if (product.Price <= 0 || product.Quantity <= 0)
+                return;
+            var remainingStocks = product.StocksIn - product.StocksOut;
+            if (product.Quantity > remainingStocks)
             {
-                if (product == null)
-                {
-                    System.Diagnostics.Debug.WriteLine("AddToCart: product is null");
-                    return;
-                }
 
-                if (product.Quantity <= 0)
-                {
-                    await Toast.Make("Please enter quantity greater than zero.", ToastDuration.Short).Show();
-                    return;
-                }
-                // 🔒 Check if Quantity exceeds remaining stocks
-                var remainingStocks = product.StocksIn - product.StocksOut;
-                if (product.Quantity > remainingStocks)
-                {
-                    await Application.Current.MainPage.DisplayAlert(
-                        "Insufficient Stock",
-                        $"Only {remainingStocks} left in stock. Please reduce the quantity.",
-                        "OK");
-                    return;
-                }
+                await ToastHelper.ShowMessage($"Only {remainingStocks} left in stock. Please reduce the quantity.");
+                return;
+            }
 
-                var existing = CartItems.FirstOrDefault(c => c.ProdName == product.ProdName);
-                if (existing != null)
-                {
-                    await Toast.Make($"{product.ProdName} is already in the cart.", ToastDuration.Short).Show();
-                    return;
-                }
-
-                CartItems.Add(new CartItems
+            if (!CartList.Any(p => p.ProductId == product.ProdId))
+            {
+                CartList.Add(new CartItems
                 {
                     ProductId = product.ProdId,
                     ProdName = product.ProdName,
-                    ProdCategory = product.Category,
                     Price = product.Price,
                     Quantity = product.Quantity,
-                    Subtotal = product.Price * product.Quantity
+                    Subtotal = product.Subtotal
                 });
-
                 TotalAmount += product.Price * product.Quantity;
-
-                // Reset quantity to avoid reusing
-                product.Quantity = 0;
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"❌ AddToCart Exception: {ex}");
-                await ToastHelper.ShowError("Something went wrong while adding to cart.");
+                CartCount = CartList.Count;
             }
         }
-        //remove items from cart
-        [RelayCommand]
-        public async Task RemoveFromCart(CartItems item)
+
+        partial void OnSearchTextChanging(string value)
         {
-            if (item == null) return;
+            // Reset timer
+            _debounceTimer?.Stop();
+            _debounceTimer?.Dispose();
 
-            // Update total
-            TotalAmount -= item.Subtotal;
+            _debounceTimer = new Timer(300); // debounce time in milliseconds
+            _debounceTimer.Elapsed += (s, e) =>
+            {
+                _debounceTimer.Stop();
+                _debounceTimer.Dispose();
 
-            // Remove from list
-            CartItems.Remove(item);
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    PerformSearch(value);
+                });
+            };
+            _debounceTimer.Start();
         }
+        private void PerformSearch(string keyword)
+        {
+            if (string.IsNullOrWhiteSpace(keyword))
+            {
+                ProductList = new ObservableCollection<Product>(_allProducts);
+            }
+            else
+            {
+                ProductList = new ObservableCollection<Product>(
+                    _allProducts.Where(p =>
+                        p.ProdName.Contains(keyword, StringComparison.OrdinalIgnoreCase)
+                    ));
+            }
+        }
+
 
         partial void OnIsCashCheckedChanged(bool value)
         {
@@ -178,7 +193,7 @@ namespace TindaKo.ViewModel
             // Check if buyer is required
             if (IsCreditChecked && SelectedBuyer == null)
             {
-                await Toast.Make("Pakilagay ang pangalan ng umutang.", ToastDuration.Short).Show();
+                await ToastHelper.ShowError("Pakilagay ang pangalan ng umutang.");
             }
             else
             {
@@ -208,7 +223,7 @@ namespace TindaKo.ViewModel
 
         private void ClearForm()
         {
-            CartItems.Clear();
+            CartList.Clear();
             TotalAmount = 0;
             IsCashChecked = true;
             SelectedBuyer = null;
@@ -229,7 +244,7 @@ namespace TindaKo.ViewModel
                     Username = Preferences.Get("username", string.Empty)
                 };
 
-                var soldItems = CartItems.Select(ci => new Sell
+                var soldItems = CartList.Select(ci => new Sell
                 {
                     ProductID = ci.ProductId,
                     ProductName = ci.ProdName,
@@ -273,26 +288,10 @@ namespace TindaKo.ViewModel
                 await Application.Current.MainPage.Navigation.PopAsync();
             }
         }
-        private void CartItems_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
-        {
-            if (e.Action == NotifyCollectionChangedAction.Add)
-            {
-                foreach (var newItem in e.NewItems)
-                {
-                    CheckCartItems();
-                }
-            }
-            else if (e.Action == NotifyCollectionChangedAction.Remove)
-            {
-                foreach (var oldItem in e.OldItems)
-                {
-                    CheckCartItems();
-                }
-            }
-        }
+    
         private void CheckCartItems()
         {
-            if (CartItems.Count <= 0)
+            if (CartList.Count <= 0)
             {
                 IsCartHasItems = false;
             }
@@ -308,7 +307,7 @@ namespace TindaKo.ViewModel
 
             sb.AppendLine("Product Name       |  Price  | Qty | Subtotal");
 
-            foreach (var item in CartItems)
+            foreach (var item in CartList)
             {
                 grandTotal += item.Subtotal;
 
@@ -323,6 +322,75 @@ namespace TindaKo.ViewModel
 
             return sb.ToString();
         }
-
+        [RelayCommand]
+        private async Task OpenCartAsync()
+        {
+            var popup = new SellPageCartPopup(this);
+            popup.Show();
+        }
+        [RelayCommand]
+        private async Task RemoveItemAsync(CartItems cartItems)
+        {
+            if (CartList.Contains(cartItems))
+            {
+                CartList.Remove(cartItems);
+                CartCount = CartList.Count; // 🔁 Sync cart count
+                TotalAmount -=cartItems.Subtotal;
+            }
+        }
     }
 }
+//public async Task AddToCart(Product product)
+//{
+//    try
+//    {
+//        if (product == null)
+//        {
+//            System.Diagnostics.Debug.WriteLine("AddToCart: product is null");
+//            return;
+//        }
+
+//        if (product.Quantity <= 0)
+//        {
+//            await Toast.Make("Please enter quantity greater than zero.", ToastDuration.Short).Show();
+//            return;
+//        }
+//        // 🔒 Check if Quantity exceeds remaining stocks
+//        var remainingStocks = product.StocksIn - product.StocksOut;
+//        if (product.Quantity > remainingStocks)
+//        {
+//            await Application.Current.MainPage.DisplayAlert(
+//                "Insufficient Stock",
+//                $"Only {remainingStocks} left in stock. Please reduce the quantity.",
+//                "OK");
+//            return;
+//        }
+
+//        var existing = CartItems.FirstOrDefault(c => c.ProdName == product.ProdName);
+//        if (existing != null)
+//        {
+//            await Toast.Make($"{product.ProdName} is already in the cart.", ToastDuration.Short).Show();
+//            return;
+//        }
+
+//        CartItems.Add(new CartItems
+//        {
+//            ProductId = product.ProdId,
+//            ProdName = product.ProdName,
+//            ProdCategory = product.Category,
+//            Price = product.Price,
+//            Quantity = product.Quantity,
+//            Subtotal = product.Price * product.Quantity
+//        });
+
+//        TotalAmount += product.Price * product.Quantity;
+
+//        // Reset quantity to avoid reusing
+//        product.Quantity = 0;
+//    }
+//    catch (Exception ex)
+//    {
+//        System.Diagnostics.Debug.WriteLine($"❌ AddToCart Exception: {ex}");
+//        await ToastHelper.ShowError("Something went wrong while adding to cart.");
+//    }
+//}

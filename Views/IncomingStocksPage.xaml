@@ -4,60 +4,142 @@
              x:Class="TindaKo.Views.IncomingStocksPage"
              xmlns:viewmodel="clr-namespace:TindaKo.ViewModel"
              xmlns:inputLayout="clr-namespace:Syncfusion.Maui.Toolkit.TextInputLayout;assembly=Syncfusion.Maui.Toolkit"
+             xmlns:picker="clr-namespace:Syncfusion.Maui.Toolkit.Picker;assembly=Syncfusion.Maui.Toolkit"
              Title="Incoming Stocks">
     
-    <Grid RowDefinitions="Auto, *">
-        <!-- Cart icon and badge -->
-        <Border Grid.Row="0"
-                Padding="10"
-                HorizontalOptions="End" 
-                Margin="10"
-                Style="{StaticResource CardStyle}">
-            <!--GestureRecognizers="{Binding ShowCartCommand}"-->
-            <Grid>
-                <Image Source="cartblack.png" HeightRequest="50" WidthRequest="50"/>
-                <Label Text="{Binding CartCount}" 
-                       BackgroundColor="{StaticResource CancelButton}"
-                       TextColor="{StaticResource WhiteText}"
-                       FontSize="12"
-                       HorizontalOptions="End"
-                       VerticalOptions="Start"
-                       Padding="5"
-                       IsVisible="{Binding CartCount, Converter={StaticResource GreaterThanZeroConverter}}"/>
-            </Grid>
-        </Border>
+    <Grid RowDefinitions="Auto,Auto, *,Auto,Auto">
+        <!-- Top Bar: Search + Cart -->
+        <Grid Grid.Row="0" 
+              Padding="10" 
+              ColumnSpacing="10" 
+              ColumnDefinitions="*, Auto">
+            
+            <inputLayout:SfTextInputLayout Hint="Supplier Name" 
+                                               HelperText="(Optional)"
+                                               ContainerBackground="Transparent">
+                <Entry Text="{Binding SupplierName}"/>
+
+            </inputLayout:SfTextInputLayout>
+
+
+
+            <!-- Cart Icon + Badge -->
+            <Border Grid.Column="1"
+                    Padding="5"
+                    HorizontalOptions="End"
+                    Stroke="Transparent">
+                
+                <Grid>
+                    <Image Source="shoppingbasket.png"
+                           HeightRequest="40"
+                           WidthRequest="40"
+                           VerticalOptions="Center" />
+
+                    <Border 
+                        BackgroundColor="{StaticResource PrimaryDark}" 
+                        StrokeThickness="0"
+                        StrokeShape="RoundRectangle 10"
+                        Padding="0"
+                        HorizontalOptions="End"
+                        VerticalOptions="Start"
+                        IsVisible="{Binding CartCount, Converter={StaticResource GreaterThanZeroConverter}}">
+
+                        <Label Text="{Binding CartCount}"
+                               TextColor="{StaticResource WhiteText}"
+                               FontSize="12"
+                               Padding="5"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"/>
+
+                    </Border>
+
+                </Grid>
+
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer
+                                Command="{Binding OpenCartCommand}"/>
+                </Border.GestureRecognizers>
+            </Border>
+        </Grid>
+        <Grid Grid.Row="1" Padding="10">
+            <VerticalStackLayout>
+                <SearchBar Placeholder="Search product"
+                    Text="{Binding SearchText}"
+                    Grid.Column="0"
+                    VerticalOptions="Center" />
+                
+            </VerticalStackLayout>
+        </Grid>
 
         <!-- Product List -->
-        <CollectionView ItemsSource="{Binding ProductList}" Grid.Row="1">
+        <CollectionView ItemsSource="{Binding ProductList}" Grid.Row="2">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <Border Margin="10" Padding="10" Stroke="LightGray" StrokeThickness="1">
                         <VerticalStackLayout Spacing="5">
-                            <Label Text="{Binding ProdName}" FontAttributes="Bold"/>
-                            <HorizontalStackLayout Spacing="10">
-                                <inputLayout:SfTextInputLayout Hint="Supplier Price" VerticalOptions="Center">
-                                    <Entry
-                                       Keyboard="Numeric"
-                                       WidthRequest="70"
-                                       Text="{Binding SupplierPrice, Mode=TwoWay}" />
+                            <Label Text="{Binding ProdName}" 
+                                   FontAttributes="Bold"
+                                   TextColor="{StaticResource PrimaryDark}"/>
+                            <Grid ColumnDefinitions="2*,2*,Auto" VerticalOptions="Center" ColumnSpacing="5">
+                                <!-- Supplier Price -->
+                                <inputLayout:SfTextInputLayout Hint="Supplier price" 
+                                                               Grid.Column="0"
+                                                               ContainerBackground="Transparent">
+                                    <Entry 
+                                    Keyboard="Numeric"
+                                    Text="{Binding SupplierPrice, Mode=TwoWay}"/>
                                 </inputLayout:SfTextInputLayout>
-                                <inputLayout:SfTextInputLayout Hint="New Stocks In" VerticalOptions="Center">
-                                    <Entry
-                                       Keyboard="Numeric"
-                                       WidthRequest="75"
-                                       Text="{Binding NewStocksQty, Mode=TwoWay}" />
-                                </inputLayout:SfTextInputLayout>
-                                <Button ImageSource="add.png"
-                                        BackgroundColor="Transparent"
-                                        VerticalOptions="Center"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:IncomingStocksViewModel}}, Path=AddToCartCommand}"
-                                        CommandParameter="{Binding}"/>
-                            </HorizontalStackLayout>
+
+                                <!-- New Stocks Qty -->
+                                <inputLayout:SfTextInputLayout Hint="New Stocks In" 
+                                                               Grid.Column="1"
+                                                               ContainerBackground="Transparent">
+                                    <Entry 
+                                    Keyboard="Numeric"
+                                    Text="{Binding NewStocksQty, Mode=TwoWay}"/>
+                                </inputLayout:SfTextInputLayout >
+
+                                <!-- Add Button -->
+                                <Button 
+                                    Grid.Column="2"
+                                    ImageSource="add.png"
+                                    BackgroundColor="Transparent"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:IncomingStocksViewModel}}, Path=AddToCartCommand}"
+                                    CommandParameter="{Binding}" />
+                            </Grid>
+
                             <Label Text="{Binding Subtotal, StringFormat='Subtotal: ₱{0:N}'}" FontSize="12" TextColor="Gray"/>
                         </VerticalStackLayout>
                     </Border>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
+        <Grid Grid.Row="3" 
+              ColumnDefinitions="*,*" 
+              ColumnSpacing="2" 
+              HeightRequest="40"
+              Margin="0,0,0,5">
+            <!-- Complete Transaction -->
+            <Grid Grid.Column="0" IsEnabled="{Binding IsCartHasItems}" BackgroundColor="{StaticResource Primary}">
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding CompleteTransactionCommand}" />
+                </Grid.GestureRecognizers>
+                <Label Text="Complete Transaction" HorizontalOptions="Center" VerticalOptions="Center" TextColor="White"/>
+            </Grid>
+
+            <!-- Cancel Transaction -->
+            <Grid Grid.Column="1" BackgroundColor="{StaticResource CancelButton}">
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding CloseCommand}" />
+                </Grid.GestureRecognizers>
+                <Label Text="Cancel Transaction" HorizontalOptions="Center" VerticalOptions="Center" TextColor="White"/>
+            </Grid>
+        </Grid>
+        <!-- Static Bottom Bar -->
+        <BoxView Grid.Row="4"
+                 HeightRequest="40"
+                 Color="{StaticResource PrimaryDark}"
+                 HorizontalOptions="Fill"
+                 VerticalOptions="End" />
     </Grid>
 </ContentPage>

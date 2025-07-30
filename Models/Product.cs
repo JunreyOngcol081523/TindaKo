@@ -28,22 +28,36 @@ namespace TindaKo.Models
 
 
         private decimal quantity;
-
-        [Ignore]
         public decimal Quantity
         {
             get => quantity;
-            set => SetProperty(ref quantity, value);
+            set
+            {
+                if (SetProperty(ref quantity, value))
+                {
+                    OnPropertyChanged(nameof(Subtotal)); // Notify UI to re-read Subtotal
+                }
+            }
         }
+
+        [Ignore]
+        public decimal Subtotal => Price * Quantity;
+
     }
 
     public class ProductDisplay : ObservableObject
     {
+        public ProductDisplay(Product product) { 
+            ProdId = product.ProdId;
+            ProdName = product.ProdName;
+        }
+        public ProductDisplay() { }
         public int ProdId { get; set; }
-
+  
         public string ProdName { get; set; }
-
+        
         private decimal supplierPrice;
+ 
         public decimal SupplierPrice
         {
             get => supplierPrice;
@@ -55,6 +69,7 @@ namespace TindaKo.Models
         }
 
         private decimal newStocksQty;
+
         public decimal NewStocksQty
         {
             get => newStocksQty;
@@ -66,6 +81,7 @@ namespace TindaKo.Models
         }
 
         private decimal subtotal;
+
         public decimal Subtotal
         {
             get => subtotal;

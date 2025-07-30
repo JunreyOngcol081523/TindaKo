@@ -57,6 +57,9 @@ namespace TindaKo
             builder.Services.AddSingleton<CreditorViewModel>();
             builder.Services.AddSingleton<IncomingStocksPage>();
             builder.Services.AddSingleton<IncomingStocksViewModel>();
+            builder.Services.AddSingleton<IncomingStocksPopup>();
+            builder.Services.AddSingleton<IncomingStocksPopupViewModel>();
+            builder.Services.AddSingleton<SellPageCartPopup>();
         }
     }
 }
