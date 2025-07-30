@@ -81,7 +81,7 @@
                                     <!-- New Stocks Qty -->
                                     <inputLayout:SfTextInputLayout Hint="Quantity"
                                                                    HelperText="Ilan ang bibilhin mo?"
-                                                                   HeightRequest="70"
+                                                                  
                                                                Grid.Column="1"
                                                                ContainerBackground="Transparent">
                                         <Entry Keyboard="Numeric" Text="{Binding Quantity}"/>
@@ -90,9 +90,9 @@
                                     <!-- Add Button -->
                                     <Button 
                                         Grid.Column="2"
-                                        ImageSource="add.png"
+                                        ImageSource="cartblack.png"
                                         BackgroundColor="Transparent"
-                                        HeightRequest="50"
+                                        HeightRequest="70"
                                         Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:SellViewModel}}, Path=AddToCartCommand}"
                                         CommandParameter="{Binding .}"/>
                                 </Grid>
@@ -109,7 +109,11 @@
         </Grid>
 
         <!-- TRANSACTION & PAYMENT SECTION -->
-        <Grid Grid.Row="2" RowDefinitions="Auto,Auto,50" Padding="10" BackgroundColor="Bisque">
+        <Grid Grid.Row="2" 
+              RowDefinitions="Auto,Auto,50" 
+              RowSpacing="5"
+              Padding="10" 
+              BackgroundColor="Bisque">
 
             <!-- Payment Method + Total Row -->
             <Grid Grid.Row="0" ColumnDefinitions="Auto,Auto,45,*,Auto" ColumnSpacing="5">
@@ -129,7 +133,10 @@
             </Grid>
 
             <!-- Pangalan ng umutang -->
-            <HorizontalStackLayout Grid.Row="1" Spacing="5">
+            <HorizontalStackLayout Grid.Row="1" 
+                                   Spacing="5" 
+                                   Margin="0,0,0,15"
+                                   HorizontalOptions="Center">
                 <Label Text="{Binding SelectedBuyerName, StringFormat='Name of Creditor: {0}'}"
                        FontAttributes="Bold"
                        TextDecorations="Underline"

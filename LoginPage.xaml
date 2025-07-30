@@ -48,10 +48,10 @@
 
                     <!-- Username -->
 
-                    <inputLayout:SfTextInputLayout Hint="Username">
+                    <inputLayout:SfTextInputLayout Hint="Username" ContainerBackground="Transparent">
                         <Entry Text="{Binding UserName}" />
                     </inputLayout:SfTextInputLayout>
-                    <inputLayout:SfTextInputLayout Hint="Password">
+                    <inputLayout:SfTextInputLayout Hint="Password" ContainerBackground="Transparent">
                         <!-- Password -->
                         <Entry Text="{Binding UserPassword}"
                            Placeholder="Password"
