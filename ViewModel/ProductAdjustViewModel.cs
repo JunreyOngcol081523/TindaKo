@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using TindaKo.Converters;
 using TindaKo.Helpers;
 using TindaKo.Models;
 using TindaKo.Services;
@@ -36,7 +37,7 @@ namespace TindaKo.Views
             {
                 _product.StocksIn += NewStocksIn;
                 _product.StocksOut += NewStocksOut;
-                await DatabaseService.UpdateProductAsync(_product);
+                await ProductService.UpdateProductAsync(_product);
                 // Optionally: save to DB
                 await ToastHelper.ShowError("Stocks adjusted.");
 

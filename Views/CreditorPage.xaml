@@ -5,6 +5,7 @@
     x:Class="TindaKo.Views.CreditorPage"
     xmlns:viewmodel="clr-namespace:TindaKo.ViewModel"
     xmlns:converters="clr-namespace:TindaKo.Converters"
+     xmlns:segmentedControl="clr-namespace:Syncfusion.Maui.Toolkit.SegmentedControl;assembly=Syncfusion.Maui.Toolkit"
     Title="Listahan ng Utang">
 
     <ContentPage.BindingContext>
@@ -15,12 +16,19 @@
         <!-- Filters and Search - Row 0 -->
         <VerticalStackLayout Grid.Row="0" Spacing="10">
             <!-- Filter -->
-            <HorizontalStackLayout Spacing="20" HorizontalOptions="Center">
+            <Grid>
+                <segmentedControl:SfSegmentedControl
+                    
+                    ItemsSource="{Binding SegmentOptions}"
+                    SelectedIndex="{Binding SelectedSegmentIndex, Mode=TwoWay}"/>
+
+            </Grid>
+            <!--<HorizontalStackLayout Spacing="20" HorizontalOptions="Center">
                 <RadioButton Content="All" Value="All" GroupName="CreditFilter" IsChecked="{Binding IsAllChecked}" />
                 <RadioButton Content="Past Due" Value="PastDue" GroupName="CreditFilter" IsChecked="{Binding IsPastDueChecked}" />
                 <RadioButton Content="Paid" Value="Paid" GroupName="CreditFilter" IsChecked="{Binding IsPaidChecked}" />
                 <RadioButton Content="Unpaid" Value="Unpaid" GroupName="CreditFilter" IsChecked="{Binding IsUnpaidChecked}" />
-            </HorizontalStackLayout>
+            </HorizontalStackLayout>-->
 
             <HorizontalStackLayout>
                 <Label Text="{Binding TotalAmount, StringFormat='Total Amount: ₱{0:N2}'}"/>

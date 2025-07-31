@@ -6,7 +6,6 @@
     xmlns:viewmodel="clr-namespace:TindaKo.ViewModel"  
     x:Class="TindaKo.Views.IncomingStocksPopup"
     AutoSizeMode="Height"
-    ShowFooter="True"
     ShowCloseButton="True"
     x:Name="IncomingStocksSfPopup">
 

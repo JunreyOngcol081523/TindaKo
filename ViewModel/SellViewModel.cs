@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Text;
+using TindaKo.Converters;
 using TindaKo.Helpers;
 using TindaKo.Models;
 using TindaKo.Services;
@@ -27,10 +28,6 @@ namespace TindaKo.ViewModel
         [ObservableProperty]
         private string searchText;
         private Timer _debounceTimer;
-
-        
-
-
         [ObservableProperty] private decimal totalAmount;
         [ObservableProperty] private bool isCreditChecked;
         [ObservableProperty] private bool isCashChecked;
@@ -74,20 +71,23 @@ namespace TindaKo.ViewModel
         {
             try
             {
-                var products = await DatabaseService.GetProductsAsync(100);
-                _allProducts = products.ToList();
-                // You should have this service
-                ProductList = new ObservableCollection<Product>(products);
+                if (string.IsNullOrEmpty(SearchText))
+                {
+                    _allProducts = await ProductService.GetProductsAsync(100);
+                }
+                else
+                {
+                    _allProducts = await ProductService.SearchProductsAsync(SearchText, 100);
+                }
+                ProductList = new ObservableCollection<Product>(_allProducts);
             }
             catch (Exception ex)
             {
+
                 Debug.WriteLine($"error loading products: {ex.Message}");
             }
         }
-        partial void OnSearchTextChanged(string value)
-        {
-            _ = LoadProductsAsync();
-        }
+
         [RelayCommand]
         private async Task AddToCart(Product product)
         {
@@ -116,7 +116,7 @@ namespace TindaKo.ViewModel
             }
         }
 
-        partial void OnSearchTextChanging(string value)
+        partial void OnSearchTextChanged(string value)
         {
             // Reset timer
             _debounceTimer?.Stop();
@@ -130,27 +130,11 @@ namespace TindaKo.ViewModel
 
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
-                    PerformSearch(value);
+                    _ = LoadProductsAsync();
                 });
             };
             _debounceTimer.Start();
         }
-        private void PerformSearch(string keyword)
-        {
-            if (string.IsNullOrWhiteSpace(keyword))
-            {
-                ProductList = new ObservableCollection<Product>(_allProducts);
-            }
-            else
-            {
-                ProductList = new ObservableCollection<Product>(
-                    _allProducts.Where(p =>
-                        p.ProdName.Contains(keyword, StringComparison.OrdinalIgnoreCase)
-                    ));
-            }
-        }
-
-
         partial void OnIsCashCheckedChanged(bool value)
         {
             if (value)
@@ -253,7 +237,7 @@ namespace TindaKo.ViewModel
                     Qty = ci.Quantity
                 }).ToList();
                 
-                await DatabaseService.SaveTransactionWithSalesAsync(transaction, soldItems);
+                await TransactionServices.SaveTransactionWithSalesAsync(transaction, soldItems);
                 if (IsCreditChecked)
                 {
                     var creditor = new Creditor
@@ -264,7 +248,7 @@ namespace TindaKo.ViewModel
                         DueDate = DateTime.Now.AddMonths(1),
                         IsPaid = false
                     };
-                    await DatabaseService.SaveCreditorAsync(creditor);
+                    await CreditorServices.SaveCreditorAsync(creditor);
                 }
             }
             catch (Exception ex)

@@ -32,11 +32,11 @@ namespace TindaKo.ViewModel
 
             if (string.IsNullOrWhiteSpace(SearchText))
             {
-                result = await DatabaseService.GetBuyersAsync();
+                result = await BuyerServices.GetBuyersAsync();
             }
             else
             {
-                var allBuyers = await DatabaseService.GetBuyersAsync();
+                var allBuyers = await BuyerServices.GetBuyersAsync();
                 result = allBuyers
                     .Where(b => b.Name != null &&
                                 b.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
@@ -63,7 +63,7 @@ namespace TindaKo.ViewModel
             };
 
             Buyers.Add(buyer);
-            DatabaseService.AddBuyerAsync(buyer);
+            BuyerServices.AddBuyerAsync(buyer);
             // Reset fields
             NewBuyerName = NewBuyerContact = NewBuyerAddress = string.Empty;
         }

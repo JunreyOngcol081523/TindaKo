@@ -5,6 +5,7 @@
              xmlns:viewmodel="clr-namespace:TindaKo.ViewModel"
              xmlns:inputLayout="clr-namespace:Syncfusion.Maui.Toolkit.TextInputLayout;assembly=Syncfusion.Maui.Toolkit"
              Title="Benta"
+              xmlns:editors="clr-namespace:Syncfusion.Maui.Toolkit.NumericUpDown;assembly=Syncfusion.Maui.Toolkit"
              xmlns:model="clr-namespace:TindaKo.Models"
              x:Name="SellPageRoot">
 
@@ -30,8 +31,8 @@
 
                 <Grid>
                     <Image Source="shoppingbasket.png"
-                           HeightRequest="40"
-                           WidthRequest="40"
+                           HeightRequest="50"
+                           WidthRequest="50"
                            VerticalOptions="Center" />
 
                     <Border 
@@ -46,6 +47,7 @@
                         <Label Text="{Binding CartCount}"
                                TextColor="{StaticResource WhiteText}"
                                FontSize="12"
+                               FontAttributes="Bold"
                                Padding="5"
                                HorizontalOptions="Center"
                                VerticalOptions="Center"/>
@@ -74,33 +76,38 @@
                                       VerticalOptions="Center" 
                                       ColumnSpacing="5">
                                     <!-- Supplier Price -->
-                                    <Label Grid.Column="0" 
-                                           HeightRequest="50"
-                                           Text="{Binding Price, StringFormat='Price: ₱{0:N}'}"
-                                           BackgroundColor="Transparent"/>
+                                    <VerticalStackLayout  Grid.Column="0" Spacing="16">
+                                        <Label 
+                                           Text="{Binding Price, StringFormat='Price: ₱{0:N}'}"/>
+
+                                        <Label Text="{Binding Subtotal, StringFormat='Subtotal: ₱{0:N}'}" 
+                                               FontSize="13" 
+                                               TextColor="{StaticResource Gray600}"
+                                               BackgroundColor="Transparent"/>  
+                                    </VerticalStackLayout>
                                     <!-- New Stocks Qty -->
-                                    <inputLayout:SfTextInputLayout Hint="Quantity"
-                                                                   HelperText="Ilan ang bibilhin mo?"
-                                                                  
-                                                               Grid.Column="1"
-                                                               ContainerBackground="Transparent">
-                                        <Entry Keyboard="Numeric" Text="{Binding Quantity}"/>
-                                    </inputLayout:SfTextInputLayout >
+                                    <VerticalStackLayout Grid.Column="1">
+                                        <Label Text="Quantity" VerticalOptions="End"/>
+                                        <editors:SfNumericUpDown
+                                            Value="{Binding Quantity, Mode=TwoWay}"
+                                            AllowNull="False"
+                                            UpDownButtonColor="{StaticResource PrimaryDark}"
+                                            Minimum="0"
+                                            CustomFormat="0"
+                                            UpDownButtonAlignment="Both" 
+                                            SmallChange="1"/>
+                                    </VerticalStackLayout>
 
                                     <!-- Add Button -->
                                     <Button 
                                         Grid.Column="2"
-                                        ImageSource="cartblack.png"
+                                        ImageSource="shoppingbasket.png"
                                         BackgroundColor="Transparent"
                                         HeightRequest="70"
                                         Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:SellViewModel}}, Path=AddToCartCommand}"
                                         CommandParameter="{Binding .}"/>
                                 </Grid>
 
-                                <Label Text="{Binding Subtotal, StringFormat='Subtotal: ₱{0:N}'}" 
-                                       FontSize="12" 
-                                       TextColor="Gray"
-                                       BackgroundColor="Transparent"/>
                             </VerticalStackLayout>
                         </Border>
                     </DataTemplate>
@@ -140,7 +147,7 @@
                 <Label Text="{Binding SelectedBuyerName, StringFormat='Name of Creditor: {0}'}"
                        FontAttributes="Bold"
                        TextDecorations="Underline"
-                       TextColor="Blue"
+                       TextColor="{StaticResource PrimaryDark}"
                        IsVisible="{Binding IsCreditChecked}">
                     <Label.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding OpenBuyerModalCommand}" />

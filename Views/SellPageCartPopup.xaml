@@ -4,7 +4,6 @@
                 xmlns:sfPopup="clr-namespace:Syncfusion.Maui.Toolkit.Popup;assembly=Syncfusion.Maui.Toolkit"
                 xmlns:viewmodel="clr-namespace:TindaKo.ViewModel"  
                 AutoSizeMode="Height"
-                ShowFooter="True"
                 ShowCloseButton="True"
                 x:Class="TindaKo.Views.SellPageCartPopup"
                 xmlns:model="clr-namespace:TindaKo.Models"

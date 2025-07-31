@@ -8,7 +8,7 @@
 
     <Grid RowDefinitions="*,Auto">
         <Grid Grid.Row="0"
-            Padding="18"
+            Padding="10"
           RowDefinitions="Auto,Auto,*">
           
             <!-- Search and Add Button -->
@@ -32,9 +32,15 @@
             </Border>
             <Grid Grid.Row="1">
                 <HorizontalStackLayout HorizontalOptions="Center">
-                    <Label Text="Limit rows: " VerticalTextAlignment="Center"/>
-                    <Entry Text="{Binding MaxResults}" Keyboard="Numeric"/>
-                    <Button Text="Load Products" Command="{Binding RefreshProductsCommand}" HorizontalOptions="End"/>
+                    <Label Text="Limit rows: " 
+                           VerticalTextAlignment="Center"
+                           HorizontalOptions="Start"/>
+                    <Entry Text="{Binding MaxResults}" 
+                           Keyboard="Numeric"
+                           HorizontalOptions="Start"/>
+                    <Button Text="Load Products" 
+                            Command="{Binding RefreshProductsCommand}" 
+                            HorizontalOptions="End"/>
                 </HorizontalStackLayout>
             </Grid>
 

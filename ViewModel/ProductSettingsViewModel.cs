@@ -7,6 +7,7 @@ using System.IO;
 using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
+using TindaKo.Converters;
 using TindaKo.Helpers;
 using TindaKo.Models;
 using TindaKo.Services;
@@ -131,7 +132,7 @@ namespace TindaKo
                 // Save to database
                 foreach (var product in products)
                 {
-                    await DatabaseService.AddProductAsync(product);
+                    await ProductService.AddProductAsync(product);
                 }
 
                 await ToastHelper.ShowMessage("Products imported successfully.");

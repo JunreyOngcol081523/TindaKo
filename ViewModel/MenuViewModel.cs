@@ -11,11 +11,21 @@ namespace TindaKo.ViewModel
         [ObservableProperty] private bool isAdmin;
         [ObservableProperty] private string userName;
         [ObservableProperty] private string userRole;
-
+        [ObservableProperty] private decimal dailySales;
+        [ObservableProperty] private decimal monthlySales;
+        [ObservableProperty] private int dueUnpaidCredits;
+        [ObservableProperty] private int lowStocksCount;
         public MenuViewModel() { 
             UserName =Preferences.Get("userfullname", string.Empty);
             UserRole = Preferences.Get("userrole","unkown");
             _=GetUserRole();
+        }
+        public async Task LoadDataFromDB()
+        {
+            DailySales = await TransactionServices.GetTodayTotalSalesAsync();
+            MonthlySales = await TransactionServices.GetMonthlyTotalSalesAsync();
+            DueUnpaidCredits = await CreditorServices.GetOverdueUnpaidCreditsCountAsync();
+            LowStocksCount = await ProductService.CountLowStockProductsAsync();
         }
         public async Task GetUserRole()
         {

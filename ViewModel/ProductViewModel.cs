@@ -10,6 +10,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TindaKo.Converters;
 using TindaKo.Helpers;
 using TindaKo.Models;
 using TindaKo.Services;
@@ -59,8 +60,8 @@ namespace TindaKo.ViewModel
                         StocksIn = StocksIn,
                         StocksOut = StocksOut
                     };
-                    await DatabaseService.AddProductAsync(product);
-                    await ToastHelper.ShowError("Product Added");
+                    await ProductService.AddProductAsync(product);
+                    await ToastHelper.ShowMessage("Product Added");
                     await LoadProducts();
                 }
                 else
@@ -81,7 +82,7 @@ namespace TindaKo.ViewModel
         private async Task UpdateProductAsync(Product product)
         {
             if (product == null) return;
-            await DatabaseService.UpdateProductAsync(product);
+            await ProductService.UpdateProductAsync(product);
             //var toast = Toast.Make("Product updated successfully!", ToastDuration.Short, 14);
             await ToastHelper.ShowMessage("Product Updated");
 
@@ -94,11 +95,11 @@ namespace TindaKo.ViewModel
 
             if (string.IsNullOrWhiteSpace(SearchText))
             {
-                results = await DatabaseService.GetProductsAsync(MaxResults); // Loads all (optionally paginate)
+                results = await ProductService.GetProductsAsync(MaxResults); // Loads all (optionally paginate)
             }
             else
             {
-                results = await DatabaseService.SearchProductsAsync(SearchText, MaxResults); // Filter at DB level
+                results = await ProductService.SearchProductsAsync(SearchText, MaxResults); // Filter at DB level
             }
 
             Products = new ObservableCollection<Product>(results);

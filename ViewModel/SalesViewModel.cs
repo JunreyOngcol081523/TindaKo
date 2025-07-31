@@ -46,18 +46,18 @@ namespace TindaKo.ViewModel
 
             if (IsFilterEnabled)
             {
-                rawTransactions = await DatabaseService.GetFilteredTransactionsAsync(true, DateFrom, DateTo, SelectedTransactionType);
+                rawTransactions = await TransactionServices.GetFilteredTransactionsAsync(true, DateFrom, DateTo, SelectedTransactionType);
             }
             else
             {
-                rawTransactions = await DatabaseService.GetFilteredTransactionsAsync(false, DateTime.MinValue, DateTime.MaxValue, string.Empty);
+                rawTransactions = await TransactionServices.GetFilteredTransactionsAsync(false, DateTime.MinValue, DateTime.MaxValue, string.Empty);
             }
 
             var displayList = new List<TransactionDisplay>();
             SalesAmount = 0;
             foreach (var tx in rawTransactions)
             {
-                var buyer = await DatabaseService.GetBuyerAsync(tx.BuyerID); // Fetch buyer
+                var buyer = await BuyerServices.GetBuyerAsync(tx.BuyerID); // Fetch buyer
                 displayList.Add(new TransactionDisplay
                 {
                     TransactionId = tx.TransactionId,

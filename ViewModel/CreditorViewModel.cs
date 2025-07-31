@@ -27,12 +27,26 @@ namespace TindaKo.ViewModel
         private bool isUnpaidChecked;
         [ObservableProperty]
         private decimal totalAmount;
+        public ObservableCollection<string> SegmentOptions { get; }
 
+        [ObservableProperty]
+        private int selectedSegmentIndex;
         public CreditorViewModel()
         {
             _ = LoadCreditorsAsync();
+            SegmentOptions = new ObservableCollection<string>
+        {
+            "All", "Past Due", "Paid", "Unpaid"
+        };
+            SelectedSegmentIndex = 0; // default to "All"
         }
-
+        partial void OnSelectedSegmentIndexChanged(int value)
+        {
+            IsAllChecked = value == 0;
+            IsPastDueChecked = value == 1;
+            IsPaidChecked = value == 2;
+            IsUnpaidChecked = value == 3;
+        }
         partial void OnSearchTextChanged(string value)
         {
             _ = LoadCreditorsAsync();
@@ -85,7 +99,7 @@ namespace TindaKo.ViewModel
         [RelayCommand]
         private async Task LoadCreditorsAsync()
         {
-            var allCreditors = await DatabaseService.GetCreditorsAsync();
+            var allCreditors = await CreditorServices.GetCreditorsAsync();
             ApplyFilter(allCreditors);
         }
 
@@ -132,7 +146,7 @@ namespace TindaKo.ViewModel
             creditor.PaidDate = DateTime.Today;
 
             // Save the update to the database
-            await DatabaseService.UpdateCreditorAsync(creditor);
+            await CreditorServices.UpdateCreditorAsync(creditor);
 
             // Reload the list with the updated values
             await LoadCreditorsAsync();

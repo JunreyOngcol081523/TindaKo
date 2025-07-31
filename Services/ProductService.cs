@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using TindaKo.Models;
 using TindaKo.Services;
 
-namespace TindaKo.Converters
+namespace TindaKo.Services
 {
     public static class ProductService
     {
@@ -29,5 +29,45 @@ namespace TindaKo.Converters
                 await Init();
             await _db.UpdateAsync(product);
         }
+        // CRUD Example
+        public static async Task<List<Product>> GetProductsAsync(int maxResults)
+        {
+            await Init();
+            return await _db.Table<Product>().Take(maxResults).ToListAsync();
+        }
+        public static async Task<List<Product>> SearchProductsAsync(string keyword, int maxResults)
+        {
+            await Init();
+            return await _db.Table<Product>()
+                      .Where(p =>
+                          (!string.IsNullOrEmpty(p.ProdName) && p.ProdName.ToLower().Contains(keyword.ToLower())) ||
+                          (!string.IsNullOrEmpty(p.Category) && p.Category.ToLower().Contains(keyword.ToLower())))
+                      .Take(maxResults)
+                      .ToListAsync();
+        }
+
+        public static async Task<int> AddProductAsync(Product product) {
+            await Init();
+            return await _db.InsertAsync(product);
+        }
+
+
+
+        public static async Task<int> DeleteProductAsync(Product product) {
+            await Init();
+            return await _db.DeleteAsync(product);
+        }
+        public static async Task<int> CountLowStockProductsAsync()
+        {
+            await Init(); // Ensure database is initialized
+
+            var products = await _db.Table<Product>().ToListAsync();
+
+            var lowStockCount = products.Count(p => (p.StocksIn - p.StocksOut) <= 5);
+
+            return lowStockCount;
+        }
+
+
     }
 }

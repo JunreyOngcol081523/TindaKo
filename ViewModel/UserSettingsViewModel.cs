@@ -38,7 +38,7 @@ namespace TindaKo.ViewModel
         }
         private async void LoadUsers()
         {
-            var results = await DatabaseService.GetUsersAsync();
+            var results = await UserServices.GetUsersAsync();
             Users = new ObservableCollection<Users>();
             foreach (var user in results)
             {
@@ -114,13 +114,13 @@ namespace TindaKo.ViewModel
                         UserRole = SelectedUser.UserRole
                     };
 
-                    await DatabaseService.AddNewUserAsync(newuser);
+                    await UserServices.AddNewUserAsync(newuser);
                 }
                 else
                 {
                     // Directly update SelectedUser (includes correct UserId)
                     SelectedUser.UserPassword = NewUserPassword;
-                    await DatabaseService.UpdateUserAsync(SelectedUser);
+                    await UserServices.UpdateUserAsync(SelectedUser);
                 }
 
                 await ToastHelper.ShowMessage(IsAddCommand ? "User added." : "User updated.");

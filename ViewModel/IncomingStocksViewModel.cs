@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Maui.Controls.Platform;
 using System.Collections.ObjectModel;
 using TindaKo.Converters;
 using TindaKo.Helpers;
@@ -31,9 +32,15 @@ namespace TindaKo.ViewModel
 
         private async Task LoadProductsAsync()
         {
-            var products = await DatabaseService.GetProductsAsync(100);
-            _allProducts = products.Select(p => new ProductDisplay(p)).ToList();
-            // You should have this service
+            if (string.IsNullOrEmpty(SearchText)) {
+               var products = await ProductService.GetProductsAsync(100);
+                _allProducts = products.Select(p => new ProductDisplay(p)).ToList();
+            }
+            else
+            {
+                var products = await ProductService.SearchProductsAsync(SearchText, 100);
+                _allProducts = products.Select(p => new ProductDisplay(p)).ToList();
+            }
             ProductList = new ObservableCollection<ProductDisplay>(_allProducts);
         }
 
@@ -56,7 +63,6 @@ namespace TindaKo.ViewModel
                 CartCount = CartList.Count;
             }
         }
-
         partial void OnSearchTextChanged(string value)
         {
             // Reset timer
@@ -71,7 +77,7 @@ namespace TindaKo.ViewModel
 
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
-                    PerformSearch(value);
+                    _=LoadProductsAsync();
                 });
             };
             _debounceTimer.Start();
@@ -102,7 +108,23 @@ namespace TindaKo.ViewModel
         [RelayCommand]
         private async Task CompleteTransactionAsync()
         {
-            var totalAmount = CartList.Sum(item => item.Subtotal);
+            if (CartCount <= 0)
+            {
+                await ToastHelper.ShowError("Your cart is empty.");
+                return;
+            }
+
+            var mainPage = Application.Current?.MainPage;
+            if (mainPage == null) return;
+
+            bool confirm = await mainPage.DisplayAlert(
+                "Completeness Check",
+                "Click [Yes] if you are done with adding stocks.\nClick [No] if not.",
+                "Yes", "No");
+
+            if (!confirm) return;
+
+            decimal totalAmount = CartList.Sum(item => item.Subtotal);
 
             var incomingStocks = new IncomingStocks
             {
@@ -113,23 +135,27 @@ namespace TindaKo.ViewModel
 
             bool success = await IncomingStocksService.SaveIncomingStocksAsync(incomingStocks, CartList);
 
-            if (success)
+            if (!success)
             {
-                // Update StocksIn for each product
-                foreach (var item in CartList)
-                {
-                    var product = await ProductService.GetProductByIdAsync(item.ProdId); // fetch from DB
-                    if (product != null)
-                    {
-                        product.StocksIn += item.NewStocksQty;
-                        await ProductService.UpdateProductAsync(product);
-                    }
-                }
-
-                await ToastHelper.ShowMessage("Incoming stocks saved!");
-                CartList.Clear(); // clear cart if needed
+                await ToastHelper.ShowError("Failed to save incoming stocks.");
+                return;
             }
+
+            // Update StocksIn for each product
+            foreach (var item in CartList)
+            {
+                var product = await ProductService.GetProductByIdAsync(item.ProdId);
+                if (product != null)
+                {
+                    product.StocksIn += item.NewStocksQty;
+                    await ProductService.UpdateProductAsync(product);
+                }
+            }
+
+            await ToastHelper.ShowMessage("Incoming stocks saved successfully.");
+            CartList.Clear();
         }
+
 
         [RelayCommand]
         private async Task CloseAsync()

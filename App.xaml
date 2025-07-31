@@ -11,6 +11,7 @@
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
                 <ResourceDictionary Source="Resources/Styles/CardStyles.xaml" />
+                <ResourceDictionary Source="Resources/Styles/MenuCard.xaml" />
                 <syncTheme:SyncfusionThemeResourceDictionary VisualTheme="MaterialLight"/>
             </ResourceDictionary.MergedDictionaries>
 
@@ -19,6 +20,18 @@
                 <Setter Property="BarBackgroundColor" Value="{StaticResource Primary}" />
                 <Setter Property="BarTextColor" Value="White" />
             </Style>
+            <!--fonts-->
+            <!--<Style TargetType="Label">
+                <Setter Property="FontFamily" Value="centurygothicRegular" />
+            </Style>
+
+            <Style TargetType="Button">
+                <Setter Property="FontFamily" Value="centurygothicRegular" />
+            </Style>
+
+            <Style TargetType="Entry">
+                <Setter Property="FontFamily" Value="centurygothicRegular" />
+            </Style>-->
             <converters:BoolToStatusConverter x:Key="BoolToStatusConverter" />
             <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
             <converters:StringEqualsConverter x:Key="StringEqualsConverter" />

@@ -31,7 +31,6 @@ namespace TindaKo.ViewModel
         [RelayCommand]
         public async Task LoginAsync()
         {
-            await DatabaseService.InitAsync(); // Make sure DB is ready
 
             if (string.IsNullOrWhiteSpace(UserName) || string.IsNullOrWhiteSpace(UserPassword) || string.IsNullOrWhiteSpace(SelectedRole))
             {
@@ -39,7 +38,7 @@ namespace TindaKo.ViewModel
                 return;
             }
 
-            var user = await DatabaseService.GetUserAsync(UserName, UserPassword);
+            var user = await UserServices.GetUserAsync(UserName, UserPassword);
             
             if (user != null && user.UserRole == SelectedRole)
             {

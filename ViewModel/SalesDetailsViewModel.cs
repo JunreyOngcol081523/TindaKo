@@ -28,7 +28,7 @@ namespace TindaKo.ViewModel
         private async Task LoadSellByTransactionID()
         {
             var transID = TransDisplay.TransactionId;
-            List<Sell> sellItems = await DatabaseService.GetSellsAsync(transID);
+            List<Sell> sellItems = await TransactionServices.GetSellsAsync(transID);
             SoldItems.Clear();
             foreach (Sell sell in sellItems) { 
                 SoldItems.Add(sell);
