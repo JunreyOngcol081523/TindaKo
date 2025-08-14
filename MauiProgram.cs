@@ -68,6 +68,8 @@ namespace TindaKo
             builder.Services.AddSingleton<SellPageCartPopup>();
             builder.Services.AddSingleton<ReportsViewModel>();
             builder.Services.AddSingleton<ReportsPage>();
+            builder.Services.AddSingleton<StoreSettings>();
+            builder.Services.AddSingleton<StoreSettingsViewModel>();
         }
     }
 }

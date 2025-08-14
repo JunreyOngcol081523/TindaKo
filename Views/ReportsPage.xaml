@@ -40,7 +40,7 @@
                            Margin="10" />
 
                     <!-- Year Picker -->
-                    <Picker x:Name="yearPicker"
+                    <Picker x:Name="yearPicker1"
                             Title="Select Year"
                             ItemsSource="{Binding AvailableYears}"
                             SelectedItem="{Binding SelectedYear, Mode=TwoWay}"

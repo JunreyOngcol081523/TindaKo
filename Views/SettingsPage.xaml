@@ -8,5 +8,5 @@
     
     <views:UserSettingsPage Title="User Settings" IconImageSource="person.png"/>
     <views:ProductSettingsPage Title="Product Settings" IconImageSource="product.png"/>
-    
+    <views:StoreSettings Title="Store Settings" IconImageSource="store.png"/>
 </TabbedPage>
