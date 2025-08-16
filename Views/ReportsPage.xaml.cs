@@ -1,3 +1,5 @@
+using Syncfusion.Maui.Sliders;
+using System.Globalization;
 using TindaKo.ViewModel;
 
 namespace TindaKo.Views;
@@ -9,4 +11,5 @@ public partial class ReportsPage : ContentPage
 		InitializeComponent();
 		BindingContext = vm;
     }
+
 }

@@ -47,8 +47,7 @@
                         <Button
                         Text="Due Credits"
                         WidthRequest="120"
-                        HeightRequest="60"
-                        Command="{Binding ButtonCommand, Source={x:Reference Root}}"/>
+                        HeightRequest="60"/>
 
                                     <!-- The badge (using Border instead of Frame) -->
                             <Border
@@ -59,7 +58,6 @@
                             Margin="5"
                             WidthRequest="20"
                             HeightRequest="20"
-                            IsVisible="{Binding IsBadgeVisible, Source={x:Reference Root}}"
                             StrokeShape="RoundRectangle 10,10,10,10">
 
                                 <Label
@@ -78,7 +76,7 @@
                         Text="Low Stocks"
                         WidthRequest="120"
                         HeightRequest="60"
-                        Command="{Binding ButtonCommand, Source={x:Reference Root}}"/>
+                        />
 
                                     <!-- The badge (using Border instead of Frame) -->
                             <Border
@@ -89,7 +87,6 @@
                             Margin="5"
                             WidthRequest="20"
                             HeightRequest="20"
-                            IsVisible="{Binding IsBadgeVisible, Source={x:Reference Root}}"
                             StrokeShape="RoundRectangle 10,10,10,10">
 
                                 <Label

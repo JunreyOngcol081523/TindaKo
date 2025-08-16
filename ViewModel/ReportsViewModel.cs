@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using DocumentFormat.OpenXml.Spreadsheet;
 using Microcharts;
 using SkiaSharp;
@@ -14,17 +15,46 @@ namespace TindaKo.ViewModel
     public partial class ReportsViewModel : ObservableObject
     {
         private Chart _monthlySalesChart;
+        private Chart _expensesSalesChart;
         public ObservableCollection<int> AvailableYears { get; } = new();
         public Chart MonthlySalesChart
         {
             get => _monthlySalesChart;
             set => SetProperty(ref _monthlySalesChart, value);
         }
+        public Chart ExpensesSalesChart
+        {
+            get => _expensesSalesChart;
+            set => SetProperty(ref _expensesSalesChart, value);
+        }
+        public ObservableCollection<string> SegmentOptions { get; }
+
+        [ObservableProperty]
+        private int selectedSegmentIndex = 0; // Default to first option
+        [ObservableProperty]
+        private bool isCustom;
+
+        // Computed property to get the selected label
+        public string? SelectedSegmentLabel => SegmentOptions.ElementAtOrDefault(SelectedSegmentIndex);
+
+        // Whenever SelectedSegmentIndex changes, notify that SelectedSegmentLabel also changed
+        partial void OnSelectedSegmentIndexChanged(int value)
+        {
+            OnPropertyChanged(nameof(SelectedSegmentLabel));
+            IsCustom = SelectedSegmentLabel == "Custom";
+        }
+
+        [ObservableProperty]
+        private string filterBy = "Monthly";
         public ReportsViewModel()
         {
-            LoadMonthlySalesChart();
             LoadAvailableYears();
             SelectedYear = DateTime.Now.Year; // Default to current year
+            SegmentOptions = new ObservableCollection<string>
+        {
+            "Monthly", "Yearly", "Custom"
+        };
+            SelectedSegmentIndex = 0;
         }
 
 
@@ -36,11 +66,11 @@ namespace TindaKo.ViewModel
             {
                 if (SetProperty(ref _selectedYear, value))
                 {
-                    LoadMonthlySalesChart();
+                    _= LoadMonthlySalesChart();
                 }
             }
         }
-        private async void LoadMonthlySalesChart()
+        private async Task LoadMonthlySalesChart()
         {
             try
             {
@@ -77,5 +107,39 @@ namespace TindaKo.ViewModel
                 AvailableYears.Add(year);
             }
         }
+
+        private async Task LoadExpensesSales(string filterBy, DateTime dFrom, DateTime dTo)
+        {
+            var entries = await ChartHelper.GetExpensesSalesChartDataAsync(filterBy, dFrom, dTo);
+
+            ExpensesSalesChart = new DonutChart
+            {
+                IsAnimated = true,
+                AnimationDuration = TimeSpan.FromSeconds(1),
+                Entries = entries ?? new List<ChartEntry>()
+            };
+        }
+        [ObservableProperty]
+        private DateTime dateFrom = DateTime.Today.AddDays(-7); // Default: 7 days ago
+
+        [ObservableProperty]
+        private DateTime dateTo = DateTime.Today; // Default: today
+
+        public string SelectedDateRange => $"From {DateFrom:MMM dd, yyyy} to {DateTo:MMM dd, yyyy}";
+
+        [RelayCommand]
+        private async Task GenerateReportAsync()
+        {
+            if (DateFrom > DateTo)
+            {
+                await ToastHelper.ShowError("Start date cannot be later than end date.");
+                return;
+            }
+            FilterBy = SelectedSegmentLabel ?? "Monthly"; 
+
+            await LoadExpensesSales(FilterBy,DateFrom,DateTo);
+
+        }
+
     }
 }

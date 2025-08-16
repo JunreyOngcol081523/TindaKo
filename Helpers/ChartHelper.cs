@@ -45,6 +45,34 @@ namespace TindaKo.Helpers
                 return new List<ChartEntry>(); // Return an empty chart list (chart will just be blank)
             }
         }
+        public static async Task<List<ChartEntry>> GetExpensesSalesChartDataAsync(string filterBy, DateTime dateFrom, DateTime dateTo)
+        {
+            try
+            {
+                var expenses = await IncomingStocksService.GetTotalAmountAsync(filterBy, dateFrom, dateTo);
+                var sales = await TransactionServices.GetTotalAmountAsync(filterBy, dateFrom, dateTo);
 
+                var entries = new List<ChartEntry>
+                {
+                    new ChartEntry((float)expenses)
+                    {
+                        Label = "Expenses",
+                        ValueLabel = "₱" + expenses.ToString("N0"),
+                        Color = SKColor.Parse("#C0392B") // Red for expenses
+                    },
+                    new ChartEntry((float)sales)
+                    {
+                        Label = "Sales",
+                        ValueLabel = "₱" + sales.ToString("N0"),
+                        Color = SKColor.Parse("#009688") // Green for sales
+                    }
+                };
+                return entries;
+            }
+            catch (Exception ex)
+            {
+                return new List<ChartEntry>(); // Return an empty chart list (chart will just be blank)
+            }
+        }
     }
 }

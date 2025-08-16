@@ -3,7 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="TindaKo.Views.ReportsPage"
              xmlns:mc="clr-namespace:Microcharts.Maui;assembly=Microcharts.Maui"
-            
+             xmlns:segmentedControl="clr-namespace:Syncfusion.Maui.Toolkit.SegmentedControl;assembly=Syncfusion.Maui.Toolkit"
+             xmlns:sliders="clr-namespace:Syncfusion.Maui.Sliders;assembly=Syncfusion.Maui.Sliders"
              Title="Reports">
     <ScrollView>
         <VerticalStackLayout Padding="18" Spacing="10">
@@ -33,20 +34,42 @@
             <!--expenses vs sales-->
             <Border Style="{StaticResource CardStyle}">
                 <VerticalStackLayout>
-                    <Label Text="Monthly Sales Report"
+                    <Label Text="Sales vs Expenses"
                            TextColor="{StaticResource PrimaryDark}"
                            FontAttributes="Bold"
                            HorizontalOptions="Center"
                            Margin="10" />
 
-                    <!-- Year Picker -->
-                    <Picker x:Name="yearPicker1"
-                            Title="Select Year"
-                            ItemsSource="{Binding AvailableYears}"
-                            SelectedItem="{Binding SelectedYear, Mode=TwoWay}"
-                            HorizontalOptions="Center"
-                            Margin="0,0,0,10" />
-                    <mc:ChartView Chart="{Binding MonthlySalesChart}"
+                    <Grid>
+                        <segmentedControl:SfSegmentedControl
+                        ItemsSource="{Binding SegmentOptions}"
+                        SelectedIndex="{Binding SelectedSegmentIndex, Mode=TwoWay}"/>
+                    </Grid>
+                    <VerticalStackLayout Padding="20" Spacing="15">
+                        <Label Text="Select Report Range" FontSize="18" />
+
+                        <!-- Date From -->
+                        <HorizontalStackLayout Spacing="10">
+                            <Label Text="From:" VerticalOptions="Center" IsEnabled="{Binding IsCustom}"/>
+                            <DatePicker Date="{Binding DateFrom}" IsEnabled="{Binding IsCustom}" />
+                        </HorizontalStackLayout>
+
+                        <!-- Date To -->
+                        <HorizontalStackLayout Spacing="10">
+                            <Label Text="To:" VerticalOptions="Center" IsEnabled="{Binding IsCustom}"/>
+                            <DatePicker Date="{Binding DateTo}" IsEnabled="{Binding IsCustom}"/>
+                        </HorizontalStackLayout>
+
+                        <!-- Apply Filter Button -->
+                        <Button Text="Generate Report"
+                        Command="{Binding GenerateReportCommand}" />
+
+                        <!-- Example: show selected range -->
+                        <Label Text="{Binding SelectedDateRange}" FontSize="16" TextColor="Gray" IsVisible="{Binding IsCustom}"/>
+                    </VerticalStackLayout>
+
+
+                    <mc:ChartView Chart="{Binding ExpensesSalesChart}"
                         HeightRequest="150"
                         Margin="10"
                         VerticalOptions="Fill" />
