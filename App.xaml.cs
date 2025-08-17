@@ -12,6 +12,7 @@ namespace TindaKo
         public App()
         {
             InitializeComponent();
+            Task.Run(async () => await DatabaseService.GetConnectionAsync());
             bool isRemembered = Preferences.Get("remember", false);
 
             if (isRemembered)

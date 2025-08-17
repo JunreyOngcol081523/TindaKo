@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -169,40 +170,44 @@ namespace TindaKo.Services
         }
         public static async Task<decimal> GetTotalAmountAsync(string filterBy, DateTime dateFrom, DateTime dateTo)
         {
-
             await Init();
+
             DateTime startDate, endDate;
 
             switch (filterBy.ToLower())
             {
-                case "Monthly":
-                    startDate = new DateTime(dateFrom.Year, dateFrom.Month, 1); // 1st day of month
-                    endDate = startDate.AddMonths(1).AddDays(-1);              // last day of month
+                case "monthly":
+                    startDate = new DateTime(dateFrom.Year, dateFrom.Month, 1);
+                    endDate = startDate.AddMonths(1).AddDays(-1);
                     break;
 
-                case "Yearly":
-                    startDate = new DateTime(dateFrom.Year, 1, 1);             // Jan 1
-                    endDate = new DateTime(dateFrom.Year, 12, 31);             // Dec 31
+                case "yearly":
+                    startDate = new DateTime(dateFrom.Year, 1, 1);
+                    endDate = new DateTime(dateFrom.Year, 12, 31);
                     break;
 
-                case "Custom":
+                case "custom":
                     startDate = dateFrom.Date;
-                    endDate = dateTo.Date;
+                    endDate = dateTo.Date.AddDays(1).AddTicks(-1);
                     break;
+
 
                 default:
                     throw new ArgumentException("Invalid filterBy value. Use 'monthly', 'yearly', or 'custom'.");
             }
 
-            // SQLite query - converting DateTimeTransacted (string) to DATE
-            string sql = @"
-        SELECT IFNULL(SUM(TotalAmount), 0) 
-        FROM [Transaction] 
-        WHERE DATE(DateTimeTransacted) BETWEEN DATE(?) AND DATE(?)";
+            var format = "MMM dd, yyyy h:mm tt";
+            var culture = CultureInfo.InvariantCulture;
 
-            var result = await _db.ExecuteScalarAsync<decimal>(sql, startDate, endDate);
-            return result;
+            var transactions = await _db.Table<Transaction>().ToListAsync();
+
+            var filtered = transactions.Where(t =>
+                DateTime.TryParseExact(t.DateTimeTransacted, format, culture, DateTimeStyles.None, out var date)
+                && date >= startDate && date <= endDate);
+
+            return filtered.Sum(t => t.TotalAmount);
         }
+
 
     }
 }

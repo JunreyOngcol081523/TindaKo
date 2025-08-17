@@ -55,23 +55,23 @@
 
         <CollectionView ItemsSource="{Binding SoldItems}">
             <CollectionView.Header>
-                <Grid ColumnDefinitions="2.5*,2*,1.5*,1*,2*" Padding="5" BackgroundColor="{StaticResource Primary}">
+                <Grid ColumnDefinitions="2.5*,1.5*,1*,2*" Padding="5" BackgroundColor="{StaticResource Primary}">
                     <Label TextColor="{StaticResource WhiteText}" Grid.Column="0" Text="Product Name" FontAttributes="Bold" />
-                    <Label TextColor="{StaticResource WhiteText}" Grid.Column="1" Text="Category" FontAttributes="Bold" />
-                    <Label TextColor="{StaticResource WhiteText}" Grid.Column="2" Text="Price" FontAttributes="Bold" />
-                    <Label TextColor="{StaticResource WhiteText}" Grid.Column="3" Text="Qty" FontAttributes="Bold" />
-                    <Label TextColor="{StaticResource WhiteText}" Grid.Column="4" Text="Subtotal" FontAttributes="Bold" />
+
+                    <Label TextColor="{StaticResource WhiteText}" Grid.Column="1" Text="Price" FontAttributes="Bold" />
+                    <Label TextColor="{StaticResource WhiteText}" Grid.Column="2" Text="Qty" FontAttributes="Bold" />
+                    <Label TextColor="{StaticResource WhiteText}" Grid.Column="3" Text="Subtotal" FontAttributes="Bold" />
                 </Grid>
             </CollectionView.Header>
 
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <Grid ColumnDefinitions="2.5*,2*,1.5*,1*,2*" Padding="5" RowDefinitions="Auto,*">
+                    <Grid ColumnDefinitions="2.5*,1.5*,1*,2*" Padding="5" RowDefinitions="Auto,*">
                         <Label Grid.Row="0" Grid.Column="0" Text="{Binding ProductName}" />
-                        <Label Grid.Row="0" Grid.Column="1" Text="{Binding Category}" />
-                        <Label Grid.Row="0" Grid.Column="2" Text="{Binding Price, StringFormat='₱{0:N2}'}" />
-                        <Label Grid.Row="0" Grid.Column="3" Text="{Binding Qty}" />
-                        <Label Grid.Row="0" Grid.Column="4" Text="{Binding SoldSubtotal, StringFormat='₱{0:N2}'}" />
+
+                        <Label Grid.Row="0" Grid.Column="1" Text="{Binding Price, StringFormat='₱{0:N2}'}" />
+                        <Label Grid.Row="0" Grid.Column="2" Text="{Binding Qty}" />
+                        <Label Grid.Row="0" Grid.Column="3" Text="{Binding SoldSubtotal, StringFormat='₱{0:N2}'}" />
                         <BoxView Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="5" HeightRequest="1" Color="LightGray" />
                     </Grid>
                 </DataTemplate>

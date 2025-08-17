@@ -64,10 +64,22 @@ namespace TindaKo.ViewModel
             RememberLogin = Preferences.Get("remember",false);
             UserName = Preferences.Get("username",string.Empty);
         }
-        //[RelayCommand]
-        //public async Task ResetDBAsync()
-        //{
-        //   await DatabaseService.ResetDB();
-        //}
+        [RelayCommand]
+        public async Task ResetDBAsync()
+        {
+            //confirmation dialog
+            var confirm = await Application.Current.MainPage.DisplayAlert("Confirm Reset", "Are you sure you want to reset the database? This action cannot be undone.", "Yes", "No");
+            if (confirm)
+            {
+                await DatabaseService.ResetDB();
+               
+            }
+
+            else
+            {
+                await ToastHelper.ShowMessage("Database reset cancelled.");
+            }
+            await DatabaseService.GetConnectionAsync();
+        }
     }
 }

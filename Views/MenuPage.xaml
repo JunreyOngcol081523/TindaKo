@@ -45,9 +45,12 @@
                     <Grid>
                         <!-- The main button -->
                         <Button
-                        Text="Due Credits"
-                        WidthRequest="120"
-                        HeightRequest="60"/>
+                        ImageSource="calendar.png"
+                        WidthRequest="80"
+                        FontSize="8"
+                        HeightRequest="60"
+                        BackgroundColor="Transparent"
+                            Command="{Binding NavigateUnpaidDueCreditsCommand}"/>
 
                                     <!-- The badge (using Border instead of Frame) -->
                             <Border
@@ -70,12 +73,15 @@
                                 VerticalTextAlignment="Center"/>
                             </Border>
                     </Grid>
+                   <!--low stocks-->  
                     <Grid>
                         <!-- The main button -->
                         <Button
-                        Text="Low Stocks"
-                        WidthRequest="120"
+                        ImageSource="low.png"
+                        BackgroundColor="Transparent"
+                        WidthRequest="80"
                         HeightRequest="60"
+                        Command="{Binding NavigateLowStockProductsCommand}"
                         />
 
                                     <!-- The badge (using Border instead of Frame) -->
@@ -99,45 +105,40 @@
                                 VerticalTextAlignment="Center"/>
                             </Border>
                     </Grid>
+                    <!--fast moving products-->
+                    <Grid>
+                        <!-- The main button -->
+                        <Button
+                            ImageSource="fastmoving.png"
+                            WidthRequest="80"
+                            HeightRequest="80"
+                            BackgroundColor="Transparent"
+                            FontSize="10"
+                            Command="{Binding NavigateFastSellingProductsCommand}"
+                       />
 
+                                    <!-- The badge (using Border instead of Frame) -->
+                            <Border
+                                BackgroundColor="{StaticResource CancelButton}"
+                                StrokeThickness="0"
+                                HorizontalOptions="End"
+                                VerticalOptions="Start"
+                                Margin="5"
+                                WidthRequest="20"
+                                HeightRequest="20"
+                                StrokeShape="RoundRectangle 10,10,10,10">
 
-                    <Border
-                    Padding="5"
-                    HorizontalOptions="End"
-                    Style="{StaticResource CardStyle}"
-                    Stroke="{StaticResource Gray200}">
-
-                        <Grid>
-                            <Image Source="person.png"
-                           HeightRequest="30"
-                           WidthRequest="30"
-                           VerticalOptions="Center" />
-
-                            <Border 
-                        BackgroundColor="{StaticResource PrimaryDark}" 
-                        StrokeThickness="0"
-                        StrokeShape="RoundRectangle 10"
-                        Padding="0"
-                        HorizontalOptions="End"
-                        VerticalOptions="Start">
-
-                                <Label Text="5"
-                               TextColor="{StaticResource WhiteText}"
-                               FontSize="8"
-                               Padding="5"
-                               FontAttributes="Bold"
-                               HorizontalOptions="Center"
-                               VerticalOptions="Center"/>
-
+                                <Label
+                                    Text="{Binding FastMovingProductsCount}"
+                                    FontSize="12"
+                                    TextColor="White"
+                                    HorizontalOptions="Center"
+                                    VerticalOptions="Center"
+                                    HorizontalTextAlignment="Center"
+                                    VerticalTextAlignment="Center"/>
                             </Border>
+                    </Grid>
 
-                        </Grid>
-
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer
-                                Command="{Binding OpenCartCommand}"/>
-                        </Border.GestureRecognizers>
-                    </Border>
                 </HorizontalStackLayout>
             </Grid>
             <!--card daily sales-->
@@ -149,15 +150,16 @@
                       RowSpacing="30">
                         <!--#region daily -->
                         <VerticalStackLayout  Grid.Row="0" Grid.Column="0">
+                            <Label Grid.Row="1"
+                               Text="Daily Sales"
+                               FontAttributes="Italic"
+                               TextColor="{StaticResource PrimaryDark}"/>
                             <Label
                                Text="{Binding DailySales, StringFormat='₱{0:N2}'}"
                                TextColor="{StaticResource Gray950}"
                                FontSize="25"
                                FontAttributes="Bold"/>
-                                <Label Grid.Row="1"
-                               Text="Daily Sales"
-                               FontAttributes="Italic"
-                               TextColor="{StaticResource PrimaryDark}"/>
+
                         </VerticalStackLayout>
                         <!--#endregion-->
                         <!--#region benta -->
@@ -179,15 +181,16 @@
                         <!--#endregion-->
                         <!--#region monthly -->
                         <VerticalStackLayout  Grid.Row="0" Grid.Column="1">
+                            <Label Grid.Row="1"
+                            Text="Monthly Sales"
+                            FontAttributes="Italic"
+                            TextColor="{StaticResource PrimaryDark}"/>
                             <Label
                            Text="{Binding MonthlySales, StringFormat='₱{0:N2}'}"
                            TextColor="{StaticResource Gray950}"
                            FontSize="20"
                            FontAttributes="Bold"/>
-                            <Label Grid.Row="1"
-                           Text="Monthly Sales"
-                            FontAttributes="Italic"
-                           TextColor="{StaticResource PrimaryDark}"/>
+
                         </VerticalStackLayout>
                         <!--#endregion-->
                         <!--#region sales -->
@@ -209,7 +212,7 @@
 
                 </Border>
             </Grid>
-            <!--creditor due-->
+            <!--monthly profit due-->
             <Grid Grid.Row="3"
               BackgroundColor="Transparent">
                 <BoxView HeightRequest="60"/>

@@ -24,7 +24,9 @@
                        TextColor="#9E9E9E"
                        HorizontalTextAlignment="Center" >
                     <Label.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding ResetDBCommand}"/>
+                        <TapGestureRecognizer
+                            NumberOfTapsRequired="1"
+                            Command="{Binding ResetDBCommand}"/>
                     </Label.GestureRecognizers>
                 </Label>
             </VerticalStackLayout>

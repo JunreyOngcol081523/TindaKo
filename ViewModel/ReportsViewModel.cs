@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TindaKo.Helpers;
+using TindaKo.Services;
 namespace TindaKo.ViewModel
 {
     public partial class ReportsViewModel : ObservableObject
@@ -110,6 +111,11 @@ namespace TindaKo.ViewModel
 
         private async Task LoadExpensesSales(string filterBy, DateTime dFrom, DateTime dTo)
         {
+            var expenses = await IncomingStocksService.GetTotalAmountAsync(filterBy, dFrom, dTo);
+            //var sales = await TransactionServices.GetTotalAmountAsync(filterBy, dFrom, dTo);
+            //var monthlyexpenses = await IncomingStocksService.GetTotalIncomingStocksAsync();
+            //await ToastHelper.ShowMessage($"Expenses: {expenses}, Sales: {sales}, Monthly Expenses: {monthlyexpenses}");
+
             var entries = await ChartHelper.GetExpensesSalesChartDataAsync(filterBy, dFrom, dTo);
 
             ExpensesSalesChart = new DonutChart
@@ -130,6 +136,7 @@ namespace TindaKo.ViewModel
         [RelayCommand]
         private async Task GenerateReportAsync()
         {
+
             if (DateFrom > DateTo)
             {
                 await ToastHelper.ShowError("Start date cannot be later than end date.");

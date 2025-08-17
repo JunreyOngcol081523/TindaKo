@@ -6,162 +6,212 @@
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              Title="Products">
 
-    <Grid RowDefinitions="*,Auto">
-        <Grid Grid.Row="0"
-            Padding="10"
-          RowDefinitions="Auto,Auto,*">
-          
-            <!-- Search and Add Button -->
-            <Border Grid.Row="0" Style="{StaticResource CardStyle}">
-                <Grid 
-                ColumnDefinitions="*,*,*,*" 
-                RowDefinitions="*,*,*,*"  
-                RowSpacing="5">
+    <!-- Root Grid with 4 rows -->
+    <Grid RowDefinitions="Auto,Auto,*,Auto">
 
-                    <Label Grid.Row="0" Grid.Column="0" Text="Prod Name:" VerticalOptions="Center" HorizontalOptions="Center"/>
-                    <Entry Text="{Binding ProductName}" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" Placeholder="Product Name"/>
-                    <Label Grid.Row="1" Grid.Column="0" Text="Category" VerticalOptions="Center"  HorizontalOptions="Center"/>
-                    <Picker SelectedItem="{Binding ProductCategory}" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" ItemsSource="{Binding Categories}"/>
-                    <Label Grid.Row="2" Grid.Column="0" Text="Price:" VerticalOptions="Center"  HorizontalOptions="Center"/>
-                    <Entry Text="{Binding ProductPrice}" Grid.Row="2" Grid.Column="1" Placeholder="price" Keyboard="Numeric"/>
-                    <Label Grid.Row="2" Grid.Column="2" Text="Qty In:" VerticalOptions="Center"  HorizontalOptions="Center"/>
-                    <Entry Text="{Binding StocksIn}" Grid.Row="2" Grid.Column="3" Keyboard="Numeric"/>
-                    <SearchBar Text="{Binding SearchText}" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Placeholder="search product"/>
-                    <Button Command="{Binding AddProductCommand}" Grid.Row="3" Grid.Column="3" ImageSource="add.png" HeightRequest="60" BackgroundColor="Transparent"/>
+        <!-- Row 0: Header (Add/Close buttons + Form) -->
+        <Grid Grid.Row="0"
+              Padding="10"
+              RowDefinitions="Auto,Auto">
+
+            <!-- Top buttons -->
+            <HorizontalStackLayout Spacing="8" Grid.Row="0">
+                <Button ImageSource="add.png"
+                        HeightRequest="50"
+                        BackgroundColor="Transparent"
+                        Command="{Binding AddNewProductCommand}" />
+                <Button ImageSource="close.png"
+                        HeightRequest="50"
+                        BackgroundColor="Transparent"
+                        Command="{Binding CloseProductFormCommand}" />
+            </HorizontalStackLayout>
+
+            <!-- Product Form -->
+            <Border Grid.Row="1"
+                    Style="{StaticResource CardStyle}"
+                    IsVisible="{Binding FormVisible}">
+                <Grid ColumnDefinitions="*,*,*,*" 
+                      RowDefinitions="*,*,*,*"  
+                      RowSpacing="5">
+
+                    <Label Grid.Row="0" Grid.Column="0" Text="Prod Name:" 
+                           VerticalOptions="Center" HorizontalOptions="Center"/>
+                    <Entry Text="{Binding ProductName}" 
+                           Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" 
+                           Placeholder="Product Name"/>
+
+                    <Label Grid.Row="1" Grid.Column="0" Text="Category" 
+                           VerticalOptions="Center" HorizontalOptions="Center"/>
+                    <Picker SelectedItem="{Binding ProductCategory}" 
+                            Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" 
+                            ItemsSource="{Binding Categories}"/>
+
+                    <Label Grid.Row="2" Grid.Column="0" Text="Price:" 
+                           VerticalOptions="Center" HorizontalOptions="Center"/>
+                    <Entry Text="{Binding ProductPrice}" 
+                           Grid.Row="2" Grid.Column="1" 
+                           Placeholder="price" Keyboard="Numeric"/>
+
+                    <Label Grid.Row="2" Grid.Column="2" Text="Qty In:" 
+                           VerticalOptions="Center" HorizontalOptions="Center"/>
+                    <Entry Text="{Binding StocksIn}" 
+                           Grid.Row="2" Grid.Column="3" 
+                           Keyboard="Numeric"/>
+
+
+                    <Button Command="{Binding AddProductCommand}" 
+                            Text="Add Product"
+                            Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4" 
+                            ImageSource="add.png" HeightRequest="60" 
+                            BackgroundColor="Transparent"/>
                 </Grid>
             </Border>
-            <Grid Grid.Row="1">
-                <HorizontalStackLayout HorizontalOptions="Center">
-                    <Label Text="Limit rows: " 
-                           VerticalTextAlignment="Center"
-                           HorizontalOptions="Start"/>
-                    <Entry Text="{Binding MaxResults}" 
-                           Keyboard="Numeric"
-                           HorizontalOptions="Start"/>
-                    <Button Text="Load Products" 
-                            Command="{Binding RefreshProductsCommand}" 
-                            HorizontalOptions="End"/>
-                </HorizontalStackLayout>
-            </Grid>
-
-            <!-- Product List -->
-            <Grid Grid.Row="2">
-                <CollectionView ItemsSource="{Binding Products}" 
-                        SelectionMode="None"
-                        Margin="0,0,0,0"
-                        Grid.Row="0">
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate>
-                            <Border Style="{StaticResource CardStyle}">
-                                <Grid Padding="5" RowSpacing="5">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto"/>
-                                        <!-- Product Name -->
-                                        <RowDefinition Height="Auto"/>
-                                        <!-- Category & Price -->
-                                        <RowDefinition Height="Auto"/>
-                                        <!-- Stock & Button -->
-                                    </Grid.RowDefinitions>
-
-                                    <!-- Product Name -->
-                                    <Entry Text="{Binding ProdName, Mode=TwoWay}"
-                                       FontSize="16"
-                                       FontAttributes="Bold"
-                                       BackgroundColor="Transparent"
-                                       Placeholder="Product Name" />
-
-                                    <!-- Category & Price Row -->
-                                    <Grid Grid.Row="1" ColumnSpacing="12">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="*" />
-                                        </Grid.ColumnDefinitions>
-
-                                        <!-- Category Entry -->
-                                        <VerticalStackLayout Grid.Column="0" VerticalOptions="Center">
-                                            <Label Text="Category"
-                                               FontSize="12"
-                                               />
-                                            <Entry Text="{Binding Category, Mode=TwoWay}"
-                                               FontSize="14"
-                                               Keyboard="Numeric"
-                                               BackgroundColor="Transparent"
-                                               Placeholder="Enter price" />
-                                        </VerticalStackLayout>
-
-                                        <!-- Price Column -->
-                                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
-                                            <Label Text="Price(Pesos)"
-                                               FontSize="12"/>
-                                            <Entry Text="{Binding Price, Mode=TwoWay}"
-                                               FontSize="14"
-                                               Keyboard="Numeric"
-                                               BackgroundColor="Transparent"
-                                           
-                                               Placeholder="Enter price" />
-                                        </VerticalStackLayout>
-                                    </Grid>
-
-                                    <!-- Stock and Update Button -->
-                                    <Grid Grid.Row="2">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-
-                                        <VerticalStackLayout Grid.Column="0" >
-                                            <Label Text="{Binding StocksIn, StringFormat='Stocks In: {0}'}"/>
-                                            <Label Text="{Binding StocksOut, StringFormat='Stocks Out: {0}'}"/>
-                                            <!-- Current Stock -->
-                                            <Label Text="{Binding CurrentStock, StringFormat='Remaining Stock: {0}'}"
-                                           FontSize="14"
-                                           VerticalOptions="Center"
-                                           >
-                                                <Label.Triggers>
-                                                    <DataTrigger TargetType="Label" Binding="{Binding CurrentStock}" Value="0">
-                                                        <Setter Property="TextColor" Value="#C0392B" />
-                                                        <Setter Property="FontAttributes" Value="Bold" />
-                                                    </DataTrigger>
-                                                </Label.Triggers>
-                                            </Label>
-                                        </VerticalStackLayout>
-                                        <!-- adjust Button -->
-                                        <Button 
-                                            ImageSource="squarepen.png"
-                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ProductViewModel}}, Path=OpenProductStocksAdjustCommand}"
-                                            CommandParameter="{Binding .}"
-                                            BackgroundColor="Transparent"
-                                            TextColor="White"
-                                            CornerRadius="6"
-                                            Padding="6,2"
-                                            HorizontalOptions="End"
-                                            HeightRequest="30"
-                                            Grid.Column="1" />
-                                        <!-- Update Button -->
-                                        <Button 
-                                            ImageSource="save.png"
-                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ProductViewModel}}, Path=UpdateProductCommand}"
-                                            CommandParameter="{Binding .}"
-                                            BackgroundColor="Transparent"
-                                            TextColor="White"
-                                            CornerRadius="6"
-                                            Padding="6,2"
-                                            HorizontalOptions="End"
-                                            HeightRequest="30"
-                                            Grid.Column="2" />
-                                    </Grid>
-                                </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
-            </Grid>
-
         </Grid>
-        <!---footer-->
-        <Grid Grid.Row="1">
+
+        <!-- Row 1: Limit rows controls -->
+        <Grid Grid.Row="1" Padding="10" RowDefinitions="Auto,Auto">
+            <HorizontalStackLayout HorizontalOptions="Center"
+                                   Grid.Row="0">
+
+                <Label Text="Limit rows: " 
+                       VerticalTextAlignment="Center"
+                       HorizontalOptions="Start"/>
+                <Entry Text="{Binding MaxResults}" 
+                       Keyboard="Numeric"
+                       WidthRequest="80"
+                       HorizontalOptions="Start"/>
+                <Button Text="Load Products" 
+                        Command="{Binding RefreshProductsCommand}" 
+                        HorizontalOptions="End"/>
+            </HorizontalStackLayout>
+            <SearchBar  Grid.Row="1"
+                        Text="{Binding SearchText}" 
+                       Placeholder="search product"/>
+        </Grid>
+        <!-- Loading Indicator -->
+
+        <!-- Row 2: Product List -->
+        <Grid  Grid.Row="2">
+            <ActivityIndicator 
+                IsRunning="{Binding IsBusy}" 
+                IsVisible="{Binding IsBusy}"
+                VerticalOptions="Center"
+                HorizontalOptions="Center"
+                Color="{StaticResource PrimaryDark}"
+                WidthRequest="50"
+                HeightRequest="50"/>
+            <CollectionView
+                        ItemsSource="{Binding Products}" 
+                        SelectionMode="None"
+                        Margin="10">
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border Style="{StaticResource CardStyle}">
+                            <Grid Padding="5" RowSpacing="5">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <!-- Product Name -->
+                                <Entry Text="{Binding ProdName, Mode=TwoWay}"
+                                   FontSize="16"
+                                   FontAttributes="Bold"
+                                   BackgroundColor="Transparent"
+                                   Placeholder="Product Name" />
+
+                                <!-- Category & Price Row -->
+                                <Grid Grid.Row="1" ColumnSpacing="12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- Category Entry -->
+                                    <VerticalStackLayout Grid.Column="0" VerticalOptions="Center">
+                                        <Label Text="Category"
+                                           FontSize="12"
+                                           TextColor="{StaticResource Gray400}"/>
+                                        <Entry Text="{Binding Category, Mode=TwoWay}"
+                                           FontSize="14"
+                                           BackgroundColor="Transparent"
+                                           Placeholder="Category" />
+                                    </VerticalStackLayout>
+
+                                    <!-- Price Column -->
+                                    <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                                        <Label Text="Price (Pesos)"
+                                           TextColor="{StaticResource Gray400}"
+                                           FontSize="12"/>
+                                        <Entry Text="{Binding Price, Mode=TwoWay}"
+                                           FontSize="14"
+                                           Keyboard="Numeric"
+                                           BackgroundColor="Transparent"
+                                           Placeholder="Enter price" />
+                                    </VerticalStackLayout>
+                                </Grid>
+
+                                <!-- Stock and Update Button -->
+                                <Grid Grid.Row="2">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <VerticalStackLayout Grid.Column="0">
+                                        <Label Text="{Binding StocksIn, StringFormat='Stocks In: {0}'}" 
+                                           TextColor="{StaticResource Gray400}"/>
+                                        <Label Text="{Binding StocksOut, StringFormat='Stocks Out: {0}'}" 
+                                           TextColor="{StaticResource Gray400}"/>
+                                        <Label Text="{Binding CurrentStock, StringFormat='Remaining Stock: {0}'}"
+                                           TextColor="{StaticResource Gray400}"
+                                           FontSize="14"
+                                           VerticalOptions="Center">
+                                            <Label.Triggers>
+                                                <DataTrigger TargetType="Label" 
+                                                         Binding="{Binding CurrentStock}" 
+                                                         Value="0">
+                                                    <Setter Property="TextColor" Value="#C0392B" />
+                                                    <Setter Property="FontAttributes" Value="Bold" />
+                                                </DataTrigger>
+                                            </Label.Triggers>
+                                        </Label>
+                                    </VerticalStackLayout>
+
+                                    <!-- Adjust Button -->
+                                    <Button ImageSource="squarepen.png"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ProductViewModel}}, Path=OpenProductStocksAdjustCommand}"
+                                        CommandParameter="{Binding .}"
+                                        BackgroundColor="Transparent"
+                                        CornerRadius="6"
+                                        Padding="6,2"
+                                        HeightRequest="30"
+                                        Grid.Column="1" />
+
+                                    <!-- Update Button -->
+                                    <Button ImageSource="save.png"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ProductViewModel}}, Path=UpdateProductCommand}"
+                                        CommandParameter="{Binding .}"
+                                        BackgroundColor="Transparent"
+                                        CornerRadius="6"
+                                        Padding="6,2"
+                                        HeightRequest="30"
+                                        Grid.Column="2" />
+                                </Grid>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </Grid>
+
+        <!-- Row 3: Footer -->
+        <Grid Grid.Row="3">
             <BoxView BackgroundColor="{StaticResource PrimaryDark}" HeightRequest="40"/>
         </Grid>
+
     </Grid>
 </ContentPage>

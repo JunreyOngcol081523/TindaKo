@@ -7,7 +7,7 @@
              xmlns:sliders="clr-namespace:Syncfusion.Maui.Sliders;assembly=Syncfusion.Maui.Sliders"
              Title="Reports">
     <ScrollView>
-        <VerticalStackLayout Padding="18" Spacing="10">
+        <VerticalStackLayout Padding="10" Spacing="5">
             <!--monthly sales-->
             <Border Style="{StaticResource CardStyle}">
                 <VerticalStackLayout>
@@ -32,7 +32,7 @@
 
             </Border>
             <!--expenses vs sales-->
-            <Border Style="{StaticResource CardStyle}">
+            <Border Style="{StaticResource CardStyle}" >
                 <VerticalStackLayout>
                     <Label Text="Sales vs Expenses"
                            TextColor="{StaticResource PrimaryDark}"
@@ -40,32 +40,32 @@
                            HorizontalOptions="Center"
                            Margin="10" />
 
-                    <Grid>
+                    <Grid >
                         <segmentedControl:SfSegmentedControl
                         ItemsSource="{Binding SegmentOptions}"
                         SelectedIndex="{Binding SelectedSegmentIndex, Mode=TwoWay}"/>
                     </Grid>
-                    <VerticalStackLayout Padding="20" Spacing="15">
-                        <Label Text="Select Report Range" FontSize="18" />
+                    <VerticalStackLayout Padding="10" Spacing="5">
+                        <Label Text="Select Report Range" />
 
                         <!-- Date From -->
-                        <HorizontalStackLayout Spacing="10">
+                        <HorizontalStackLayout>
                             <Label Text="From:" VerticalOptions="Center" IsEnabled="{Binding IsCustom}"/>
                             <DatePicker Date="{Binding DateFrom}" IsEnabled="{Binding IsCustom}" />
                         </HorizontalStackLayout>
 
                         <!-- Date To -->
-                        <HorizontalStackLayout Spacing="10">
+                        <HorizontalStackLayout>
                             <Label Text="To:" VerticalOptions="Center" IsEnabled="{Binding IsCustom}"/>
                             <DatePicker Date="{Binding DateTo}" IsEnabled="{Binding IsCustom}"/>
                         </HorizontalStackLayout>
 
                         <!-- Apply Filter Button -->
-                        <Button Text="Generate Report"
+                        <Button Text="Load Chart"
                         Command="{Binding GenerateReportCommand}" />
 
                         <!-- Example: show selected range -->
-                        <Label Text="{Binding SelectedDateRange}" FontSize="16" TextColor="Gray" IsVisible="{Binding IsCustom}"/>
+                        <Label Text="{Binding SelectedDateRange}" TextColor="Gray" IsVisible="{Binding IsCustom}" HorizontalOptions="Center"/>
                     </VerticalStackLayout>
 
 

@@ -38,7 +38,6 @@ namespace TindaKo.ViewModel
         {
             "All", "Past Due", "Paid", "Unpaid"
         };
-            SelectedSegmentIndex = 0; // default to "All"
         }
         partial void OnSelectedSegmentIndexChanged(int value)
         {

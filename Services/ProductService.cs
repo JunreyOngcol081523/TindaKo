@@ -67,7 +67,50 @@ namespace TindaKo.Services
 
             return lowStockCount;
         }
+        public static async Task<List<Product>> GetLowStockProductsAsync(int threshold = 5)
+        {
+            await Init(); // Ensure database is initialized
 
+            // Get all products
+            var products = await _db.Table<Product>().ToListAsync();
+
+            // Filter by remaining stock
+            var lowStockProducts = products
+                .Where(p => (p.StocksIn - p.StocksOut) <= threshold)
+                .OrderBy(p => p.CurrentStock) // Optional: order by lowest first
+                .ToList();
+
+            return lowStockProducts;
+        }
+
+        public static async Task<List<FastSellingProductDto>> GetFastMovingProductsAsync()
+        {
+            await Init();
+
+            var currentMonth = DateTime.Now.Month;
+            var currentYear = DateTime.Now.Year;
+
+            var sells = await _db.Table<Sell>().ToListAsync();
+            var transactions = await _db.Table<Transaction>().ToListAsync();
+
+            var query = from s in sells
+                        join t in transactions on s.TransactionId equals t.TransactionId
+                        let date = DateTime.Parse(t.DateTimeTransacted)
+                        where date.Month == currentMonth && date.Year == currentYear
+                        group s by s.ProductName into g
+                        orderby g.Sum(x => x.Qty) descending
+                        select new FastSellingProductDto
+                        {
+                            ProductName = g.Key,
+                            TotalQty = g.Sum(x => x.Qty)
+                        };
+
+            var allProducts = query.ToList();
+
+            int halfCount = allProducts.Count / 2;
+
+            return allProducts.Take(halfCount).ToList();
+        }
 
     }
 }

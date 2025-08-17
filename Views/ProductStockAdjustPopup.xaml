@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:viewmodel="clr-namespace:TindaKo.ViewModel"
+    xmlns:editors="clr-namespace:Syncfusion.Maui.Toolkit.NumericUpDown;assembly=Syncfusion.Maui.Toolkit"
     x:Class="TindaKo.Views.ProductStockAdjustPopup">
 
     <VerticalStackLayout Padding="20" Spacing="10">
@@ -12,11 +13,24 @@
                FontSize="16" FontAttributes="Bold"/>
 
         <Label Text="Add Stocks In:" />
-        <Entry Text="{Binding NewStocksIn}" Keyboard="Numeric" />
-
+        <editors:SfNumericUpDown
+                                            Value="{Binding NewStocksIn}"
+                                            AllowNull="False"
+                                            UpDownButtonColor="{StaticResource PrimaryDark}"
+                                            Minimum="0"
+                                            CustomFormat="0"
+                                            UpDownButtonAlignment="Both" 
+                                            SmallChange="1"/>
         <Label Text="Add Stocks Out:" />
-        <Entry Text="{Binding NewStocksOut}" Keyboard="Numeric" />
-        <Label Text="{Binding ReadMe}" FontAttributes="Italic"/>
+        <editors:SfNumericUpDown
+                                            Value="{Binding NewStocksOut}"
+                                            AllowNull="False"
+                                            UpDownButtonColor="{StaticResource PrimaryDark}"
+                                            Minimum="0"
+                                            CustomFormat="0"
+                                            UpDownButtonAlignment="Both" 
+                                            SmallChange="1"/>
+        <Label Text="{Binding ReadMe}" FontAttributes="Italic" TextColor="{StaticResource Gray400}"/>
         <Button Text="Confirm Adjust" 
                 Command="{Binding AdjustProductStocksCommand}" />
 

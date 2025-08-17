@@ -21,10 +21,10 @@ namespace TindaKo.ViewModel
         private string _storePhoneNum;
         public StoreSettingsViewModel()
         { 
-            StoreName = Preferences.Get("StoreName", "Your Store");
-            StoreAddress = Preferences.Get("StoreAddress", "Store Address");
-            StoreEmail = Preferences.Get("StoreEmail", "yourstoreemail@email.org");
-            StorePhoneNum = Preferences.Get("StorePhoneNum", "123-456-7890");
+            StoreName = Preferences.Get("StoreName", String.Empty);
+            StoreAddress = Preferences.Get("StoreAddress", String.Empty);
+            StoreEmail = Preferences.Get("StoreEmail", String.Empty);
+            StorePhoneNum = Preferences.Get("StorePhoneNum", String.Empty);
         }
         [RelayCommand]
         private async Task SaveStoreSettings()

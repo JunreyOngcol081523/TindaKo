@@ -51,7 +51,7 @@ namespace TindaKo.Helpers
             {
                 var expenses = await IncomingStocksService.GetTotalAmountAsync(filterBy, dateFrom, dateTo);
                 var sales = await TransactionServices.GetTotalAmountAsync(filterBy, dateFrom, dateTo);
-
+                 
                 var entries = new List<ChartEntry>
                 {
                     new ChartEntry((float)expenses)

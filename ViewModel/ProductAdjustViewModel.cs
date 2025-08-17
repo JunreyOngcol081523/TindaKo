@@ -39,7 +39,7 @@ namespace TindaKo.Views
                 _product.StocksOut += NewStocksOut;
                 await ProductService.UpdateProductAsync(_product);
                 // Optionally: save to DB
-                await ToastHelper.ShowError("Stocks adjusted.");
+                await ToastHelper.ShowMessage("Stocks adjusted.");
 
                 await Application.Current.MainPage.Navigation.PopModalAsync();
             }

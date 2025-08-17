@@ -18,14 +18,14 @@ using TindaKo.Views;
 
 namespace TindaKo.ViewModel
 {
-    public partial class ProductViewModel:ObservableObject
+    public partial class ProductViewModel : ObservableObject
     {
         [ObservableProperty] private string password;
         [ObservableProperty] private string productName;
         [ObservableProperty] private string productCategory;
         [ObservableProperty] private decimal productPrice;
         [ObservableProperty] private int stocksIn;
-        [ObservableProperty] private int stocksOut=0;
+        [ObservableProperty] private int stocksOut = 0;
         [ObservableProperty] private int stocks;
         [ObservableProperty] private int maxResults;
         [ObservableProperty] private string searchText;
@@ -33,6 +33,13 @@ namespace TindaKo.ViewModel
         [ObservableProperty] private ObservableCollection<string> categories;
         [ObservableProperty] private int newStocksIn;
         [ObservableProperty] private int newStocksOut;
+        [ObservableProperty] private bool formVisible;
+        private bool _isBusy;
+        public bool IsBusy
+        {
+            get => _isBusy;
+            set => SetProperty(ref _isBusy, value);
+        }
         //constructor
         public ProductViewModel()
         {
@@ -40,10 +47,11 @@ namespace TindaKo.ViewModel
 
             _ = LoadCategories();
             MaxResults = Preferences.Get(nameof(MaxResults), 20);
+            FormVisible = false;
         }
         public async Task LoadCategories()
         {
-           Categories = await CategoriesHelper.LoadCategoriesFromJsonAsync();    
+            Categories = await CategoriesHelper.LoadCategoriesFromJsonAsync();
         }
         [RelayCommand]
         private async Task AddProductAsync()
@@ -91,18 +99,32 @@ namespace TindaKo.ViewModel
 
         public async Task LoadProducts()
         {
-            List<Product> results;
-
-            if (string.IsNullOrWhiteSpace(SearchText))
+            try
             {
-                results = await ProductService.GetProductsAsync(MaxResults); // Loads all (optionally paginate)
-            }
-            else
-            {
-                results = await ProductService.SearchProductsAsync(SearchText, MaxResults); // Filter at DB level
-            }
+                IsBusy = true;
+                await Task.Delay(500);
+                List<Product> results;
 
-            Products = new ObservableCollection<Product>(results);
+                if (string.IsNullOrWhiteSpace(SearchText))
+                {
+                    results = await ProductService.GetProductsAsync(MaxResults); // Loads all (optionally paginate)
+                }
+                else
+                {
+                    results = await ProductService.SearchProductsAsync(SearchText, MaxResults); // Filter at DB level
+                }
+
+                Products = new ObservableCollection<Product>(results);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            finally
+            {
+                IsBusy = false;
+            }
         }
 
         //method for updating product's stocks in and stocks out
@@ -111,7 +133,7 @@ namespace TindaKo.ViewModel
         {
             if (product == null)
             {
-               
+
                 await ToastHelper.ShowError("No Product selected.");
                 return;
             }
@@ -126,13 +148,14 @@ namespace TindaKo.ViewModel
 
         partial void OnSearchTextChanged(string value)
         {
-            _ = LoadProducts(); 
+            _ = LoadProducts();
         }
 
-        private void ClearTextFields() { 
+        private void ClearTextFields()
+        {
             this.ProductName = string.Empty;
             this.ProductCategory = string.Empty;
-            this.ProductPrice = 0; 
+            this.ProductPrice = 0;
             this.StocksIn = 0;
         }
         private bool ValidatedRequireFields()
@@ -140,11 +163,12 @@ namespace TindaKo.ViewModel
             List<string> fields = new List<string>();
             fields.Add(ProductName);
             fields.Add(ProductCategory);
-            if(fields.Contains(""))
+            if (fields.Contains(""))
             {
                 return false;
             }
-            if (ProductPrice <= 0) { 
+            if (ProductPrice <= 0)
+            {
                 return false;
             }
             return true;
@@ -154,6 +178,18 @@ namespace TindaKo.ViewModel
         {
             Preferences.Set(nameof(MaxResults), MaxResults);
             await LoadProducts();
+        }
+
+        [RelayCommand]
+        private async Task AddNewProductAsync()
+        {
+            FormVisible = true;
+        }
+        [RelayCommand]
+        private async Task CloseProductFormAsync()
+        {
+            FormVisible = false;
+            ClearTextFields();
         }
     }
 }
