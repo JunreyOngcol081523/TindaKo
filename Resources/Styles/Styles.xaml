@@ -393,15 +393,15 @@
         </Setter>
     </Style>
   
-    <!--
-    <Style TargetType="TitleBar">
+    
+    <!--<Style TargetType="TitleBar">
         <Setter Property="MinimumHeightRequest" Value="32"/>
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
                 <VisualStateGroup x:Name="TitleActiveStates">
                     <VisualState x:Name="TitleBarTitleActive">
                         <VisualState.Setters>
-                            <Setter Property="BackgroundColor" Value="Transparent" />
+                            <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
                             <Setter Property="ForegroundColor" Value="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" />
                         </VisualState.Setters>
                     </VisualState>
@@ -414,8 +414,8 @@
                 </VisualStateGroup>
             </VisualStateGroupList>
         </Setter>
-    </Style>
-    -->
+    </Style>-->
+    
 
     <Style TargetType="Page" ApplyToDerivedTypes="True">
         <Setter Property="Padding" Value="0"/>
@@ -436,9 +436,9 @@
     </Style>
 
     <Style TargetType="NavigationPage">
-        <Setter Property="BarBackgroundColor" Value="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource OffBlack}}" />
-        <Setter Property="BarTextColor" Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource White}}" />
-        <Setter Property="IconColor" Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource White}}" />
+        <Setter Property="BarBackgroundColor" Value="{StaticResource Primary}" />
+        <Setter Property="BarTextColor" Value="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource White}}" />
+        <Setter Property="IconColor" Value="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource White}}" />
     </Style>
 
     <Style TargetType="TabbedPage">
