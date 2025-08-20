@@ -41,7 +41,11 @@ namespace TindaKo.ViewModel
             var sb = new StringBuilder();
             sb.AppendLine("Fast Selling Products");
             sb.AppendLine("Product Name, Total Sold, Total Amount");
-
+            if(FastSellingProducts.Count == 0)
+            {
+                await ToastHelper.ShowMessage("No fast selling products to share");
+                return;
+            }
             foreach (var item in FastSellingProducts)
             {
                 sb.AppendLine($"{item.ProductName}, {item.TotalQty}");

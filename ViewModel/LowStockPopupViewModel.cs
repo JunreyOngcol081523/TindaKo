@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TindaKo.Helpers;
 using TindaKo.Models;
 using TindaKo.Services;
 using TindaKo.Services.TindaKo.Services;
@@ -30,7 +31,11 @@ namespace TindaKo.ViewModel
             var sb = new StringBuilder();
             sb.AppendLine("⚠ Low Stock Products");
             sb.AppendLine("Product Name, Remaining Stock");
-
+            if(LowStockProducts.Count == 0)
+            {
+                await ToastHelper.ShowMessage("No low stock products to share");
+                return;
+            }
             foreach (var item in LowStockProducts)
                 sb.AppendLine($"{item.ProdName}, {item.CurrentStock}");
 

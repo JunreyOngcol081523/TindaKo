@@ -32,8 +32,9 @@ namespace TindaKo.ViewModel
 
         private async Task LoadProductsAsync()
         {
-            if (string.IsNullOrEmpty(SearchText)) {
-               var products = await ProductService.GetProductsAsync(100);
+            if (string.IsNullOrEmpty(SearchText))
+            {
+                var products = await ProductService.GetProductsAsync(100);
                 _allProducts = products.Select(p => new ProductDisplay(p)).ToList();
             }
             else
@@ -77,7 +78,7 @@ namespace TindaKo.ViewModel
 
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
-                    _=LoadProductsAsync();
+                    _ = LoadProductsAsync();
                 });
             };
             _debounceTimer.Start();
@@ -96,7 +97,7 @@ namespace TindaKo.ViewModel
                     ));
             }
         }
-
+        //relay commands
         [RelayCommand]
         private async Task OpenCartAsync()
         {
@@ -173,7 +174,13 @@ namespace TindaKo.ViewModel
                 await App.Current.MainPage.Navigation.PopAsync(); // if it's a Page
             }
         }
+        [RelayCommand]
+        private async Task OpenLogsAsync()
+        {
 
+            var logsPage = new IncomingStocksLogsPage();
+            await App.Current.MainPage.Navigation.PushAsync(logsPage);
+        }
     }
 }
 

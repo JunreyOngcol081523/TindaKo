@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TindaKo.Views.IncomingStocksLogsPage"
+             xmlns:viewmodels="clr-namespace:TindaKo.ViewModel">
+                
+    <VerticalStackLayout>
+        <Grid 
+              RowDefinitions="*,*"
+              RowSpacing="10">
+            <!--header title-->
+            <Grid Grid.Row="0" 
+                  HorizontalOptions="Fill" 
+                  BackgroundColor="{StaticResource Primary}"
+                  ColumnDefinitions="*,*">
+                <Image 
+                    Grid.Column="0"
+                    Source="logs.png"
+                    HeightRequest="50"
+                    WidthRequest="50"
+                    VerticalOptions="Center"
+                    HorizontalOptions="End"
+                   />
+                <Label 
+                    Grid.Column="1"
+                    Text="Incoming Stocks Logs"
+                    VerticalOptions="Center" 
+                    FontSize="18"
+                    HorizontalOptions="Start"
+                    TextColor="{StaticResource WhiteText}"/>
+            </Grid>
+            <!--filter-->
+            <Grid Grid.Row="1" 
+                  RowDefinitions="*,*" 
+                  HorizontalOptions="Center">
+                <HorizontalStackLayout Grid.Row="0" 
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center">
+                    <CheckBox IsChecked="{Binding IsFilterEnabled}"/>
+                    <Label Text="Filter" VerticalOptions="Center"/>
+                </HorizontalStackLayout>
+                <HorizontalStackLayout Grid.Row="1" Spacing="5">
+                    <Label Text="Month:" VerticalOptions="Center" IsEnabled="{Binding IsFilterEnabled}"/>
+                    <Picker ItemsSource="{Binding Months}" 
+                            VerticalOptions="Center"
+                            IsEnabled="{Binding IsFilterEnabled}"
+                            SelectedItem="{Binding SelectedMonth}"/>
+                    <Label Text="Year:" VerticalOptions="Center" IsEnabled="{Binding IsFilterEnabled}"/>
+                    <Picker ItemsSource="{Binding Years}" 
+                            VerticalOptions="Center"
+                            IsEnabled="{Binding IsFilterEnabled}"
+                            SelectedItem="{Binding SelectedYear}"/>
+                </HorizontalStackLayout>
+            </Grid>
+            
+        </Grid>
+
+    </VerticalStackLayout>
+</ContentPage>

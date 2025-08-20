@@ -135,12 +135,22 @@
             </CollectionView.ItemTemplate>
         </CollectionView>
         <Grid Grid.Row="3" 
-              ColumnDefinitions="*,*" 
+              ColumnDefinitions="Auto,*,*" 
               ColumnSpacing="2" 
               HeightRequest="40"
               Margin="0,0,0,5">
             <!-- Complete Transaction -->
-            <Grid Grid.Column="0" IsEnabled="{Binding IsCartHasItems}" BackgroundColor="{StaticResource Primary}">
+            <Grid Grid.Column="0" BackgroundColor="{StaticResource PrimaryDark}" Padding="5">
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding OpenLogsCommand}" />
+                </Grid.GestureRecognizers>
+                <HorizontalStackLayout VerticalOptions="Center">
+                    <Image Source="logs.png" HeightRequest="50"/>
+                    <Label TextColor="{StaticResource WhiteText}" Text="View Logs" VerticalOptions="Center"/>
+                </HorizontalStackLayout>
+            </Grid>
+            <!-- Complete Transaction -->
+            <Grid Grid.Column="1" IsEnabled="{Binding IsCartHasItems}" BackgroundColor="{StaticResource Primary}">
                 <Grid.GestureRecognizers>
                     <TapGestureRecognizer Command="{Binding CompleteTransactionCommand}" />
                 </Grid.GestureRecognizers>
@@ -148,7 +158,7 @@
             </Grid>
 
             <!-- Cancel Transaction -->
-            <Grid Grid.Column="1" BackgroundColor="{StaticResource CancelButton}">
+            <Grid Grid.Column="2" BackgroundColor="{StaticResource CancelButton}">
                 <Grid.GestureRecognizers>
                     <TapGestureRecognizer Command="{Binding CloseCommand}" />
                 </Grid.GestureRecognizers>

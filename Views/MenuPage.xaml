@@ -45,44 +45,44 @@
                     <Grid>
                         <!-- The main button -->
                         <Button
-                        ImageSource="calendar.png"
-                        WidthRequest="80"
-                        FontSize="8"
-                        HeightRequest="60"
-                        BackgroundColor="Transparent"
+                            ImageSource="calendar.png"
+                            WidthRequest="80"
+                            FontSize="8"
+                            HeightRequest="60"
+                            BackgroundColor="Transparent"
                             Command="{Binding NavigateUnpaidDueCreditsCommand}"/>
 
                                     <!-- The badge (using Border instead of Frame) -->
                             <Border
-                            BackgroundColor="{StaticResource CancelButton}"
-                            StrokeThickness="0"
-                            HorizontalOptions="End"
-                            VerticalOptions="Start"
-                            Margin="5"
-                            WidthRequest="20"
-                            HeightRequest="20"
-                            StrokeShape="RoundRectangle 10,10,10,10">
+                                BackgroundColor="{StaticResource CancelButton}"
+                                StrokeThickness="0"
+                                HorizontalOptions="End"
+                                VerticalOptions="Start"
+                                Margin="5"
+                                WidthRequest="20"
+                                HeightRequest="20"
+                                StrokeShape="RoundRectangle 10,10,10,10">
 
                                 <Label
-                                Text="{Binding DueUnpaidCredits}"
-                                FontSize="12"
-                                TextColor="White"
-                                HorizontalOptions="Center"
-                                VerticalOptions="Center"
-                                HorizontalTextAlignment="Center"
-                                VerticalTextAlignment="Center"/>
+                                    Text="{Binding DueUnpaidCredits}"
+                                    FontSize="12"
+                                    TextColor="White"
+                                    HorizontalOptions="Center"
+                                    VerticalOptions="Center"
+                                    HorizontalTextAlignment="Center"
+                                    VerticalTextAlignment="Center"/>
                             </Border>
                     </Grid>
                    <!--low stocks-->  
                     <Grid>
                         <!-- The main button -->
                         <Button
-                        ImageSource="low.png"
-                        BackgroundColor="Transparent"
-                        WidthRequest="80"
-                        HeightRequest="60"
-                        Command="{Binding NavigateLowStockProductsCommand}"
-                        />
+                            ImageSource="low.png"
+                            BackgroundColor="Transparent"
+                            WidthRequest="80"
+                            HeightRequest="60"
+                            Command="{Binding NavigateLowStockProductsCommand}"
+                            />
 
                                     <!-- The badge (using Border instead of Frame) -->
                             <Border

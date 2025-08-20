@@ -93,6 +93,9 @@
 	  <MauiXaml Update="Resources\Styles\MenuCard.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Views\IncomingStocksLogsPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Views\BuyerPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
