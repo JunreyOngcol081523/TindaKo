@@ -131,7 +131,7 @@ namespace TindaKo.ViewModel
             {
                 DateStocksIn = DateTime.Now,
                 SupplierName = this.SupplierName,
-                TotalAmout = totalAmount
+                TotalAmount = totalAmount
             };
 
             bool success = await IncomingStocksService.SaveIncomingStocksAsync(incomingStocks, CartList);

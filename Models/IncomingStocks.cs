@@ -13,7 +13,7 @@ namespace TindaKo.Models
         public int IncomingStocksId { get; set; }
         public DateTime DateStocksIn { get; set; }
         public string? SupplierName { get; set; }
-        public decimal TotalAmout { get; set; }
+        public decimal TotalAmount { get; set; }
     }
     public class IncomingStocksProductsList
     {

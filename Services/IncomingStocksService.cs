@@ -82,7 +82,7 @@ namespace TindaKo.Services
             }
 
             string sql = @"
-        SELECT IFNULL(SUM(TotalAmout), 0) 
+        SELECT IFNULL(SUM(TotalAmount), 0) 
         FROM IncomingStocks 
         WHERE DateStocksIn BETWEEN ? AND ?";
 
@@ -103,7 +103,7 @@ namespace TindaKo.Services
                 .Where(t => t.DateStocksIn.Month == now.Month && t.DateStocksIn.Year == now.Year)
                 .ToList();
 
-            var total = monthlyStocks.Sum(t => t.TotalAmout); // use TotalAmout (matches model)
+            var total = monthlyStocks.Sum(t => t.TotalAmount); // use TotalAmout (matches model)
             return total;
         }
 
@@ -120,5 +120,36 @@ namespace TindaKo.Services
             await Init();
             return await _db.Table<IncomingStocks>().ToListAsync();
         }
+        //load all incoming stocks logs by month and year
+        public static async Task<List<IncomingStocks>> GetIncomingStocksLogsByMonthYearAsync(string month, int year)
+        {
+            try
+            {
+                await Init();
+                var monthNumber = DateTime.ParseExact(month, "MMMM", System.Globalization.CultureInfo.InvariantCulture).Month;
+                return (await _db.Table<IncomingStocks>().ToListAsync())
+                    .Where(t => t.DateStocksIn.Month == monthNumber && t.DateStocksIn.Year == year)
+                    .ToList();
+
+            }
+            catch (Exception ex)
+            {
+
+                await ToastHelper.ShowError(ex.Message);
+                Debug.WriteLine($"Error loading incoming stocks logs: {ex.Message}");
+                return new List<IncomingStocks>();
+            }
+            
+        }
+
+        //get incoming stocks products list by incoming stocks id
+        public static async Task<List<IncomingStocksProductsList>> GetIncomingStocksProductsListAsync(int incomingStocksId)
+        {
+            await Init();
+            return await _db.Table<IncomingStocksProductsList>()
+                .Where(p => p.IncomingStocksId == incomingStocksId)
+                .ToListAsync();
+        }
     }
+
 }

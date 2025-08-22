@@ -2,24 +2,24 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="TindaKo.Views.IncomingStocksLogsPage"
-             xmlns:viewmodels="clr-namespace:TindaKo.ViewModel">
+             xmlns:viewmodel="clr-namespace:TindaKo.ViewModel">
                 
     <VerticalStackLayout>
         <Grid 
-              RowDefinitions="*,*"
+              RowDefinitions="*,*,*,*"
               RowSpacing="10">
             <!--header title-->
             <Grid Grid.Row="0" 
                   HorizontalOptions="Fill" 
                   BackgroundColor="{StaticResource Primary}"
-                  ColumnDefinitions="*,*">
+                  ColumnDefinitions="Auto,*">
                 <Image 
                     Grid.Column="0"
                     Source="logs.png"
                     HeightRequest="50"
                     WidthRequest="50"
                     VerticalOptions="Center"
-                    HorizontalOptions="End"
+                    HorizontalOptions="Start"
                    />
                 <Label 
                     Grid.Column="1"
@@ -32,27 +32,82 @@
             <!--filter-->
             <Grid Grid.Row="1" 
                   RowDefinitions="*,*" 
-                  HorizontalOptions="Center">
+                  HorizontalOptions="Fill"
+                  Padding="10"
+                  >
                 <HorizontalStackLayout Grid.Row="0" 
-                                       HorizontalOptions="Center"
+                                       HorizontalOptions="Start"
                                        VerticalOptions="Center">
                     <CheckBox IsChecked="{Binding IsFilterEnabled}"/>
                     <Label Text="Filter" VerticalOptions="Center"/>
                 </HorizontalStackLayout>
-                <HorizontalStackLayout Grid.Row="1" Spacing="5">
-                    <Label Text="Month:" VerticalOptions="Center" IsEnabled="{Binding IsFilterEnabled}"/>
-                    <Picker ItemsSource="{Binding Months}" 
+                <VerticalStackLayout Grid.Row="1" Spacing="2">
+                    <HorizontalStackLayout>
+                        <Label Text="Month:" VerticalOptions="Center" IsEnabled="{Binding IsFilterEnabled}"/>
+                        <Picker ItemsSource="{Binding Months}" 
                             VerticalOptions="Center"
                             IsEnabled="{Binding IsFilterEnabled}"
                             SelectedItem="{Binding SelectedMonth}"/>
-                    <Label Text="Year:" VerticalOptions="Center" IsEnabled="{Binding IsFilterEnabled}"/>
-                    <Picker ItemsSource="{Binding Years}" 
+                    </HorizontalStackLayout>
+                    
+                    <HorizontalStackLayout>
+                        <Label Text="Year:" VerticalOptions="Center" IsEnabled="{Binding IsFilterEnabled}"/>
+                        <Picker ItemsSource="{Binding Years}" 
                             VerticalOptions="Center"
                             IsEnabled="{Binding IsFilterEnabled}"
                             SelectedItem="{Binding SelectedYear}"/>
-                </HorizontalStackLayout>
+                    </HorizontalStackLayout>
+                    <Button Text="Show Logs"
+                            Command="{Binding ShowReportCommand}"/>
+                </VerticalStackLayout>
             </Grid>
-            
+            <!--collection view-->
+            <Grid Grid.Row="2" Padding="10">
+                <CollectionView Grid.Row="1"
+                        ItemsSource="{Binding IncomingStocksList}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Border Style="{StaticResource CardStyle}" Padding="10" >
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer 
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:IncomingStocksLogsViewModel}}, Path=ItemTappedCommand}"
+                                    CommandParameter="{Binding .}"/>
+                                </Border.GestureRecognizers>
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                                    <Image Grid.Column="0"
+                                           Source="receipt.png"
+                                           HeightRequest="30"
+                                           WidthRequest="30" />
+
+                                    <Grid Grid.Column="1"
+                                      ColumnDefinitions="Auto,*,*"
+                                      RowDefinitions="Auto,Auto,*">
+                                        <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                                           Text="{Binding DateStocksIn, StringFormat='{0:MMMM dd, yyyy h:mmtt}'}"
+                                           FontSize="12"
+                                           FontAttributes="Italic"
+                                           TextColor="#455A64"/>
+                                        <Label Grid.Row="0" Grid.Column="2"
+                                           Text="{Binding SupplierName}"
+                                           FontSize="12"
+                                           HorizontalOptions="End"
+                                           FontAttributes="Italic"
+                                           TextColor="#455A64"/>
+                                        <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                                           Text="{Binding TotalAmount, StringFormat='₱{0:N2}'}"
+                                           FontAttributes="Bold"
+                                           TextColor="#004D40"/>
+                                    </Grid>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </Grid>
+            <!--footer-->
+            <Grid Grid.Row="3">
+                
+            </Grid>
         </Grid>
 
     </VerticalStackLayout>

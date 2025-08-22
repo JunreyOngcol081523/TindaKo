@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TindaKo.Views.IncomingStocksDetailsPage"
+             xmlns:viewmodel="clr-namespace:TindaKo.ViewModel"
+             Title="IncomingStocksDetailsPage">
+    <VerticalStackLayout Padding="20" Spacing="10">
+        <!--header-->
+        <VerticalStackLayout>
+            <HorizontalStackLayout HorizontalOptions="Center" Spacing="5" Margin="10">
+                <Image Source="receipt.png" HeightRequest="30"/>
+                <Label Text="Incoming Stocks Details" 
+                       FontAttributes="Bold"
+                       TextColor="{StaticResource PrimaryDark}" 
+                       FontSize="15"
+                       VerticalTextAlignment="Center"/>
+            </HorizontalStackLayout>
+            <BoxView HeightRequest="1" BackgroundColor="{StaticResource Gray300}"/>
+        </VerticalStackLayout>
+        <!-- First Row -->
+        <Grid ColumnDefinitions="*,Auto">
+            <Label Text="{Binding DateStocksIn, StringFormat='{0:MMMM dd, yyyy h:mmtt}'}"
+                   FontSize="12"
+                   TextColor="Black"
+                   FontAttributes="Italic"/>
+            <Label Text="{Binding Username}"
+                   FontSize="12"
+                   HorizontalOptions="End"
+                   TextColor="{StaticResource Gray600}"
+                   FontAttributes="Italic"/>
+        </Grid>
+
+        <!-- Second Row -->
+        <Grid ColumnDefinitions="*,Auto"
+              RowDefinitions="*,*">
+            <Label Grid.Row="0" 
+                   Grid.Column="0" 
+                   Grid.RowSpan="2"
+                   VerticalOptions="Center"
+                   Text="{Binding TotalAmount, StringFormat='₱{0:N2}'}"
+
+                   FontAttributes="Bold"
+                   TextColor="#004D40"/>
+            <Label Grid.Row="0" 
+                   Grid.Column="1" 
+                   Text="{Binding SupplierName}"
+
+                   HorizontalOptions="End"
+                   FontAttributes="Bold"
+                   TextColor="#16A085"/>
+
+        </Grid>
+
+
+
+        <!-- Separator -->
+        <BoxView HeightRequest="1" Color="{StaticResource Gray300}" Margin="0,10"/>
+
+        <CollectionView ItemsSource="{Binding IncomingStocksProductsList}">
+            <CollectionView.Header>
+                <Grid ColumnDefinitions="2.5*,1.5*,1*,2*" Padding="5" BackgroundColor="{StaticResource Primary}">
+                    <Label TextColor="{StaticResource WhiteText}" Grid.Column="0" Text="Product Name" FontAttributes="Bold" />
+
+                    <Label TextColor="{StaticResource WhiteText}" Grid.Column="1" Text="SupplierPrice" FontAttributes="Bold" />
+                    <Label TextColor="{StaticResource WhiteText}" Grid.Column="2" Text="Qty" FontAttributes="Bold" />
+                    <Label TextColor="{StaticResource WhiteText}" Grid.Column="3" Text="Subtotal" FontAttributes="Bold" />
+                </Grid>
+            </CollectionView.Header>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Grid ColumnDefinitions="2.5*,1.5*,1*,2*" Padding="5" RowDefinitions="Auto,*">
+                        <Label Grid.Row="0" Grid.Column="0" Text="{Binding ProdName}" />
+
+                        <Label Grid.Row="0" Grid.Column="1" Text="{Binding SupplierPrice, StringFormat='₱{0:N2}'}" />
+                        <Label Grid.Row="0" Grid.Column="2" Text="{Binding StocksInQty}" />
+                        <Label Grid.Row="0" Grid.Column="3" Text="{Binding SubtotalAmount, StringFormat='₱{0:N2}'}" />
+                        <BoxView Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="5" HeightRequest="1" Color="LightGray" />
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <Button Text="Close" Command="{Binding CloseDetailsCommand}" BackgroundColor="{StaticResource CancelButton}"/>
+    </VerticalStackLayout>
+</ContentPage>
