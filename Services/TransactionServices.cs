@@ -136,6 +136,37 @@ namespace TindaKo.Services
             return total;
         }
 
+        //get all transactions
+        public static async Task<List<Transaction>> GetAllTransactionsAsync(int? year = null)
+        {
+            try
+            {
+                await Init();
+
+                int targetYear = year ?? DateTime.Now.Year;
+
+                var allTransactions = await _db.Table<Transaction>().ToListAsync();
+
+                var filtered = allTransactions
+                .Where(t =>
+                {
+                    if (string.IsNullOrWhiteSpace(t.DateTimeTransacted))
+                        return false;
+
+                    bool parsed = DateTime.TryParse(t.DateTimeTransacted, out var date);
+                    return parsed && date.Year == targetYear;
+                })
+                    .ToList();
+
+                return filtered;
+            }
+            catch (Exception ex)
+            {
+
+                Debug.WriteLine(ex.Message);
+                return null;
+            }
+        }
 
     }
 }

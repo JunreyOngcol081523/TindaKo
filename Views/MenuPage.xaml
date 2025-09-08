@@ -41,81 +41,69 @@
               >
                 <HorizontalStackLayout Spacing="10"
                                    HorizontalOptions="Center">
-                    <Border
-                    Padding="5"
-                    HorizontalOptions="End"
-                    Style="{StaticResource CardStyle}"
-                    Stroke="{StaticResource Gray200}">
+                    <!--due credits-->
+                    <Grid>
+                        <!-- The main button -->
+                        <Button
+                        Text="Due Credits"
+                        WidthRequest="120"
+                        HeightRequest="60"
+                        Command="{Binding ButtonCommand, Source={x:Reference Root}}"/>
 
-                        <Grid>
-                            <Label Text="Due Credits      "
-                               FontSize="12"
-                               VerticalOptions="End"
-                               TextColor="{StaticResource Gray400}"/>
+                                    <!-- The badge (using Border instead of Frame) -->
+                            <Border
+                            BackgroundColor="{StaticResource CancelButton}"
+                            StrokeThickness="0"
+                            HorizontalOptions="End"
+                            VerticalOptions="Start"
+                            Margin="5"
+                            WidthRequest="20"
+                            HeightRequest="20"
+                            IsVisible="{Binding IsBadgeVisible, Source={x:Reference Root}}"
+                            StrokeShape="RoundRectangle 10,10,10,10">
 
-                            <Border 
-                        BackgroundColor="{StaticResource PrimaryDark}" 
-                        StrokeThickness="0"
-                        StrokeShape="RoundRectangle 10"
-                        Padding="0"
-                        HorizontalOptions="End"
-                        VerticalOptions="Start">
-
-                                <Label Text="{Binding DueUnpaidCredits}"
-                                       TextColor="{StaticResource WhiteText}"
-                                       FontSize="8"
-                                       Padding="5"
-                                       FontAttributes="Bold"
-                                       HorizontalOptions="Center"
-                                       VerticalOptions="Center"/>
-
+                                <Label
+                                Text="{Binding DueUnpaidCredits}"
+                                FontSize="12"
+                                TextColor="White"
+                                HorizontalOptions="Center"
+                                VerticalOptions="Center"
+                                HorizontalTextAlignment="Center"
+                                VerticalTextAlignment="Center"/>
                             </Border>
+                    </Grid>
+                    <Grid>
+                        <!-- The main button -->
+                        <Button
+                        Text="Low Stocks"
+                        WidthRequest="120"
+                        HeightRequest="60"
+                        Command="{Binding ButtonCommand, Source={x:Reference Root}}"/>
 
-                        </Grid>
+                                    <!-- The badge (using Border instead of Frame) -->
+                            <Border
+                            BackgroundColor="{StaticResource CancelButton}"
+                            StrokeThickness="0"
+                            HorizontalOptions="End"
+                            VerticalOptions="Start"
+                            Margin="5"
+                            WidthRequest="20"
+                            HeightRequest="20"
+                            IsVisible="{Binding IsBadgeVisible, Source={x:Reference Root}}"
+                            StrokeShape="RoundRectangle 10,10,10,10">
 
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer
-                                Command="{Binding OpenCartCommand}"/>
-                        </Border.GestureRecognizers>
-                    </Border>
-
-                    <Border
-                    Padding="5"
-                    HorizontalOptions="End"
-                    Style="{StaticResource CardStyle}"
-                    Stroke="{StaticResource Gray200}">
-
-                        <Grid>
-                            <Label Text="Low Stocks    "
-                               VerticalOptions="End"
-                               FontSize="12"
-                                TextColor="{StaticResource Gray400}"/>
-
-                            <Border 
-                                BackgroundColor="{StaticResource CancelButton}" 
-                                StrokeThickness="0"
-                                StrokeShape="RoundRectangle 10"
-                                Padding="0"
-                                HorizontalOptions="End"
-                                VerticalOptions="Start">
-
-                                <Label Text="{Binding LowStocksCount}"
-                                       TextColor="{StaticResource WhiteText}"
-                                       FontSize="8"
-                                       Padding="5"
-                                       FontAttributes="Bold"
-                                       HorizontalOptions="Center"
-                                       VerticalOptions="Center"/>
-
+                                <Label
+                                Text="{Binding LowStocksCount}"
+                                FontSize="12"
+                                TextColor="White"
+                                HorizontalOptions="Center"
+                                VerticalOptions="Center"
+                                HorizontalTextAlignment="Center"
+                                VerticalTextAlignment="Center"/>
                             </Border>
+                    </Grid>
 
-                        </Grid>
 
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer
-                                Command="{Binding OpenCartCommand}"/>
-                        </Border.GestureRecognizers>
-                    </Border>
                     <Border
                     Padding="5"
                     HorizontalOptions="End"

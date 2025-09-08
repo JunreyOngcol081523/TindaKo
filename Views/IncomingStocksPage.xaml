@@ -96,6 +96,7 @@
                                     CustomFormat="C2"
                                     UpDownButtonColor="{StaticResource PrimaryDark}"
                                     UpDownButtonAlignment="Both" 
+                                    HeightRequest="45"
                                     Minimum="0"/>
                                 </VerticalStackLayout>    
 
@@ -110,12 +111,15 @@
                                     Minimum="0"
                                     CustomFormat="0"
                                     UpDownButtonAlignment="Both" 
+                                    HorizontalTextAlignment="Center"
+                                    HeightRequest="45"
                                     SmallChange="1"/>
                                 </VerticalStackLayout>
 
                                 <Button 
                                     Grid.Column="2"
                                     ImageSource="add.png"
+                                    HeightRequest="35"
                                     BackgroundColor="Transparent"
                                     Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:IncomingStocksViewModel}}, Path=AddToCartCommand}"
                                     CommandParameter="{Binding}" />

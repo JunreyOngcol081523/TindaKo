@@ -22,7 +22,11 @@
                 <Label Text="Developed by JunreyDev"
                        FontSize="12"
                        TextColor="#9E9E9E"
-                       HorizontalTextAlignment="Center" />
+                       HorizontalTextAlignment="Center" >
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding ResetDBCommand}"/>
+                    </Label.GestureRecognizers>
+                </Label>
             </VerticalStackLayout>
 
             <!-- Card-style Login Container -->

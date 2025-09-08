@@ -66,7 +66,7 @@ namespace TindaKo.ViewModel
         [RelayCommand]
         private async Task NavigateReportsAsync()
         {
-
+            await Application.Current.MainPage.Navigation.PushAsync(new ReportsPage(new ReportsViewModel()));
         }
         [RelayCommand]
         private async Task NavigateDatabaseAsync()

@@ -42,5 +42,22 @@ namespace TindaKo.Services
             }
             return _db;
         }
+        public static async Task ResetDB()
+        {
+            if (_db == null)
+            {
+                var dbPath = Path.Combine(FileSystem.AppDataDirectory, "tindako.db");
+                _db = new SQLiteAsyncConnection(dbPath);
+
+                await _db.DropTableAsync<Product>();
+                await _db.DropTableAsync<Users>();
+                await _db.DropTableAsync<Sell>();
+                await _db.DropTableAsync<Transaction>();
+                await _db.DropTableAsync<Buyer>();
+                await _db.DropTableAsync<Creditor>();
+                await _db.DropTableAsync<IncomingStocks>();
+                await _db.DropTableAsync<IncomingStocksProductsList>();
+            }
+        }
     }
 }

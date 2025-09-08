@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TindaKo.Views.ReportsPage"
+             xmlns:mc="clr-namespace:Microcharts.Maui;assembly=Microcharts.Maui"
+            
+             Title="Reports">
+    <ScrollView>
+        <VerticalStackLayout Padding="18" Spacing="10">
+            <!--monthly sales-->
+            <Border Style="{StaticResource CardStyle}">
+                <VerticalStackLayout>
+                    <Label Text="Monthly Sales Report"
+                           TextColor="{StaticResource PrimaryDark}"
+                           FontAttributes="Bold"
+                           HorizontalOptions="Center"
+                           Margin="10" />
+
+                    <!-- Year Picker -->
+                    <Picker x:Name="yearPicker"
+                            Title="Select Year"
+                            ItemsSource="{Binding AvailableYears}"
+                            SelectedItem="{Binding SelectedYear, Mode=TwoWay}"
+                            HorizontalOptions="Center"
+                            Margin="0,0,0,10" />
+                    <mc:ChartView Chart="{Binding MonthlySalesChart}"
+                        HeightRequest="150"
+                        Margin="10"
+                        VerticalOptions="Fill" />
+                </VerticalStackLayout>
+
+            </Border>
+            <!--expenses vs sales-->
+            <Border Style="{StaticResource CardStyle}">
+                <VerticalStackLayout>
+                    <Label Text="Monthly Sales Report"
+                           TextColor="{StaticResource PrimaryDark}"
+                           FontAttributes="Bold"
+                           HorizontalOptions="Center"
+                           Margin="10" />
+
+                    <!-- Year Picker -->
+                    <Picker x:Name="yearPicker"
+                            Title="Select Year"
+                            ItemsSource="{Binding AvailableYears}"
+                            SelectedItem="{Binding SelectedYear, Mode=TwoWay}"
+                            HorizontalOptions="Center"
+                            Margin="0,0,0,10" />
+                    <mc:ChartView Chart="{Binding MonthlySalesChart}"
+                        HeightRequest="150"
+                        Margin="10"
+                        VerticalOptions="Fill" />
+                </VerticalStackLayout>
+
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

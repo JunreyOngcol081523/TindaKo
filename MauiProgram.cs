@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Maui;
+using Microcharts.Maui;
 using Microsoft.Extensions.Logging;
 using Syncfusion.Maui.Core.Hosting;
 using Syncfusion.Maui.Toolkit.Hosting;
@@ -17,6 +18,7 @@ namespace TindaKo
                 .UseMauiCommunityToolkit()
                 .ConfigureSyncfusionToolkit()
                 .ConfigureSyncfusionCore()
+                .UseMicrocharts()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -64,6 +66,8 @@ namespace TindaKo
             builder.Services.AddSingleton<IncomingStocksPopup>();
             builder.Services.AddSingleton<IncomingStocksPopupViewModel>();
             builder.Services.AddSingleton<SellPageCartPopup>();
+            builder.Services.AddSingleton<ReportsViewModel>();
+            builder.Services.AddSingleton<ReportsPage>();
         }
     }
 }

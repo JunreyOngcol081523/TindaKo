@@ -60,9 +60,14 @@ namespace TindaKo.ViewModel
 
         //-----------load remember user----------//
         private void LoadSettings() {
+            DatabaseService.GetConnectionAsync();
             RememberLogin = Preferences.Get("remember",false);
             UserName = Preferences.Get("username",string.Empty);
         }
-        //--------------get all User by username------------//
+        //[RelayCommand]
+        //public async Task ResetDBAsync()
+        //{
+        //   await DatabaseService.ResetDB();
+        //}
     }
 }

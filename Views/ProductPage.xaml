@@ -136,6 +136,7 @@
                                             CornerRadius="6"
                                             Padding="6,2"
                                             HorizontalOptions="End"
+                                            HeightRequest="30"
                                             Grid.Column="1" />
                                         <!-- Update Button -->
                                         <Button 
@@ -147,6 +148,7 @@
                                             CornerRadius="6"
                                             Padding="6,2"
                                             HorizontalOptions="End"
+                                            HeightRequest="30"
                                             Grid.Column="2" />
                                     </Grid>
                                 </Grid>
