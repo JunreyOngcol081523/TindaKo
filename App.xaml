@@ -37,6 +37,7 @@
             <converters:StringEqualsConverter x:Key="StringEqualsConverter" />
             <converters:DueDateToColorConverter x:Key="DueDateToColorConverter"/>
             <converters:GreaterThanZeroConverter x:Key="GreaterThanZeroConverter"/>
+            <converters:BoolToExpandIconConverter x:Key="BoolToExpandIconConverter"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

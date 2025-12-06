@@ -1,3 +1,4 @@
+using TindaKo.Models;
 using TindaKo.ViewModel;
 
 namespace TindaKo.Views;
@@ -11,4 +12,6 @@ public partial class CreditorPage : ContentPage
         vm.SelectedSegmentIndex = initialSegment;
         BindingContext = vm;
     }
+
+
 }
