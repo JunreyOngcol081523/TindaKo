@@ -53,7 +53,7 @@ namespace TindaKo.Services
             catch (Exception ex)
             {
                 Debug.WriteLine(ex.StackTrace);
-                await Application.Current.MainPage.DisplayAlert("Error", ex.Message, "OK");
+                await App.Navigator.DisplayAlert("Error", ex.Message, "OK");
             }
         }
 

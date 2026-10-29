@@ -49,7 +49,7 @@ namespace TindaKo.ViewModel
                 Preferences.Set("password", UserPassword);
                 Preferences.Set("userfullname", UserFullName);
                 await ToastHelper.ShowMessage($"Welcome, {user.UserName}!");
-                Application.Current.MainPage = new NavigationPage(new MenuPage(new MenuViewModel()));
+                App.SetNavigator(new NavigationPage(new MenuPage(new MenuViewModel())));
                 
             }
             else
@@ -68,7 +68,7 @@ namespace TindaKo.ViewModel
         public async Task ResetDBAsync()
         {
             //confirmation dialog
-            var confirm = await Application.Current.MainPage.DisplayAlert("Confirm Reset", "Are you sure you want to reset the database? This action cannot be undone.", "Yes", "No");
+            var confirm = await App.Navigator.DisplayAlert("Confirm Reset", "Are you sure you want to reset the database? This action cannot be undone.", "Yes", "No");
             if (confirm)
             {
                 await DatabaseService.ResetDB();

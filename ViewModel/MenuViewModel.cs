@@ -46,42 +46,42 @@ namespace TindaKo.ViewModel
         [RelayCommand]
         private async Task NavigateSellAsync()
         {
-            await Application.Current.MainPage.Navigation.PushAsync(new SellPage(new SellViewModel()));
+            await App.Navigator.Navigation.PushAsync(new SellPage(new SellViewModel()));
         }
         [RelayCommand]
         private async Task NavigateProductAsync()
         {
-            await Application.Current.MainPage.Navigation.PushAsync(new ProductPage(new ProductViewModel()));
+            await App.Navigator.Navigation.PushAsync(new ProductPage(new ProductViewModel()));
         }
         [RelayCommand]
         private async Task NavigateSalesAsync()
         {
-            await Application.Current.MainPage.Navigation.PushAsync(new SalesPage(new SalesViewModel()));
+            await App.Navigator.Navigation.PushAsync(new SalesPage(new SalesViewModel()));
         }
         [RelayCommand]
         private async Task NavigateIncomingStocksAsync()
         {
-            await Application.Current.MainPage.Navigation.PushAsync(new IncomingStocksPage(new IncomingStocksViewModel()));
+            await App.Navigator.Navigation.PushAsync(new IncomingStocksPage(new IncomingStocksViewModel()));
         }
         [RelayCommand]
         private async Task NavigateSettingsAsync()
         {
-            await Application.Current.MainPage.Navigation.PushAsync(new SettingsPage());
+            await App.Navigator.Navigation.PushAsync(new SettingsPage());
         }
         [RelayCommand]
         private async Task NavigateReportsAsync()
         {
-            await Application.Current.MainPage.Navigation.PushAsync(new ReportsPage(new ReportsViewModel()));
+            await App.Navigator.Navigation.PushAsync(new ReportsPage(new ReportsViewModel()));
         }
         [RelayCommand]
         private async Task NavigateDatabaseAsync()
         {
-            await Application.Current.MainPage.Navigation.PushAsync(new DatabaseBackupPage(new DBViewModel()));
+            await App.Navigator.Navigation.PushAsync(new DatabaseBackupPage(new DBViewModel()));
         }
         [RelayCommand]
         private async Task NavigateCreditsAsync()
         {
-            await Application.Current.MainPage.Navigation.PushAsync(new CreditorPage(0));
+            await App.Navigator.Navigation.PushAsync(new CreditorPage(0));
         }
 
         [RelayCommand]
@@ -91,7 +91,7 @@ namespace TindaKo.ViewModel
             Preferences.Set("username", string.Empty);
             Preferences.Set("password", string.Empty);
             Preferences.Set("userfullname", string.Empty);
-            Application.Current.MainPage = new NavigationPage(new LoginPage(new LoginViewModel()));
+            App.SetNavigator(new NavigationPage(new LoginPage(new LoginViewModel())));
         }
 
         [RelayCommand]
@@ -126,7 +126,7 @@ namespace TindaKo.ViewModel
         [RelayCommand]
         private async Task NavigateUnpaidDueCredits()
         {
-            await Application.Current.MainPage.Navigation.PushAsync(new CreditorPage(3));
+            await App.Navigator.Navigation.PushAsync(new CreditorPage(3));
         }
     }
 }

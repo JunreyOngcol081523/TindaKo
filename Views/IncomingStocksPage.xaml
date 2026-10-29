@@ -93,7 +93,7 @@
                                     Placeholder="Quantity added"
                                     Value="{Binding SupplierPrice, Mode=TwoWay}"
                                     AllowNull="False"
-                                    CustomFormat="C2"
+                                    CustomFormat="₱#,##0.00"
                                     UpDownButtonColor="{StaticResource PrimaryDark}"
                                     UpDownButtonAlignment="Both" 
                                     HeightRequest="45"

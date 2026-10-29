@@ -19,7 +19,7 @@ public partial class SellPage : ContentPage
     {
         MainThread.BeginInvokeOnMainThread(async () =>
         {
-            bool answer = await Application.Current.MainPage.DisplayAlert(
+            bool answer = await App.Navigator.DisplayAlert(
                 "Kumpirmasyon",
                 "Gusto mo bang kanselahin ang kasalukuyang transaksyon ng pagbebenta?",
                 "Oo", "Hindi");
@@ -27,7 +27,7 @@ public partial class SellPage : ContentPage
 
             if (answer)
             {
-                await Application.Current.MainPage.Navigation.PopAsync();
+                await App.Navigator.Navigation.PopAsync();
             }
         });
 

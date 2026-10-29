@@ -11,7 +11,7 @@ namespace TindaKo.Services
 
     public class DatabaseService
     {
-        public static SQLiteAsyncConnection _db;
+        public static SQLiteAsyncConnection? _db;
 
         public static async Task InitAsync()
         {

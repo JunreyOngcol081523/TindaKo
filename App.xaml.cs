@@ -8,7 +8,7 @@ namespace TindaKo
 {
     public partial class App : Application
     {
-        public static NavigationPage Navigator;
+        public static NavigationPage Navigator { get; private set; } = null!;
         public App()
         {
             InitializeComponent();
@@ -25,13 +25,22 @@ namespace TindaKo
                 Navigator = new NavigationPage(new LoginPage(new LoginViewModel()));
             }
             
-            MainPage = Navigator;
-
-
-            Application.Current.UserAppTheme = AppTheme.Light;
+            UserAppTheme = AppTheme.Light;
             
         }
+        protected override Window CreateWindow(IActivationState? activationState)
+        {
+            return new Window(Navigator);
+        }
 
+        public static void SetNavigator(NavigationPage navigator)
+        {
+            Navigator = navigator;
+            if (Current?.Windows.FirstOrDefault() is Window window)
+            {
+                window.Page = navigator;
+            }
+        }
 
     }
 }

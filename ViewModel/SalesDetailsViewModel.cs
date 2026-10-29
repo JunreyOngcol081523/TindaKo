@@ -37,7 +37,7 @@ namespace TindaKo.ViewModel
         [RelayCommand]
         private async Task CloseDetailsAsync()
         {
-            await Application.Current.MainPage.Navigation.PopModalAsync();
+            await App.Navigator.Navigation.PopModalAsync();
         }
     }
 }

@@ -10,8 +10,8 @@ namespace TindaKo.Models
     public class CartItems:ObservableObject
     {
         public int ProductId { get; set; }
-        public string ProdName { get; set; }
-        public string ProdCategory { get; set; }
+        public string ProdName { get; set; } = string.Empty;
+        public string ProdCategory { get; set; } = string.Empty;
         public decimal Price { get; set; }
         public decimal Quantity { get; set; }
 

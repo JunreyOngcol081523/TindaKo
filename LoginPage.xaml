@@ -6,82 +6,84 @@
              x:Class="TindaKo.LoginPage">
 
     <ScrollView>
-        <VerticalStackLayout Padding="30" Spacing="25" VerticalOptions="Center">
+        <VerticalStackLayout Padding="24,0" Spacing="14" VerticalOptions="Center">
 
             <!-- App Header -->
-            <VerticalStackLayout Spacing="5" HorizontalOptions="Center">
-                <Label Text="Welcome to TindaKo!" 
+            <VerticalStackLayout Spacing="2" Margin="0,0,0,10" HorizontalOptions="Center">
+                <Label Text="Welcome to TindaKo!"
                        FontSize="24"
                        FontAttributes="Bold"
                        TextColor="#212121"
                        HorizontalTextAlignment="Center" />
                 <Label Text="Offline POS app for small sari-sari store"
-                       FontSize="14"
+                       FontSize="13"
                        TextColor="#616161"
                        HorizontalTextAlignment="Center" />
-                <Label Text="Developed by JunreyDev"
-                       FontSize="12"
-                       TextColor="#9E9E9E"
-                       HorizontalTextAlignment="Center" >
-                    <Label.GestureRecognizers>
-                        <TapGestureRecognizer
-                            NumberOfTapsRequired="1"
-                            Command="{Binding ResetDBCommand}"/>
-                    </Label.GestureRecognizers>
-                </Label>
             </VerticalStackLayout>
 
-            <!-- Card-style Login Container -->
-            <Border Style="{StaticResource CardStyle}" Padding="20" StrokeShape="RoundRectangle 12">
-                <VerticalStackLayout Spacing="18">
+            <!-- User Role Selection (heading removed, tighter row) -->
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                <RadioButton Content="May-ari"
+                             GroupName="UserRole"
+                             Grid.Column="0"
+                             IsChecked="{Binding SelectedRole,
+                                Converter={StaticResource StringEqualsConverter},
+                                ConverterParameter=May-ari}" />
+                <RadioButton Content="Tindera"
+                             GroupName="UserRole"
+                             Grid.Column="1"
+                             IsChecked="{Binding SelectedRole,
+                                Converter={StaticResource StringEqualsConverter},
+                                ConverterParameter=Tindera}" />
+            </Grid>
 
-                    <!-- User Role Selection -->
-                    <Label Text="Pumili ng Role" FontSize="16" FontAttributes="Bold" TextColor="#424242" />
-                    <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
-                        <RadioButton Content="May-ari"
-                                     GroupName="UserRole"
-                                     Grid.Column="0"
-                                     IsChecked="{Binding SelectedRole, 
-                                    Converter={StaticResource StringEqualsConverter}, 
-                                    ConverterParameter=May-ari}" />
-                        <RadioButton Content="Tindera"
-                                     GroupName="UserRole"
-                                     Grid.Column="1"
-                                     IsChecked="{Binding SelectedRole, 
-                                    Converter={StaticResource StringEqualsConverter}, 
-                                    ConverterParameter=Tindera}" /> 
-                    </Grid>
+            <!-- Username -->
+            <inputLayout:SfTextInputLayout Hint="Username"
+                                           ContainerBackground="Transparent">
+                <Entry Text="{Binding UserName}"
+                       ReturnType="Next"
+                       HeightRequest="48" />
+            </inputLayout:SfTextInputLayout>
 
-                    <!-- Username -->
+            <!-- Password (one label only, built-in show/hide toggle) -->
+            <inputLayout:SfTextInputLayout Hint="Password"
+                                           ContainerBackground="Transparent"
+                                           EnablePasswordVisibilityToggle="True">
+                <Entry Text="{Binding UserPassword}"
+                       IsPassword="True"
+                       ReturnType="Done"
+                       ReturnCommand="{Binding LoginCommand}"
+                       HeightRequest="48" />
+            </inputLayout:SfTextInputLayout>
 
-                    <inputLayout:SfTextInputLayout Hint="Username" ContainerBackground="Transparent">
-                        <Entry Text="{Binding UserName}" />
-                    </inputLayout:SfTextInputLayout>
-                    <inputLayout:SfTextInputLayout Hint="Password" ContainerBackground="Transparent">
-                        <!-- Password -->
-                        <Entry Text="{Binding UserPassword}"
-                           Placeholder="Password"
-                           IsPassword="True"
-                           HeightRequest="45"
-                           />
-                    </inputLayout:SfTextInputLayout>
+            <!-- Remember me -->
+            <HorizontalStackLayout Spacing="6">
+                <CheckBox IsChecked="{Binding RememberLogin}" VerticalOptions="Center" />
+                <Label Text="Remember Login"
+                       FontSize="14"
+                       VerticalOptions="Center"
+                       TextColor="#616161" />
+            </HorizontalStackLayout>
 
+            <!-- Login Button -->
+            <Button Text="Login"
+                    HeightRequest="48"
+                    CornerRadius="10"
+                    StyleClass="FilledButton"
+                    Command="{Binding LoginCommand}" />
 
+            <!-- Footer (moved down; keeps the hidden DB reset tap) -->
+            <Label Text="Developed by JunreyDev"
+                   FontSize="11"
+                   TextColor="#9E9E9E"
+                   HorizontalTextAlignment="Center"
+                   Margin="0,16,0,0">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer NumberOfTapsRequired="1"
+                                          Command="{Binding ResetDBCommand}" />
+                </Label.GestureRecognizers>
+            </Label>
 
-                    <!-- Remember me -->
-                    <HorizontalStackLayout Spacing="10">
-                        <CheckBox IsChecked="{Binding RememberLogin}" VerticalOptions="Center"/>
-                        <Label Text="Remember Login" VerticalOptions="Center" TextColor="#616161"/>
-                    </HorizontalStackLayout>
-
-                    <!-- Login Button -->
-                    <Button Text="Login"
-                            HeightRequest="45"
-                            CornerRadius="10"
-                            StyleClass="FilledButton"
-                            Command="{Binding LoginCommand}" />
-                </VerticalStackLayout>
-            </Border>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

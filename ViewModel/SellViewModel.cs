@@ -167,7 +167,7 @@ namespace TindaKo.ViewModel
             };
 
             buyerPage.BindingContext = buyerViewModel;
-            await Application.Current.MainPage.Navigation.PushModalAsync(buyerPage);
+            await App.Navigator.Navigation.PushModalAsync(buyerPage);
         }
         //complete transaction method
         [RelayCommand]
@@ -181,12 +181,12 @@ namespace TindaKo.ViewModel
             }
             else
             {
-                bool confirm = await Application.Current.MainPage.DisplayAlert("Kompiramahin", $"Review your cart items:\n\n {BuildCartSummary()}", "Tama lahat", "Hindi");
+                bool confirm = await App.Navigator.DisplayAlert("Kompiramahin", $"Review your cart items:\n\n {BuildCartSummary()}", "Tama lahat", "Hindi");
 
                 if (confirm)
                 {
                     SaveTransaction();
-                    bool again = await Application.Current.MainPage.DisplayAlert("Tagumpay", "Tapos na and transaction!\n Gusto mo bang gumawa ulit?", "Oo", "Hindi");
+                    bool again = await App.Navigator.DisplayAlert("Tagumpay", "Tapos na and transaction!\n Gusto mo bang gumawa ulit?", "Oo", "Hindi");
 
                     if (again)
                     {
@@ -194,7 +194,7 @@ namespace TindaKo.ViewModel
                     }
                     else
                     {
-                        await Application.Current.MainPage.Navigation.PopAsync();
+                        await App.Navigator.Navigation.PopAsync();
                     }
                 }
                 else
@@ -261,7 +261,7 @@ namespace TindaKo.ViewModel
         [RelayCommand]
         private async Task CloseSellAsync()
         {
-            bool answer = await Application.Current.MainPage.DisplayAlert(
+            bool answer = await App.Navigator.DisplayAlert(
                 "Kumpirmasyon",
                 "Gusto mo bang kanselahin ang kasalukuyang transaksyon ng pagbebenta?",
                 "Oo", "Hindi");
@@ -269,7 +269,7 @@ namespace TindaKo.ViewModel
 
             if (answer)
             {
-                await Application.Current.MainPage.Navigation.PopAsync();
+                await App.Navigator.Navigation.PopAsync();
             }
         }
     

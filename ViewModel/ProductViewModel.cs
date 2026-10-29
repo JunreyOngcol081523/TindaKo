@@ -141,7 +141,7 @@ namespace TindaKo.ViewModel
             {
                 var vm = new ProductAdjustViewModel(product);
                 var popup = new ProductStockAdjustPopup(vm);
-                await Application.Current.MainPage.Navigation.PushModalAsync(popup);
+                await App.Navigator.Navigation.PushModalAsync(popup);
                 await LoadProducts(); // refresh 
             }
         }

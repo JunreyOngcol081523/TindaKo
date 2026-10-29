@@ -30,7 +30,7 @@ namespace TindaKo.ViewModel
             {
                 if (DeviceInfo.Platform == DevicePlatform.WinUI)
                 {
-                    await Application.Current.MainPage.DisplayAlert("Info", "Backup save.", "OK");
+                    await App.Navigator.DisplayAlert("Info", "Backup save.", "OK");
                     
                 }
                 else
@@ -150,7 +150,7 @@ namespace TindaKo.ViewModel
                 }
                 catch (Exception ex)
                 {
-                    await Application.Current.MainPage.DisplayAlert("Error", $"Sharing failed: {ex.Message}", "OK");
+                    await App.Navigator.DisplayAlert("Error", $"Sharing failed: {ex.Message}", "OK");
                 }
             }
         }

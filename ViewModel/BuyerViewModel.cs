@@ -85,13 +85,13 @@ namespace TindaKo.ViewModel
             }
 
             OnBuyerSelected?.Invoke(SelectedBuyer);
-            await Application.Current.MainPage.Navigation.PopModalAsync();
+            await App.Navigator.Navigation.PopModalAsync();
 
         }
         [RelayCommand]
         private async Task CloseBuyerAsync()
         {
-            await Application.Current.MainPage.Navigation.PopModalAsync();
+            await App.Navigator.Navigation.PopModalAsync();
         }
     }
 

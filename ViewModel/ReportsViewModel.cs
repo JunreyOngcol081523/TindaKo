@@ -97,7 +97,7 @@ namespace TindaKo.ViewModel
             }
             catch (Exception ex)
             {
-                await Application.Current.MainPage.DisplayAlert("Error", ex.Message, "OK");
+                await App.Navigator.DisplayAlert("Error", ex.Message, "OK");
             }
         }
         private void LoadAvailableYears()

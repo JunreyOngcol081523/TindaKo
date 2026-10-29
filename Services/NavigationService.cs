@@ -15,7 +15,7 @@ namespace TindaKo.Services
     {
         public Task NavigateToAsync(Page page)
         {
-            return Application.Current.MainPage.Navigation.PushAsync(page);
+            return App.Navigator.Navigation.PushAsync(page);
         }
     }
 

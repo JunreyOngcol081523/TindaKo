@@ -159,9 +159,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Content Include="Resources\Templates\ProductTemplate.xlsx">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </Content>
+	  <MauiAsset Include="Resources\Templates\ProductTemplate.xlsx" LogicalName="Resources/Templates/ProductTemplate.xlsx" />
 	</ItemGroup>
 
 </Project>

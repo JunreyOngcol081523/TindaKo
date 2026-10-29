@@ -28,14 +28,15 @@ namespace TindaKo.Helpers
             return false;
         }
 
-        private static Page GetCurrentPage()
+        public static Page? GetCurrentPage()
         {
-            var navigation = Application.Current?.MainPage?.Navigation;
+            var page = Application.Current?.Windows.FirstOrDefault()?.Page;
+            var navigation = page?.Navigation;
             if (navigation?.NavigationStack?.Count > 0)
             {
                 return navigation.NavigationStack[navigation.NavigationStack.Count - 1];
             }
-            return Application.Current?.MainPage as Page;
+            return page;
         }
     }
 }

@@ -41,14 +41,14 @@ namespace TindaKo.Views
                 // Optionally: save to DB
                 await ToastHelper.ShowMessage("Stocks adjusted.");
 
-                await Application.Current.MainPage.Navigation.PopModalAsync();
+                await App.Navigator.Navigation.PopModalAsync();
             }
 
         }
         [RelayCommand]
         private async Task CloseAdjustAsync()
         {
-            await Application.Current.MainPage.Navigation.PopModalAsync();
+            await App.Navigator.Navigation.PopModalAsync();
         }
     }
 

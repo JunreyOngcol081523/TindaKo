@@ -75,7 +75,7 @@ namespace TindaKo.ViewModel
             TotalAmount = selectedIncomingStocks.TotalAmount;
             await LoadIncomingStocksProductsListAsync(selectedIncomingStocks.IncomingStocksId);
             IncomingStocksDetailsPage detailsPage = new IncomingStocksDetailsPage(this);
-            await Application.Current.MainPage.Navigation.PushModalAsync(detailsPage);
+            await App.Navigator.Navigation.PushModalAsync(detailsPage);
         }
         [RelayCommand]
         private async Task ShowReportAsync() {
@@ -85,7 +85,7 @@ namespace TindaKo.ViewModel
         private async Task CloseDetailsAsync()
         {
                        // Close the details page
-            await Application.Current.MainPage.Navigation.PopModalAsync();
+            await App.Navigator.Navigation.PopModalAsync();
         }
     }
 }

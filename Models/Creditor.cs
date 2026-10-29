@@ -9,13 +9,13 @@ namespace TindaKo.Models
        
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
-        public string CreditorName { get; set; }
+        public string CreditorName { get; set; } = string.Empty;
         public DateTime CreditDate { get; set; }
         public decimal CreditAmount { get; set; }
         public DateTime DueDate { get; set; }
         public bool IsPaid { get; set; }
         public DateTime? PaidDate { get; set; }
-        private string _notes;
+        private string _notes = string.Empty;
         public string Notes
         {
             get => _notes;
@@ -32,7 +32,7 @@ namespace TindaKo.Models
         }
 
         // Event callback so ViewModel can debounce
-        public event Action<Creditor> NotesChanged;
+        public event Action<Creditor>? NotesChanged;
         // UI state properties (not stored in database)
         [Ignore]
         public bool IsNotesExpanded { get; set; }
@@ -41,6 +41,6 @@ namespace TindaKo.Models
         public bool IsEditingNotes { get; set; }
 
         [Ignore]
-        public string TempNotes { get; set; }
+        public string TempNotes { get; set; } = string.Empty;
     }
 }

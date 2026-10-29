@@ -21,7 +21,7 @@ namespace TindaKo.Models
         public int Id { get; set; }
         public int IncomingStocksId { get; set; }
         public int ProdId { get; set; }//foreign key to product table
-        public string ProdName { get; set; }//data from product table
+        public string ProdName { get; set; } = string.Empty;//data from product table
         public decimal SupplierPrice { get; set; }
         public decimal StocksInQty { get; set; }
         public decimal SubtotalAmount { get; set; }

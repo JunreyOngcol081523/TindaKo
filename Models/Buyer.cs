@@ -12,10 +12,10 @@ namespace TindaKo.Models
         [PrimaryKey, AutoIncrement]
         public int BuyerId { get; set; }
 
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
-        public string ContactNumber { get; set; }
+        public string ContactNumber { get; set; } = string.Empty;
 
-        public string Address { get; set; }
+        public string Address { get; set; } = string.Empty;
     }
 }

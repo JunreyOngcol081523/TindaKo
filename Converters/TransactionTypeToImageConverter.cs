@@ -6,9 +6,9 @@ namespace TindaKo.Converters
 {
     public class TransactionTypeToImageConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
-            string type = value as string;
+            string? type = value as string;
 
             return type switch
             {
@@ -18,7 +18,7 @@ namespace TindaKo.Converters
             };
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }

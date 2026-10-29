@@ -5,328 +5,251 @@
              x:Class="TindaKo.Views.MenuPage"
              xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
              Title="TindaKo App">
-    <ScrollView>
-        <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,*,*" 
-          Padding="10"
-          RowSpacing="5">
-            <!--user top-->
-            <Grid Grid.Row="0" 
-              ColumnDefinitions="Auto,*">
 
-                <Grid Grid.Column="0" HorizontalOptions="Start">
-                    <HorizontalStackLayout Spacing="10">
-                        <Image Source="person.png" HeightRequest="40"/>
-                        <Label Text="{Binding UserName, StringFormat='Welcome {0}'}" 
-                           VerticalOptions="Center"
-                           TextColor="{StaticResource Gray500}"/>
+    <ContentPage.Resources>
+        <!-- Shared label style for the menu tiles -->
+        <Style x:Key="TileLabel" TargetType="Label">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="HorizontalTextAlignment" Value="Center" />
+            <Setter Property="LineBreakMode" Value="TailTruncation" />
+            <Setter Property="MaxLines" Value="2" />
+        </Style>
+    </ContentPage.Resources>
+
+    <!-- Row 0: scrolling content | Row 1: fixed bottom area (ad banner) -->
+    <Grid RowDefinitions="*,Auto">
+
+        <ScrollView Grid.Row="0">
+            <VerticalStackLayout Padding="12" Spacing="14">
+
+                <!-- ========== 1. HEADER ========== -->
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                    <HorizontalStackLayout Grid.Column="0" Spacing="10">
+                        <Image Source="person.png" HeightRequest="36" />
+                        <Label Text="{Binding UserName, StringFormat='Welcome {0}'}"
+                               VerticalOptions="Center"
+                               TextColor="{StaticResource Gray500}" />
                     </HorizontalStackLayout>
-                </Grid>
-                <Grid Grid.Column="1" HorizontalOptions="End">
-                    <HorizontalStackLayout Spacing="10" HorizontalOptions="End">
-                        <Image Source="info.png" HeightRequest="40">
 
-                        </Image>
-                        <Image Source="logout.png" HeightRequest="40">
+                    <HorizontalStackLayout Grid.Column="1" Spacing="14">
+                        <Image Source="info.png" HeightRequest="32" />
+                        <Image Source="logout.png" HeightRequest="32">
                             <Image.GestureRecognizers>
-                                <TapGestureRecognizer 
-                            Command="{Binding LogoutCommand}" 
-                            CommandParameter="{Binding .}" />
+                                <TapGestureRecognizer Command="{Binding LogoutCommand}"
+                                                      CommandParameter="{Binding .}" />
                             </Image.GestureRecognizers>
                         </Image>
                     </HorizontalStackLayout>
                 </Grid>
-            </Grid>
-            <!--badges-->
-            <Grid Grid.Row="1"
-              >
-                <HorizontalStackLayout Spacing="10"
-                                   HorizontalOptions="Center">
-                    <!--due credits-->
-                    <Grid>
-                        <!-- The main button -->
-                        <Button
-                            ImageSource="calendar.png"
-                            WidthRequest="80"
-                            FontSize="8"
-                            HeightRequest="60"
-                            BackgroundColor="Transparent"
-                            Command="{Binding NavigateUnpaidDueCreditsCommand}"/>
 
-                                    <!-- The badge (using Border instead of Frame) -->
-                            <Border
-                                BackgroundColor="{StaticResource CancelButton}"
-                                StrokeThickness="0"
-                                HorizontalOptions="End"
-                                VerticalOptions="Start"
-                                Margin="5"
-                                WidthRequest="20"
-                                HeightRequest="20"
-                                StrokeShape="RoundRectangle 10,10,10,10">
+                <!-- ========== 2. ALERTS (Due Utang / Low Stock) ========== -->
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
 
-                                <Label
-                                    Text="{Binding DueUnpaidCredits}"
-                                    FontSize="12"
-                                    TextColor="White"
-                                    HorizontalOptions="Center"
-                                    VerticalOptions="Center"
-                                    HorizontalTextAlignment="Center"
-                                    VerticalTextAlignment="Center"/>
-                            </Border>
-                    </Grid>
-                   <!--low stocks-->  
-                    <Grid>
-                        <!-- The main button -->
-                        <Button
-                            ImageSource="low.png"
-                            BackgroundColor="Transparent"
-                            WidthRequest="80"
-                            HeightRequest="60"
-                            Command="{Binding NavigateLowStockProductsCommand}"
-                            />
+                    <!-- Due Utang -->
+                    <Border Grid.Column="0"
+                            Stroke="{StaticResource Gray200}"
+                            StrokeThickness="1"
+                            Padding="12,8"
+                            StrokeShape="RoundRectangle 12">
+                        <HorizontalStackLayout Spacing="10">
+                            <Image Source="calendar.png" HeightRequest="32" VerticalOptions="Center" />
+                            <VerticalStackLayout VerticalOptions="Center">
+                                <Label Text="{Binding DueUnpaidCredits}"
+                                       FontSize="20"
+                                       FontAttributes="Bold"
+                                       TextColor="{StaticResource CancelButton}" />
+                                <Label Text="Due Utang"
+                                       FontSize="12"
+                                       TextColor="{StaticResource Gray500}" />
+                            </VerticalStackLayout>
+                        </HorizontalStackLayout>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding NavigateUnpaidDueCreditsCommand}" />
+                        </Border.GestureRecognizers>
+                    </Border>
 
-                                    <!-- The badge (using Border instead of Frame) -->
-                            <Border
-                            BackgroundColor="{StaticResource CancelButton}"
-                            StrokeThickness="0"
-                            HorizontalOptions="End"
-                            VerticalOptions="Start"
-                            Margin="5"
-                            WidthRequest="20"
-                            HeightRequest="20"
-                            StrokeShape="RoundRectangle 10,10,10,10">
+                    <!-- Low Stocks -->
+                    <Border Grid.Column="1"
+                            Stroke="{StaticResource Gray200}"
+                            StrokeThickness="1"
+                            Padding="12,8"
+                            StrokeShape="RoundRectangle 12">
+                        <HorizontalStackLayout Spacing="10">
+                            <Image Source="low.png" HeightRequest="32" VerticalOptions="Center" />
+                            <VerticalStackLayout VerticalOptions="Center">
+                                <Label Text="{Binding LowStocksCount}"
+                                       FontSize="20"
+                                       FontAttributes="Bold"
+                                       TextColor="{StaticResource CancelButton}" />
+                                <Label Text="Low Stock"
+                                       FontSize="12"
+                                       TextColor="{StaticResource Gray500}" />
+                            </VerticalStackLayout>
+                        </HorizontalStackLayout>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding NavigateLowStockProductsCommand}" />
+                        </Border.GestureRecognizers>
+                    </Border>
+                </Grid>
 
-                                <Label
-                                Text="{Binding LowStocksCount}"
-                                FontSize="12"
-                                TextColor="White"
-                                HorizontalOptions="Center"
-                                VerticalOptions="Center"
-                                HorizontalTextAlignment="Center"
-                                VerticalTextAlignment="Center"/>
-                            </Border>
-                    </Grid>
-                    <!--fast moving products-->
-                    <Grid>
-                        <!-- The main button -->
-                        <Button
-                            ImageSource="fastmoving.png"
-                            WidthRequest="80"
-                            HeightRequest="80"
-                            BackgroundColor="Transparent"
-                            FontSize="10"
-                            Command="{Binding NavigateFastSellingProductsCommand}"
-                       />
-
-                                    <!-- The badge (using Border instead of Frame) -->
-                            <Border
-                                BackgroundColor="{StaticResource CancelButton}"
-                                StrokeThickness="0"
-                                HorizontalOptions="End"
-                                VerticalOptions="Start"
-                                Margin="5"
-                                WidthRequest="20"
-                                HeightRequest="20"
-                                StrokeShape="RoundRectangle 10,10,10,10">
-
-                                <Label
-                                    Text="{Binding FastMovingProductsCount}"
-                                    FontSize="12"
-                                    TextColor="White"
-                                    HorizontalOptions="Center"
-                                    VerticalOptions="Center"
-                                    HorizontalTextAlignment="Center"
-                                    VerticalTextAlignment="Center"/>
-                            </Border>
-                    </Grid>
-
-                </HorizontalStackLayout>
-            </Grid>
-            <!--card daily sales-->
-            <Grid Grid.Row="2">
+                <!-- ========== 3. SALES CARD ========== -->
                 <Border Style="{StaticResource CardStyle}">
-                    <Grid RowDefinitions="Auto,Auto"
-                      ColumnDefinitions="*,*"
-                      ColumnSpacing="10"
-                      RowSpacing="30">
-                        <!--#region daily -->
-                        <VerticalStackLayout  Grid.Row="0" Grid.Column="0">
-                            <Label Grid.Row="1"
-                               Text="Daily Sales"
-                               FontAttributes="Italic"
-                               TextColor="{StaticResource PrimaryDark}"/>
-                            <Label
-                               Text="{Binding DailySales, StringFormat='₱{0:N2}'}"
-                               TextColor="{StaticResource Gray950}"
-                               FontSize="25"
-                               FontAttributes="Bold"/>
+                    <Grid RowDefinitions="Auto,Auto,Auto"
+                          ColumnDefinitions="*,*"
+                          ColumnSpacing="10"
+                          RowSpacing="14">
 
+                        <!-- Daily (hero) -->
+                        <VerticalStackLayout Grid.Row="0" Grid.Column="0">
+                            <Label Text="Daily Sales"
+                                   FontAttributes="Italic"
+                                   TextColor="{StaticResource PrimaryDark}" />
+                            <Label Text="{Binding DailySales, StringFormat='₱{0:N2}'}"
+                                   TextColor="{StaticResource Gray950}"
+                                   FontSize="28"
+                                   FontAttributes="Bold" />
                         </VerticalStackLayout>
-                        <!--#endregion-->
-                        <!--#region benta -->
-                        <VerticalStackLayout  
-                            Grid.Row="1" 
-                            Grid.Column="0">
-                            <Border Style="{StaticResource MenuCard}" BackgroundColor="{StaticResource Primary}">
-                                <HorizontalStackLayout Spacing="5">
-                                    <Image Source="shoppingbasketwhite.png" HeightRequest="40"/>
-                                    <Label Text="Mag Benta" 
-                                           VerticalOptions="Center"
-                                           TextColor="{StaticResource WhiteText}"/>
-                                </HorizontalStackLayout>
-                                <Border.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding NavigateSellCommand}" />
-                                </Border.GestureRecognizers>
-                            </Border>
-                        </VerticalStackLayout>
-                        <!--#endregion-->
-                        <!--#region monthly -->
-                        <VerticalStackLayout  Grid.Row="0" Grid.Column="1">
-                            <Label Grid.Row="1"
-                            Text="Monthly Sales"
-                            FontAttributes="Italic"
-                            TextColor="{StaticResource PrimaryDark}"/>
-                            <Label
-                           Text="{Binding MonthlySales, StringFormat='₱{0:N2}'}"
-                           TextColor="{StaticResource Gray950}"
-                           FontSize="20"
-                           FontAttributes="Bold"/>
 
+                        <!-- Monthly -->
+                        <VerticalStackLayout Grid.Row="0" Grid.Column="1">
+                            <Label Text="Monthly Sales"
+                                   FontAttributes="Italic"
+                                   TextColor="{StaticResource PrimaryDark}" />
+                            <Label Text="{Binding MonthlySales, StringFormat='₱{0:N2}'}"
+                                   TextColor="{StaticResource Gray950}"
+                                   FontSize="20"
+                                   FontAttributes="Bold"
+                                   Margin="0,6,0,0" />
                         </VerticalStackLayout>
-                        <!--#endregion-->
-                        <!--#region sales -->
-                        <VerticalStackLayout  Grid.Row="1" Grid.Column="1">
-                            <Border Style="{StaticResource MenuCard}" BackgroundColor="{StaticResource Primary}">
-                                <HorizontalStackLayout Spacing="5">
-                                    <Image Source="pesowhite.png" HeightRequest="40"/>
-                                    <Label Text="View Sales" 
-                                           VerticalOptions="Center"
-                                           TextColor="{StaticResource WhiteText}"/>
-                                </HorizontalStackLayout>
-                                <Border.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding NavigateSalesCommand}" />
-                                </Border.GestureRecognizers>
-                            </Border>
-                        </VerticalStackLayout>
-                        <!--#endregion-->
+
+                        <!-- Mag Benta: main action, full width -->
+                        <Border Grid.Row="1" Grid.ColumnSpan="2"
+                                Style="{StaticResource MenuCard}"
+                                BackgroundColor="{StaticResource Primary}"
+                                HeightRequest="60">
+                            <HorizontalStackLayout Spacing="10"
+                                                   HorizontalOptions="Center"
+                                                   VerticalOptions="Center">
+                                <Image Source="shoppingbasketwhite.png" HeightRequest="36" />
+                                <Label Text="Mag Benta"
+                                       FontSize="18"
+                                       FontAttributes="Bold"
+                                       VerticalOptions="Center"
+                                       TextColor="{StaticResource WhiteText}" />
+                            </HorizontalStackLayout>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding NavigateSellCommand}" />
+                            </Border.GestureRecognizers>
+                        </Border>
+
+                        <!-- View Sales: secondary (outlined) -->
+                        <Border Grid.Row="2" Grid.ColumnSpan="2"
+                                Style="{StaticResource MenuCard}"
+                                BackgroundColor="Transparent"
+                                Stroke="{StaticResource Primary}"
+                                StrokeThickness="1.5"
+                                HeightRequest="55">
+                            <HorizontalStackLayout Spacing="8"
+                                                   HorizontalOptions="Center"
+                                                   VerticalOptions="Center">
+                                <Image Source="pesowhite.png" HeightRequest="24" />
+                                <Label Text="View Sales"
+                                       VerticalOptions="Center"
+                                       TextColor="{StaticResource Primary}" />
+                            </HorizontalStackLayout>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding NavigateSalesCommand}" />
+                            </Border.GestureRecognizers>
+                        </Border>
                     </Grid>
-
-                </Border>
-            </Grid>
-            <!--monthly profit due-->
-            <Grid Grid.Row="3"
-              BackgroundColor="Transparent">
-                <BoxView HeightRequest="60"/>
-            </Grid>
-            <!--menu-->
-            <Grid Grid.Row="4"
-                  Padding="10"
-              RowDefinitions="Auto,Auto"
-              ColumnDefinitions="*,*,*"
-              RowSpacing="10"
-              ColumnSpacing="10">
-                <!--#region row 0 -->
-
-                <Border Grid.Row="0" 
-                    Grid.Column="0"
-                    Style="{StaticResource MenuCard}"
-                    IsEnabled="{Binding IsAdmin}">
-                    <Border.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding NavigateProductCommand}" />
-                    </Border.GestureRecognizers>
-                    <StackLayout HorizontalOptions="Center">
-                        <Image Source="product.png" HeightRequest="30"/>
-                        <Label Text="Products" 
-                           HorizontalTextAlignment="Center"
-                               FontSize="10"/>
-                    </StackLayout>
-
                 </Border>
 
-                <Border Grid.Row="0" 
-                    Grid.Column="1"
-                    IsEnabled="{Binding IsAdmin}"
-                    Style="{StaticResource MenuCard}">
-                    <Border.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding NavigateIncomingStocksCommand}" />
-                    </Border.GestureRecognizers>
-                    <StackLayout HorizontalOptions="Center">
-                        <Image Source="inventory.png" HeightRequest="30"/>
-                        <Label Text="Incoming Stocks" 
-                           HorizontalTextAlignment="Center"
-                           FontSize="10"/>
-                    </StackLayout>
-                </Border>
+                <!-- ========== 4. MENU TILES ========== -->
+                <!-- Row 0 starts with the tile every role can use (Utang) -->
+                <Grid RowDefinitions="100,100"
+                      ColumnDefinitions="*,*,*"
+                      RowSpacing="10"
+                      ColumnSpacing="10">
 
-                <Border Grid.Row="1" 
-                    Grid.Column="0"
-                    IsEnabled="{Binding IsAdmin}"
-                    Style="{StaticResource MenuCard}">
-                    <Border.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding NavigateReportsCommand}" />
-                    </Border.GestureRecognizers>
-                    <StackLayout HorizontalOptions="Center">
-                        <Image Source="reports.png" HeightRequest="30"/>
-                        <Label Text="Reports" 
-                               HorizontalTextAlignment="Center"
-                               FontSize="10"/>
-                    </StackLayout>
-                </Border>
-                <Border Grid.Row="1" 
-                    Grid.Column="1"
-                    IsEnabled="{Binding IsAdmin}"
-                    Style="{StaticResource MenuCard}">
-                    <Border.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding NavigateSettingsCommand}" />
-                    </Border.GestureRecognizers>
-                    <StackLayout HorizontalOptions="Center">
-                        <Image Source="settings.png" HeightRequest="30"/>
-                        <Label Text="Settings" 
-                               HorizontalTextAlignment="Center"
-                               FontSize="10"/>
-                    </StackLayout>
-                </Border>
-                <Border Grid.Row="0" 
-                    Grid.Column="2"
-                    Style="{StaticResource MenuCard}">
-                    <Border.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding NavigateCreditsCommand}" />
-                    </Border.GestureRecognizers>
-                    <StackLayout HorizontalOptions="Center">
-                        <Image Source="notebook.png" HeightRequest="30"/>
-                        <Label Text="Listahan ng Utang" 
-                           HorizontalTextAlignment="Center"
-                           FontSize="10"/>
-                    </StackLayout>
-                </Border>
-                <Border Grid.Row="1" 
-                    Grid.Column="2"
-                    Style="{StaticResource MenuCard}"
-                    IsEnabled="{Binding IsAdmin}">
+                    <Border Grid.Row="0" Grid.Column="0"
+                            Style="{StaticResource MenuCard}">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding NavigateCreditsCommand}" />
+                        </Border.GestureRecognizers>
+                        <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="6">
+                            <Image Source="notebook.png" HeightRequest="32" />
+                            <Label Text="Listahan ng Utang" Style="{StaticResource TileLabel}" FontSize="11" />
+                        </VerticalStackLayout>
+                    </Border>
 
-                    <Border.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding NavigateDatabaseCommand}" />
-                    </Border.GestureRecognizers>
-                    <StackLayout HorizontalOptions="Center">
-                        <Image Source="database.png" HeightRequest="30"/>
-                        <Label Text="DB Backup/Restore" 
-                           HorizontalTextAlignment="Center"
-                           FontSize="10"/>
-                    </StackLayout>
-                </Border>
-  
+                    <Border Grid.Row="0" Grid.Column="1"
+                            Style="{StaticResource MenuCard}"
+                            IsEnabled="{Binding IsAdmin}">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding NavigateProductCommand}" />
+                        </Border.GestureRecognizers>
+                        <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="6">
+                            <Image Source="product.png" HeightRequest="32" />
+                            <Label Text="Products" Style="{StaticResource TileLabel}" />
+                        </VerticalStackLayout>
+                    </Border>
 
-            </Grid>
-            <!--ads banner-->
-            <Grid Grid.Row="5">
-                
-            </Grid>
+                    <Border Grid.Row="0" Grid.Column="2"
+                            Style="{StaticResource MenuCard}"
+                            IsEnabled="{Binding IsAdmin}">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding NavigateIncomingStocksCommand}" />
+                        </Border.GestureRecognizers>
+                        <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="6">
+                            <Image Source="inventory.png" HeightRequest="32" />
+                            <Label Text="Incoming Stocks" Style="{StaticResource TileLabel}" />
+                        </VerticalStackLayout>
+                    </Border>
 
-            <!--footer-->
-            <Grid Grid.Row="6"
-              BackgroundColor="{StaticResource Primary}">
+                    <Border Grid.Row="1" Grid.Column="0"
+                            Style="{StaticResource MenuCard}"
+                            IsEnabled="{Binding IsAdmin}">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding NavigateReportsCommand}" />
+                        </Border.GestureRecognizers>
+                        <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="6">
+                            <Image Source="reports.png" HeightRequest="32" />
+                            <Label Text="Reports" Style="{StaticResource TileLabel}" />
+                        </VerticalStackLayout>
+                    </Border>
 
-            </Grid>
-        </Grid>
-    </ScrollView>
+                    <Border Grid.Row="1" Grid.Column="1"
+                            Style="{StaticResource MenuCard}"
+                            IsEnabled="{Binding IsAdmin}">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding NavigateSettingsCommand}" />
+                        </Border.GestureRecognizers>
+                        <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="6">
+                            <Image Source="settings.png" HeightRequest="32" />
+                            <Label Text="Settings" Style="{StaticResource TileLabel}" />
+                        </VerticalStackLayout>
+                    </Border>
 
+                    <Border Grid.Row="1" Grid.Column="2"
+                            Style="{StaticResource MenuCard}"
+                            IsEnabled="{Binding IsAdmin}">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding NavigateDatabaseCommand}" />
+                        </Border.GestureRecognizers>
+                        <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="6">
+                            <Image Source="database.png" HeightRequest="32" />
+                            <Label Text="Backup" Style="{StaticResource TileLabel}" />
+                        </VerticalStackLayout>
+                    </Border>
+                </Grid>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- ========== 5. BOTTOM AD BANNER SLOT (fixed, not scrolling) ========== -->
+        <!-- If your ad is already placed elsewhere (e.g. AppShell), delete this Grid. -->
+        <Grid Grid.Row="1"
+              BackgroundColor="{StaticResource Primary}"
+              HeightRequest="50" />
+    </Grid>
 </ContentPage>

@@ -8,7 +8,7 @@ namespace TindaKo.Models
 {
     public class FastSellingProductDto
     {
-        public string ProductName { get; set; }
+        public string ProductName { get; set; } = string.Empty;
         public decimal TotalQty { get; set; }
     }
 

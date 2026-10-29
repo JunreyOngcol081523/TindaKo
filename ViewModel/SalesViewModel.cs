@@ -85,7 +85,7 @@ namespace TindaKo.ViewModel
                 
             SalesDetailsViewModel vm = new SalesDetailsViewModel(selectedTransaction);
             SalesDetailsPage salesDetailsPage = new SalesDetailsPage(vm);
-            await Application.Current.MainPage.Navigation.PushModalAsync(salesDetailsPage);
+            await App.Navigator.Navigation.PushModalAsync(salesDetailsPage);
         }
     }
 }

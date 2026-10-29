@@ -14,9 +14,9 @@ namespace TindaKo.Models
         [PrimaryKey, AutoIncrement]
         public int ProdId { get; set; }
 
-        public string ProdName { get; set; }
+        public string ProdName { get; set; } = string.Empty;
 
-        public string Category { get; set; }
+        public string Category { get; set; } = string.Empty;
 
         public decimal Price { get; set; }
 
@@ -54,7 +54,7 @@ namespace TindaKo.Models
         public ProductDisplay() { }
         public int ProdId { get; set; }
   
-        public string ProdName { get; set; }
+        public string ProdName { get; set; } = string.Empty;
         
         private decimal supplierPrice;
  
