@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="TindaKo.Views.StoreSettings"
              xmlns:viewmodels="clr-namespace:TindaKo.ViewModel"
+             xmlns:editors="clr-namespace:Syncfusion.Maui.Toolkit.NumericUpDown;assembly=Syncfusion.Maui.Toolkit"
              Title="Store Settings">
     <ScrollView>
         <Border Style="{StaticResource CardStyle}" Margin="20">
@@ -62,6 +63,33 @@
                     Placeholder="Enter your Store Phone Number"
                     Text="{Binding StorePhoneNum}"
                     Keyboard="Email"/>
+                </VerticalStackLayout>
+                <!-- Utang Section -->
+                <VerticalStackLayout Spacing="8">
+                    <Label 
+                    Text="Allowed Utang in your Store?"
+                    FontSize="16"
+                    FontAttributes="Bold" />
+                    <CheckBox 
+                    IsChecked="{Binding AllowUtang}" />
+                </VerticalStackLayout>
+                <!-- Due date Section -->
+                <VerticalStackLayout Spacing="8">
+                    <Label 
+                    Text="How Many Days Before Due Date?"
+                    FontSize="16"
+                    FontAttributes="Bold" />
+                    <editors:SfNumericUpDown
+                                    Placeholder="Quantity added"
+                                    Value="{Binding DueDateDays, Mode=TwoWay}"
+                                    AllowNull="False"
+                                    UpDownButtonColor="{StaticResource PrimaryDark}"
+                                    Minimum="0"
+                                    CustomFormat="0"
+                                    UpDownButtonAlignment="Both" 
+                                    HorizontalTextAlignment="Center"
+                                    HeightRequest="45"
+                                    SmallChange="1"/>
                 </VerticalStackLayout>
 
                 <!-- Buttons Section -->

@@ -3,81 +3,172 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="TindaKo.Views.SalesDetailsPage"
              xmlns:viewmodel="clr-namespace:TindaKo.ViewModel"
-             Title="Sales Details">
+             Title="Sales Details"
+             BackgroundColor="{AppThemeBinding Light=#F4F6F8, Dark=#121212}">
 
-    <VerticalStackLayout Padding="20" Spacing="10">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style x:Key="CardStyle" TargetType="Border">
+                <Setter Property="BackgroundColor"
+                        Value="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}" />
+                <Setter Property="Stroke"
+                        Value="{AppThemeBinding Light=#E0E0E0, Dark=#333333}" />
+                <Setter Property="StrokeThickness" Value="1" />
+                <Setter Property="StrokeShape" Value="RoundRectangle 14" />
+            </Style>
 
-        <!-- First Row -->
-        <Grid ColumnDefinitions="*,Auto" >
-            <Label Text="{Binding TransDisplay.DateTimeTransacted}"
-                   FontSize="12"
-                   TextColor="Black"
-                   FontAttributes="Italic"/>
-            <Label Text="{Binding TransDisplay.Username}"
-                   FontSize="12"
-                   HorizontalOptions="End"
-                   TextColor="Black"/>
-        </Grid>
+            <Style x:Key="CaptionLabel" TargetType="Label">
+                <Setter Property="FontSize" Value="11" />
+                <Setter Property="TextColor"
+                        Value="{AppThemeBinding Light=#757575, Dark=#A0A0A0}" />
+            </Style>
 
-        <!-- Second Row -->
-        <Grid ColumnDefinitions="*,Auto"
-              RowDefinitions="*,*">
-            <Label Grid.Row="0" 
-                   Grid.Column="0" 
-                   Grid.RowSpan="2"
-                   VerticalOptions="Center"
-                   Text="{Binding TransDisplay.TotalAmount, StringFormat='₱{0:N2}'}"
+            <Style x:Key="ItemText" TargetType="Label">
+                <Setter Property="TextColor"
+                        Value="{AppThemeBinding Light=#212121, Dark=#F5F5F5}" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
-                   FontAttributes="Bold"
-                   TextColor="#004D40"/>
-            <Label Grid.Row="0" 
-                   Grid.Column="1" 
-                   Text="{Binding TransDisplay.TransactionType}"
+    <!-- Rows: summary | items (fills space) | pinned Close button -->
+    <Grid RowDefinitions="Auto,*,Auto" RowSpacing="14" Padding="16">
 
-                   HorizontalOptions="End"
-                   FontAttributes="Bold"
-                   TextColor="#16A085"/>
-            <!-- Third Row -->
-            <Label Grid.Row="1"
-                   Grid.Column="0"
-                   Grid.ColumnSpan="2"
-                Text="{Binding TransDisplay.BuyerName}"
-               FontSize="16"
-               TextColor="#34495E"
-               HorizontalOptions="End"
-               HorizontalTextAlignment="End"/>
-        </Grid>
+        <!-- SUMMARY CARD -->
+        <Border Grid.Row="0" Style="{StaticResource CardStyle}" Padding="16">
+            <VerticalStackLayout Spacing="12">
 
-
-
-        <!-- Separator -->
-        <BoxView HeightRequest="1" Color="Gray" Margin="0,10"/>
-
-        <CollectionView ItemsSource="{Binding SoldItems}">
-            <CollectionView.Header>
-                <Grid ColumnDefinitions="2.5*,1.5*,1*,2*" Padding="5" BackgroundColor="{StaticResource Primary}">
-                    <Label TextColor="{StaticResource WhiteText}" Grid.Column="0" Text="Product Name" FontAttributes="Bold" />
-
-                    <Label TextColor="{StaticResource WhiteText}" Grid.Column="1" Text="Price" FontAttributes="Bold" />
-                    <Label TextColor="{StaticResource WhiteText}" Grid.Column="2" Text="Qty" FontAttributes="Bold" />
-                    <Label TextColor="{StaticResource WhiteText}" Grid.Column="3" Text="Subtotal" FontAttributes="Bold" />
+                <!-- Date + Cashier -->
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                    <Label Grid.Column="0"
+                           Text="{Binding TransDisplay.DateTimeTransacted}"
+                           FontSize="12"
+                           FontAttributes="Italic"
+                           Style="{StaticResource CaptionLabel}" />
+                    <Label Grid.Column="1"
+                           Text="{Binding TransDisplay.Username}"
+                           FontSize="12"
+                           HorizontalOptions="End"
+                           Style="{StaticResource CaptionLabel}" />
                 </Grid>
-            </CollectionView.Header>
 
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <Grid ColumnDefinitions="2.5*,1.5*,1*,2*" Padding="5" RowDefinitions="Auto,*">
-                        <Label Grid.Row="0" Grid.Column="0" Text="{Binding ProductName}" />
+                <BoxView HeightRequest="1"
+                         Color="{AppThemeBinding Light=#EEEEEE, Dark=#333333}" />
 
-                        <Label Grid.Row="0" Grid.Column="1" Text="{Binding Price, StringFormat='₱{0:N2}'}" />
-                        <Label Grid.Row="0" Grid.Column="2" Text="{Binding Qty}" />
-                        <Label Grid.Row="0" Grid.Column="3" Text="{Binding SoldSubtotal, StringFormat='₱{0:N2}'}" />
-                        <BoxView Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="5" HeightRequest="1" Color="LightGray" />
-                    </Grid>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
+                <!-- Total + Transaction type badge -->
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                    <VerticalStackLayout Grid.Column="0" Spacing="0" VerticalOptions="Center">
+                        <Label Text="TOTAL" Style="{StaticResource CaptionLabel}" />
+                        <Label Text="{Binding TransDisplay.TotalAmount, StringFormat='₱{0:N2}'}"
+                               FontSize="30"
+                               FontAttributes="Bold"
+                               TextColor="#004D40" />
+                    </VerticalStackLayout>
 
-        <Button Text="Close" Command="{Binding CloseDetailsCommand}" BackgroundColor="{StaticResource CancelButton}"/>
-    </VerticalStackLayout>
+                    <Border Grid.Column="1"
+                            VerticalOptions="Start"
+                            Padding="12,5"
+                            BackgroundColor="#1A16A085"
+                            StrokeThickness="0"
+                            StrokeShape="RoundRectangle 14">
+                        <Label Text="{Binding TransDisplay.TransactionType}"
+                               FontSize="13"
+                               FontAttributes="Bold"
+                               TextColor="#16A085" />
+                    </Border>
+                </Grid>
+
+                <!-- Buyer -->
+                <VerticalStackLayout Spacing="0">
+                    <Label Text="BUYER" Style="{StaticResource CaptionLabel}" />
+                    <Label Text="{Binding TransDisplay.BuyerName}"
+                           FontSize="17"
+                           FontAttributes="Bold"
+                           TextColor="#34495E"
+                           LineBreakMode="TailTruncation" />
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+        </Border>
+
+        <!-- ITEMS SOLD -->
+        <Border Grid.Row="1"
+                Style="{StaticResource CardStyle}"
+                Padding="0">
+            <Grid RowDefinitions="Auto,*">
+
+                <!-- Fixed table header -->
+                <Grid Grid.Row="0"
+                      ColumnDefinitions="*,Auto"
+                      Padding="14,10"
+                      BackgroundColor="{StaticResource Primary}">
+                    <Label Grid.Column="0" Text="Items Sold"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource WhiteText}" />
+                    <Label Grid.Column="1" Text="Subtotal"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource WhiteText}" />
+                </Grid>
+
+                <CollectionView Grid.Row="1"
+                                ItemsSource="{Binding SoldItems}"
+                                SelectionMode="None">
+
+                    <CollectionView.EmptyView>
+                        <Label Text="No items found."
+                               Style="{StaticResource CaptionLabel}"
+                               HorizontalOptions="Center"
+                               Margin="0,30,0,0" />
+                    </CollectionView.EmptyView>
+
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid RowDefinitions="Auto,Auto">
+                                <Grid Grid.Row="0"
+                                      ColumnDefinitions="*,Auto"
+                                      ColumnSpacing="10"
+                                      Padding="14,10">
+
+                                    <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                        <Label Text="{Binding ProductName}"
+                                               FontSize="15"
+                                               FontAttributes="Bold"
+                                               LineBreakMode="TailTruncation"
+                                               Style="{StaticResource ItemText}" />
+                                        <Label Style="{StaticResource CaptionLabel}" FontSize="12">
+                                            <Label.FormattedText>
+                                                <FormattedString>
+                                                    <Span Text="{Binding Qty}" />
+                                                    <Span Text=" × " />
+                                                    <Span Text="{Binding Price, StringFormat='₱{0:N2}'}" />
+                                                </FormattedString>
+                                            </Label.FormattedText>
+                                        </Label>
+                                    </VerticalStackLayout>
+
+                                    <Label Grid.Column="1"
+                                           Text="{Binding SoldSubtotal, StringFormat='₱{0:N2}'}"
+                                           FontSize="15"
+                                           FontAttributes="Bold"
+                                           VerticalOptions="Center"
+                                           TextColor="#004D40" />
+                                </Grid>
+
+                                <BoxView Grid.Row="1" HeightRequest="1"
+                                         Color="{AppThemeBinding Light=#EEEEEE, Dark=#333333}" />
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </Grid>
+        </Border>
+
+        <!-- CLOSE -->
+        <Button Grid.Row="2"
+                Text="Close"
+                Command="{Binding CloseDetailsCommand}"
+                BackgroundColor="{StaticResource CancelButton}"
+                TextColor="White"
+                FontAttributes="Bold"
+                CornerRadius="12"
+                HeightRequest="48" />
+    </Grid>
 </ContentPage>

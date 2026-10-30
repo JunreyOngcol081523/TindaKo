@@ -1,6 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using DocumentFormat.OpenXml.Spreadsheet;
 using Microcharts;
 using SkiaSharp;
 using System;
@@ -10,11 +9,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TindaKo.Helpers;
+using TindaKo.Models;
 using TindaKo.Services;
+
 namespace TindaKo.ViewModel
 {
     public partial class ReportsViewModel : ObservableObject
     {
+        // =====================================================
+        //  CHARTS (existing)
+        // =====================================================
         private Chart _monthlySalesChart;
         private Chart _expensesSalesChart;
         public ObservableCollection<int> AvailableYears { get; } = new();
@@ -47,17 +51,17 @@ namespace TindaKo.ViewModel
 
         [ObservableProperty]
         private string filterBy = "Monthly";
+
         public ReportsViewModel()
         {
             LoadAvailableYears();
             SelectedYear = DateTime.Now.Year; // Default to current year
             SegmentOptions = new ObservableCollection<string>
-        {
-            "Monthly", "Yearly", "Custom"
-        };
+            {
+                "Monthly", "Yearly", "Custom"
+            };
             SelectedSegmentIndex = 0;
         }
-
 
         private int _selectedYear;
         public int SelectedYear
@@ -67,15 +71,15 @@ namespace TindaKo.ViewModel
             {
                 if (SetProperty(ref _selectedYear, value))
                 {
-                    _= LoadMonthlySalesChart();
+                    _ = LoadMonthlySalesChart();
                 }
             }
         }
+
         private async Task LoadMonthlySalesChart()
         {
             try
             {
-
                 var entries = await ChartHelper.MonthlySalesEntry(SelectedYear);
                 if (entries != null && entries.Any())
                 {
@@ -93,13 +97,13 @@ namespace TindaKo.ViewModel
                 {
                     MonthlySalesChart = null; // or show an "empty" message UI
                 }
-
             }
             catch (Exception ex)
             {
                 await App.Navigator.DisplayAlert("Error", ex.Message, "OK");
             }
         }
+
         private void LoadAvailableYears()
         {
             int currentYear = DateTime.Now.Year;
@@ -125,10 +129,14 @@ namespace TindaKo.ViewModel
                 Entries = entries ?? new List<ChartEntry>()
             };
         }
+
+        // FIX: SelectedDateRange now refreshes when either date changes
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(SelectedDateRange))]
         private DateTime dateFrom = DateTime.Today.AddDays(-7); // Default: 7 days ago
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(SelectedDateRange))]
         private DateTime dateTo = DateTime.Today; // Default: today
 
         public string SelectedDateRange => $"From {DateFrom:MMM dd, yyyy} to {DateTo:MMM dd, yyyy}";
@@ -136,17 +144,91 @@ namespace TindaKo.ViewModel
         [RelayCommand]
         private async Task GenerateReportAsync()
         {
-
             if (DateFrom > DateTo)
             {
                 await ToastHelper.ShowError("Start date cannot be later than end date.");
                 return;
             }
-            FilterBy = SelectedSegmentLabel ?? "Monthly"; 
+            FilterBy = SelectedSegmentLabel ?? "Monthly";
 
-            await LoadExpensesSales(FilterBy,DateFrom,DateTo);
-
+            await LoadExpensesSales(FilterBy, DateFrom, DateTo);
         }
 
+        // =====================================================
+        //  TABS (new)
+        // =====================================================
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(IsSalesTab))]
+        [NotifyPropertyChangedFor(nameof(IsOutgoingTab))]
+        private int selectedTabIndex = 0;
+
+        public bool IsSalesTab => SelectedTabIndex == 0;
+        public bool IsOutgoingTab => SelectedTabIndex == 1;
+
+        private bool _outgoingLoadedOnce;
+
+        // Load the outgoing list automatically the first time its tab is opened
+        partial void OnSelectedTabIndexChanged(int value)
+        {
+            if (value == 1 && !_outgoingLoadedOnce)
+            {
+                _outgoingLoadedOnce = true;
+                _ = LoadOutgoingAsync();
+            }
+        }
+
+        // =====================================================
+        //  OUTGOING PRODUCTS (new)
+        //  Own date range so it never clashes with the chart's DateFrom/DateTo
+        // =====================================================
+        [ObservableProperty]
+        private DateTime outgoingDateFrom = DateTime.Today.AddDays(-7);
+
+        [ObservableProperty]
+        private DateTime outgoingDateTo = DateTime.Today;
+
+        [ObservableProperty]
+        private decimal outgoingTotalAmount;
+
+        [ObservableProperty]
+        private decimal outgoingTotalQty;
+
+        [ObservableProperty]
+        private bool isOutgoingBusy;
+
+        public ObservableCollection<OutgoingProductItem> OutgoingItems { get; } = new();
+
+        [RelayCommand]
+        private async Task LoadOutgoingAsync()
+        {
+            if (IsOutgoingBusy) return;
+
+            if (OutgoingDateFrom > OutgoingDateTo)
+            {
+                await ToastHelper.ShowError("Start date cannot be later than end date.");
+                return;
+            }
+
+            IsOutgoingBusy = true;
+            try
+            {
+                var rows = await SellServices.GetOutgoingProductsAsync(OutgoingDateFrom, OutgoingDateTo);
+
+                OutgoingItems.Clear();
+                foreach (var r in rows)
+                    OutgoingItems.Add(r);
+
+                OutgoingTotalAmount = rows.Sum(r => r.TotalAmount);
+                OutgoingTotalQty = rows.Sum(r => r.TotalQty);
+            }
+            catch (Exception ex)
+            {
+                await App.Navigator.DisplayAlert("Error", ex.Message, "OK");
+            }
+            finally
+            {
+                IsOutgoingBusy = false;
+            }
+        }
     }
 }

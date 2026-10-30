@@ -32,14 +32,18 @@ namespace TindaKo.ViewModel
         [ObservableProperty] private bool isCreditChecked;
         [ObservableProperty] private bool isCashChecked;
         [ObservableProperty] private string transactionType;
-        public Buyer SelectedBuyer { get; set; } // in SellViewModel
+        public Buyer? SelectedBuyer { get; set; } // in SellViewModel
         [ObservableProperty] private string selectedBuyerName;
         [ObservableProperty] private bool isCartHasItems;
+        [ObservableProperty] private bool isAllowedUtang;
+        private int _dueDateDays;
         public SellViewModel()
         {
             CartList.CollectionChanged += CartList_CollectionChanged;
             IsCashChecked = true;
             IsCartHasItems = false;
+            IsAllowedUtang = Preferences.Get("AllowUtang", false);
+            _dueDateDays = Preferences.Get("DueDateDays", 0);
         }
 
         private void CartList_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -107,6 +111,7 @@ namespace TindaKo.ViewModel
                 {
                     ProductId = product.ProdId,
                     ProdName = product.ProdName,
+                    ProdCategory = product.Category,
                     Price = product.Price,
                     Quantity = product.Quantity,
                     Subtotal = product.Subtotal
@@ -245,7 +250,7 @@ namespace TindaKo.ViewModel
                         CreditorName = SelectedBuyer.Name,
                         CreditAmount = TotalAmount,
                         CreditDate = DateTime.Now,
-                        DueDate = DateTime.Now.AddMonths(1),
+                        DueDate = DateTime.Now.AddDays(_dueDateDays),
                         IsPaid = false
                     };
                     await CreditorServices.SaveCreditorAsync(creditor);

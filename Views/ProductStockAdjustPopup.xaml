@@ -2,38 +2,118 @@
 <ContentPage
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:viewmodel="clr-namespace:TindaKo.ViewModel"
     xmlns:editors="clr-namespace:Syncfusion.Maui.Toolkit.NumericUpDown;assembly=Syncfusion.Maui.Toolkit"
-    x:Class="TindaKo.Views.ProductStockAdjustPopup">
+    x:Class="TindaKo.Views.ProductStockAdjustPopup"
+    Title="Adjust Stocks"
+    BackgroundColor="{AppThemeBinding Light=#F4F6F8, Dark=#121212}">
 
-    <VerticalStackLayout Padding="20" Spacing="10">
-        
-        <Label Text="{Binding _product.ProdName, StringFormat='Product: {0}'}"
-               FontSize="16" FontAttributes="Bold"/>
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style x:Key="CaptionLabel" TargetType="Label">
+                <Setter Property="FontSize" Value="11" />
+                <Setter Property="TextColor"
+                        Value="{AppThemeBinding Light=#757575, Dark=#A0A0A0}" />
+            </Style>
 
-        <Label Text="Add Stocks In:" />
-        <editors:SfNumericUpDown
-                                            Value="{Binding NewStocksIn}"
-                                            AllowNull="False"
-                                            UpDownButtonColor="{StaticResource PrimaryDark}"
-                                            Minimum="0"
-                                            CustomFormat="0"
-                                            UpDownButtonAlignment="Both" 
-                                            SmallChange="1"/>
-        <Label Text="Add Stocks Out:" />
-        <editors:SfNumericUpDown
-                                            Value="{Binding NewStocksOut}"
-                                            AllowNull="False"
-                                            UpDownButtonColor="{StaticResource PrimaryDark}"
-                                            Minimum="0"
-                                            CustomFormat="0"
-                                            UpDownButtonAlignment="Both" 
-                                            SmallChange="1"/>
-        <Label Text="{Binding ReadMe}" FontAttributes="Italic" TextColor="{StaticResource Gray400}"/>
-        <Button Text="Confirm Adjust" 
-                Command="{Binding AdjustProductStocksCommand}" />
+            <Style x:Key="SectionLabel" TargetType="Label">
+                <Setter Property="FontSize" Value="15" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="TextColor"
+                        Value="{AppThemeBinding Light=#212121, Dark=#F5F5F5}" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
-        <Button Text="Cancel Adjusting Stocks" Command="{Binding CloseAdjustCommand}" BackgroundColor="{StaticResource CancelButton}"/>
-    </VerticalStackLayout>
+    <!-- Rows: scrollable content | pinned buttons -->
+    <Grid RowDefinitions="*,Auto" Padding="16" RowSpacing="12">
+
+        <ScrollView Grid.Row="0">
+            <VerticalStackLayout Spacing="14">
+
+                <!-- PRODUCT HEADER -->
+                <Border Style="{StaticResource CardStyle}" Padding="16">
+                    <VerticalStackLayout Spacing="2">
+                        <Label Text="PRODUCT" Style="{StaticResource CaptionLabel}" />
+                        <Label Text="{Binding _product.ProdName}"
+                               FontSize="20"
+                               FontAttributes="Bold"
+                               LineBreakMode="TailTruncation"
+                               TextColor="{StaticResource PrimaryDark}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- STOCKS IN -->
+                <Border Style="{StaticResource CardStyle}" Padding="16">
+                    <VerticalStackLayout Spacing="8">
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                            <Label Grid.Column="0" Text="＋" FontSize="18"
+                                   FontAttributes="Bold" TextColor="#16A085"
+                                   VerticalOptions="Center" />
+                            <Label Grid.Column="1" Text="Add Stocks In"
+                                   Style="{StaticResource SectionLabel}"
+                                   VerticalOptions="Center" />
+                        </Grid>
+                        <editors:SfNumericUpDown
+                            Value="{Binding NewStocksIn}"
+                            AllowNull="False"
+                            UpDownButtonColor="{StaticResource PrimaryDark}"
+                            Minimum="0"
+                            CustomFormat="0"
+                            UpDownButtonAlignment="Both"
+                            SmallChange="1" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- STOCKS OUT -->
+                <Border Style="{StaticResource CardStyle}" Padding="16">
+                    <VerticalStackLayout Spacing="8">
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                            <Label Grid.Column="0" Text="－" FontSize="18"
+                                   FontAttributes="Bold" TextColor="{StaticResource CancelButton}"
+                                   VerticalOptions="Center" />
+                            <Label Grid.Column="1" Text="Add Stocks Out"
+                                   Style="{StaticResource SectionLabel}"
+                                   VerticalOptions="Center" />
+                        </Grid>
+                        <editors:SfNumericUpDown
+                            Value="{Binding NewStocksOut}"
+                            AllowNull="False"
+                            UpDownButtonColor="{StaticResource PrimaryDark}"
+                            Minimum="0"
+                            CustomFormat="0"
+                            UpDownButtonAlignment="Both"
+                            SmallChange="1" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- INFO NOTE -->
+                <Label Text="{Binding ReadMe}"
+                       FontSize="13"
+                       FontAttributes="Italic"
+                       Margin="4,0"
+                       TextColor="{StaticResource Gray400}" />
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- PINNED BUTTONS -->
+        <Grid Grid.Row="1" ColumnDefinitions="*,2*" ColumnSpacing="10">
+            <Button Grid.Column="0"
+                    Text="Cancel"
+                    TextColor="White"
+                    FontAttributes="Bold"
+                    CornerRadius="12"
+                    HeightRequest="50"
+                    BackgroundColor="{StaticResource CancelButton}"
+                    Command="{Binding CloseAdjustCommand}" />
+            <Button Grid.Column="1"
+                    Text="Confirm Adjust"
+                    TextColor="White"
+                    FontAttributes="Bold"
+                    CornerRadius="12"
+                    HeightRequest="50"
+                    BackgroundColor="{StaticResource Primary}"
+                    Command="{Binding AdjustProductStocksCommand}" />
+        </Grid>
+    </Grid>
 </ContentPage>

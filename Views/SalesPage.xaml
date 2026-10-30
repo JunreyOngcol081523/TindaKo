@@ -1,90 +1,175 @@
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodel="clr-namespace:TindaKo.ViewModel"
              xmlns:local="clr-namespace:TindaKo.Converters"
              x:Class="TindaKo.Views.SalesPage"
-             Title="Sales">
+             Title="Sales"
+             BackgroundColor="{AppThemeBinding Light=#F4F6F8, Dark=#121212}">
 
     <ContentPage.Resources>
         <ResourceDictionary>
             <local:TransactionTypeToImageConverter x:Key="TransactionTypeToImageConverter" />
+
+            <Style x:Key="CaptionLabel" TargetType="Label">
+                <Setter Property="FontSize" Value="11" />
+                <Setter Property="TextColor"
+                        Value="{AppThemeBinding Light=#757575, Dark=#A0A0A0}" />
+            </Style>
+
+            <Style x:Key="FilterInput" TargetType="DatePicker">
+                <Setter Property="FontSize" Value="13" />
+                <Setter Property="TextColor"
+                        Value="{AppThemeBinding Light=#212121, Dark=#F5F5F5}" />
+            </Style>
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <Grid RowDefinitions="Auto,*,Auto" Padding="5">
+    <!-- Rows: filters | transaction list (fills space) | pinned total -->
+    <Grid RowDefinitions="Auto,*,Auto" RowSpacing="12">
 
-        <!-- Filters (NOT scrollable) -->
-        <Border Grid.Row="0" Padding="10" Margin="0,0,0,15">
-            <VerticalStackLayout>
-                <Label FontSize="12" Text="From:" VerticalTextAlignment="Center"/>
-                <DatePicker FontSize="12"
+        <!-- FILTERS (compact, not scrollable) -->
+        <Border Grid.Row="0"
+                Style="{StaticResource CardStyle}"
+                Margin="12,12,12,0"
+                Padding="14,10">
+            <Grid RowDefinitions="Auto,Auto,Auto,Auto"
+                  ColumnDefinitions="*,*"
+                  ColumnSpacing="12"
+                  RowSpacing="0">
+
+                <!-- Date range side by side -->
+                <Label Grid.Row="0" Grid.Column="0" Text="FROM" Style="{StaticResource CaptionLabel}" />
+                <Label Grid.Row="0" Grid.Column="1" Text="TO" Style="{StaticResource CaptionLabel}" />
+
+                <DatePicker Grid.Row="1" Grid.Column="0"
                             Date="{Binding DateFrom}"
-                            IsEnabled="{Binding IsFilterEnabled}"/>
-                <Label FontSize="12" Text="To:" VerticalTextAlignment="Center"/>
-                <DatePicker FontSize="12"
+                            IsEnabled="{Binding IsFilterEnabled}"
+                            Style="{StaticResource FilterInput}" />
+                <DatePicker Grid.Row="1" Grid.Column="1"
                             Date="{Binding DateTo}"
-                            IsEnabled="{Binding IsFilterEnabled}"/>
-                <Picker Title="Select Transaction Type"
-                        FontSize="12"
+                            IsEnabled="{Binding IsFilterEnabled}"
+                            Style="{StaticResource FilterInput}" />
+
+                <!-- Transaction type -->
+                <Picker Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                        Title="Select Transaction Type"
+                        FontSize="13"
+                        TextColor="{AppThemeBinding Light=#212121, Dark=#F5F5F5}"
                         IsEnabled="{Binding IsFilterEnabled}"
                         ItemsSource="{Binding TransactionType}"
                         SelectedItem="{Binding SelectedTransactionType}" />
-                <HorizontalStackLayout>
-                    <CheckBox IsChecked="{Binding IsFilterEnabled}" />
-                    <Label Text="Enable Filter"
-                           VerticalOptions="Center" />
-                </HorizontalStackLayout>
-                <Button Text="Show Transactions"
-                        Command="{Binding LoadTransactionCommand}"/>
-            </VerticalStackLayout>
+
+                <!-- Enable toggle + action -->
+                <Grid Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
+                      ColumnDefinitions="Auto,*,Auto"
+                      Margin="0,6,0,0">
+                    <CheckBox Grid.Column="0"
+                              IsChecked="{Binding IsFilterEnabled}"
+                              Color="{StaticResource Primary}" />
+                    <Label Grid.Column="1"
+                           Text="Enable Filter"
+                           FontSize="13"
+                           VerticalOptions="Center"
+                           TextColor="{AppThemeBinding Light=#212121, Dark=#F5F5F5}" />
+                    <Button Grid.Column="2"
+                            Text="Show Transactions"
+                            Command="{Binding LoadTransactionCommand}"
+                            BackgroundColor="{StaticResource Primary}"
+                            TextColor="White"
+                            FontAttributes="Bold"
+                            FontSize="13"
+                            CornerRadius="12"
+                            HeightRequest="42"
+                            Padding="16,0" />
+                </Grid>
+            </Grid>
         </Border>
 
-        <!-- SCROLLABLE transaction list -->
+        <!-- TRANSACTION LIST (own scrolling, virtualized) -->
         <CollectionView Grid.Row="1"
-                        ItemsSource="{Binding TransactionDisplay}">
+                        ItemsSource="{Binding TransactionDisplay}"
+                        SelectionMode="None"
+                        Margin="12,0">
+
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Vertical" ItemSpacing="8" />
+            </CollectionView.ItemsLayout>
+
+            <CollectionView.EmptyView>
+                <Label Text="No transactions to show."
+                       Style="{StaticResource CaptionLabel}"
+                       FontSize="13"
+                       HorizontalOptions="Center"
+                       Margin="0,40,0,0" />
+            </CollectionView.EmptyView>
+
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <Border Style="{StaticResource CardStyle}" Padding="10">
+                    <Border Style="{StaticResource CardStyle}" Padding="12">
                         <Border.GestureRecognizers>
-                            <TapGestureRecognizer 
-                                    Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:SalesViewModel}}, Path=ItemTappedCommand}"
-                                    CommandParameter="{Binding .}"/>
+                            <TapGestureRecognizer
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:SalesViewModel}}, Path=ItemTappedCommand}"
+                                CommandParameter="{Binding .}" />
                         </Border.GestureRecognizers>
-                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
-                            <Image Grid.Column="0"
-                                   Source="{Binding TransactionType, Converter={StaticResource TransactionTypeToImageConverter}}"
-                                   HeightRequest="30"
-                                   WidthRequest="30" />
+
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+
+                            <!-- Type icon in a soft circle -->
+                            <Border Grid.Column="0"
+                                    WidthRequest="46" HeightRequest="46"
+                                    StrokeThickness="0"
+                                    StrokeShape="RoundRectangle 23"
+                                    BackgroundColor="#1A16A085"
+                                    VerticalOptions="Center">
+                                <Image Source="{Binding TransactionType, Converter={StaticResource TransactionTypeToImageConverter}}"
+                                       HeightRequest="26"
+                                       WidthRequest="26"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center" />
+                            </Border>
 
                             <Grid Grid.Column="1"
-                                  ColumnDefinitions="Auto,*,*"
-                                  RowDefinitions="Auto,Auto,*">
-                                <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                                  ColumnDefinitions="*,Auto"
+                                  RowDefinitions="Auto,Auto,Auto"
+                                  RowSpacing="2">
+
+                                <!-- Date + cashier -->
+                                <Label Grid.Row="0" Grid.Column="0"
                                        Text="{Binding DateTimeTransacted}"
                                        FontSize="12"
                                        FontAttributes="Italic"
-                                       TextColor="#455A64"/>
-                                <Label Grid.Row="0" Grid.Column="2"
+                                       TextColor="#455A64" />
+                                <Label Grid.Row="0" Grid.Column="1"
                                        Text="{Binding Username}"
                                        FontSize="12"
-                                       HorizontalOptions="End"
                                        FontAttributes="Italic"
-                                       TextColor="#455A64"/>
-                                <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                                       TextColor="#455A64" />
+
+                                <!-- Amount + type badge -->
+                                <Label Grid.Row="1" Grid.Column="0"
                                        Text="{Binding TotalAmount, StringFormat='₱{0:N2}'}"
-
+                                       FontSize="20"
                                        FontAttributes="Bold"
-                                       TextColor="#004D40"/>
-                                <Label Grid.Row="1" Grid.Column="2"
-                                       Text="{Binding TransactionType}"
+                                       TextColor="#004D40" />
+                                <Border Grid.Row="1" Grid.Column="1"
+                                        Padding="10,3"
+                                        VerticalOptions="Center"
+                                        BackgroundColor="#1A16A085"
+                                        StrokeThickness="0"
+                                        StrokeShape="RoundRectangle 12">
+                                    <Label Text="{Binding TransactionType}"
+                                           FontSize="12"
+                                           FontAttributes="Bold"
+                                           TextColor="#16A085" />
+                                </Border>
 
-                                       HorizontalOptions="End"
-                                       TextColor="#16A085"/>
-                                <Label Grid.Row="2" Grid.Column="0"
+                                <!-- Buyer -->
+                                <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
                                        Text="{Binding BuyerName}"
-
-                                       HorizontalOptions="End"
-                                       TextColor="#16A085"/>
+                                       FontSize="14"
+                                       LineBreakMode="TailTruncation"
+                                       TextColor="#16A085" />
                             </Grid>
                         </Grid>
                     </Border>
@@ -92,12 +177,24 @@
             </CollectionView.ItemTemplate>
         </CollectionView>
 
-        <!-- Fixed bottom total -->
-        <Grid Grid.Row="2" Padding="10" BackgroundColor="{StaticResource PrimaryDark}">
-            <Label Text="{Binding SalesAmount, StringFormat='Total Sales: ₱{0:N2}'}" 
-                   FontSize="18" 
-                   FontAttributes="Bold"
-                   TextColor="{StaticResource White}"/>
-        </Grid>
+        <!-- PINNED TOTAL -->
+        <Border Grid.Row="2"
+                BackgroundColor="{StaticResource PrimaryDark}"
+                StrokeThickness="0"
+                StrokeShape="RoundRectangle 18,18,0,0"
+                Padding="20,14">
+            <Grid ColumnDefinitions="*,Auto">
+                <Label Grid.Column="0"
+                       Text="Total Sales"
+                       FontSize="14"
+                       VerticalOptions="Center"
+                       TextColor="{StaticResource White}" />
+                <Label Grid.Column="1"
+                       Text="{Binding SalesAmount, StringFormat='₱{0:N2}'}"
+                       FontSize="22"
+                       FontAttributes="Bold"
+                       TextColor="{StaticResource White}" />
+            </Grid>
+        </Border>
     </Grid>
 </ContentPage>

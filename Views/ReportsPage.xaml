@@ -5,77 +5,244 @@
              xmlns:mc="clr-namespace:Microcharts.Maui;assembly=Microcharts.Maui"
              xmlns:segmentedControl="clr-namespace:Syncfusion.Maui.Toolkit.SegmentedControl;assembly=Syncfusion.Maui.Toolkit"
              xmlns:sliders="clr-namespace:Syncfusion.Maui.Sliders;assembly=Syncfusion.Maui.Sliders"
-             Title="Reports">
-    <ScrollView>
-        <VerticalStackLayout Padding="10" Spacing="5">
-            <!--monthly sales-->
-            <Border Style="{StaticResource CardStyle}">
-                <VerticalStackLayout>
-                    <Label Text="Monthly Sales Report"
-                           TextColor="{StaticResource PrimaryDark}"
-                           FontAttributes="Bold"
-                           HorizontalOptions="Center"
-                           Margin="10" />
+             xmlns:model="clr-namespace:TindaKo.Models"
+             Title="Reports"
+             BackgroundColor="{AppThemeBinding Light=#F4F6F8, Dark=#121212}">
 
-                    <!-- Year Picker -->
-                    <Picker x:Name="yearPicker"
-                            Title="Select Year"
-                            ItemsSource="{Binding AvailableYears}"
-                            SelectedItem="{Binding SelectedYear, Mode=TwoWay}"
-                            HorizontalOptions="Center"
-                            Margin="0,0,0,10" />
-                    <mc:ChartView Chart="{Binding MonthlySalesChart}"
-                        HeightRequest="150"
-                        Margin="10"
-                        VerticalOptions="Fill" />
-                </VerticalStackLayout>
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <x:Array x:Key="TabItems" Type="{x:Type x:String}">
+                <x:String>Sales Chart</x:String>
+                <x:String>Outgoing Products</x:String>
+            </x:Array>
 
-            </Border>
-            <!--expenses vs sales-->
-            <Border Style="{StaticResource CardStyle}" >
-                <VerticalStackLayout>
-                    <Label Text="Sales vs Expenses"
-                           TextColor="{StaticResource PrimaryDark}"
-                           FontAttributes="Bold"
-                           HorizontalOptions="Center"
-                           Margin="10" />
+            <Style x:Key="CaptionLabel" TargetType="Label">
+                <Setter Property="FontSize" Value="11" />
+                <Setter Property="TextColor"
+                        Value="{AppThemeBinding Light=#757575, Dark=#A0A0A0}" />
+            </Style>
 
-                    <Grid >
-                        <segmentedControl:SfSegmentedControl
-                        ItemsSource="{Binding SegmentOptions}"
-                        SelectedIndex="{Binding SelectedSegmentIndex, Mode=TwoWay}"/>
-                    </Grid>
-                    <VerticalStackLayout Padding="10" Spacing="5">
-                        <Label Text="Select Report Range" />
+            <Style x:Key="CardTitle" TargetType="Label">
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="TextColor" Value="{StaticResource PrimaryDark}" />
+            </Style>
 
-                        <!-- Date From -->
-                        <HorizontalStackLayout>
-                            <Label Text="From:" VerticalOptions="Center" IsEnabled="{Binding IsCustom}"/>
-                            <DatePicker Date="{Binding DateFrom}" IsEnabled="{Binding IsCustom}" />
-                        </HorizontalStackLayout>
+            <Style x:Key="FilledButton" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
+                <Setter Property="TextColor" Value="White" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="CornerRadius" Value="12" />
+                <Setter Property="HeightRequest" Value="46" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
-                        <!-- Date To -->
-                        <HorizontalStackLayout>
-                            <Label Text="To:" VerticalOptions="Center" IsEnabled="{Binding IsCustom}"/>
-                            <DatePicker Date="{Binding DateTo}" IsEnabled="{Binding IsCustom}"/>
-                        </HorizontalStackLayout>
+    <!-- Rows: tab selector | tab content (fills space) -->
+    <Grid RowDefinitions="Auto,*" RowSpacing="10">
 
-                        <!-- Apply Filter Button -->
-                        <Button Text="Load Chart"
-                        Command="{Binding GenerateReportCommand}" />
+        <!-- TAB SELECTOR -->
+        <segmentedControl:SfSegmentedControl Grid.Row="0"
+                                             Margin="12,12,12,0"
+                                             ItemsSource="{StaticResource TabItems}"
+                                             SelectedIndex="{Binding SelectedTabIndex, Mode=TwoWay}"
+                                             SegmentHeight="44" />
 
-                        <!-- Example: show selected range -->
-                        <Label Text="{Binding SelectedDateRange}" TextColor="Gray" IsVisible="{Binding IsCustom}" HorizontalOptions="Center"/>
+        <!-- ============ TAB 1: SALES CHARTS ============ -->
+        <ScrollView Grid.Row="1" IsVisible="{Binding IsSalesTab}">
+            <VerticalStackLayout Padding="12,0,12,16" Spacing="12">
+
+                <!-- Monthly sales -->
+                <Border Style="{StaticResource CardStyle}" Padding="16">
+                    <VerticalStackLayout Spacing="10">
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                            <Label Grid.Column="0"
+                                   Text="Monthly Sales Report"
+                                   Style="{StaticResource CardTitle}"
+                                   VerticalOptions="Center" />
+                            <Picker x:Name="yearPicker"
+                                    Grid.Column="1"
+                                    Title="Year"
+                                    WidthRequest="100"
+                                    HorizontalTextAlignment="End"
+                                    ItemsSource="{Binding AvailableYears}"
+                                    SelectedItem="{Binding SelectedYear, Mode=TwoWay}" />
+                        </Grid>
+
+                        <mc:ChartView Chart="{Binding MonthlySalesChart}"
+                                      HeightRequest="200"
+                                      VerticalOptions="Fill" />
                     </VerticalStackLayout>
+                </Border>
 
+                <!-- Sales vs Expenses -->
+                <Border Style="{StaticResource CardStyle}" Padding="16">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="Sales vs Expenses" Style="{StaticResource CardTitle}" />
 
-                    <mc:ChartView Chart="{Binding ExpensesSalesChart}"
-                        HeightRequest="150"
-                        Margin="10"
-                        VerticalOptions="Fill" />
+                        <segmentedControl:SfSegmentedControl
+                            ItemsSource="{Binding SegmentOptions}"
+                            SelectedIndex="{Binding SelectedSegmentIndex, Mode=TwoWay}"
+                            SegmentHeight="40" />
+
+                        <!-- Custom range (enabled only when "Custom") -->
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                            <VerticalStackLayout Grid.Column="0" Spacing="0">
+                                <Label Text="FROM" Style="{StaticResource CaptionLabel}" />
+                                <DatePicker Date="{Binding DateFrom}"
+                                            IsEnabled="{Binding IsCustom}"
+                                            FontSize="14" />
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Column="1" Spacing="0">
+                                <Label Text="TO" Style="{StaticResource CaptionLabel}" />
+                                <DatePicker Date="{Binding DateTo}"
+                                            IsEnabled="{Binding IsCustom}"
+                                            FontSize="14" />
+                            </VerticalStackLayout>
+                        </Grid>
+
+                        <Label Text="{Binding SelectedDateRange}"
+                               IsVisible="{Binding IsCustom}"
+                               Style="{StaticResource CaptionLabel}"
+                               FontSize="12"
+                               HorizontalOptions="Center" />
+
+                        <Button Text="Load Chart"
+                                Style="{StaticResource FilledButton}"
+                                Command="{Binding GenerateReportCommand}" />
+
+                        <mc:ChartView Chart="{Binding ExpensesSalesChart}"
+                                      HeightRequest="200"
+                                      VerticalOptions="Fill" />
+                    </VerticalStackLayout>
+                </Border>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- ============ TAB 2: OUTGOING PRODUCTS ============ -->
+        <Grid Grid.Row="1"
+              IsVisible="{Binding IsOutgoingTab}"
+              RowDefinitions="Auto,Auto,*"
+              RowSpacing="10"
+              Padding="12,0,12,0">
+
+            <!-- Filter -->
+            <Border Grid.Row="0" Style="{StaticResource CardStyle}" Padding="16">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Sold Products" Style="{StaticResource CardTitle}" />
+
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                        <VerticalStackLayout Grid.Column="0" Spacing="0">
+                            <Label Text="FROM" Style="{StaticResource CaptionLabel}" />
+                            <DatePicker Date="{Binding OutgoingDateFrom}" FontSize="14" />
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1" Spacing="0">
+                            <Label Text="TO" Style="{StaticResource CaptionLabel}" />
+                            <DatePicker Date="{Binding OutgoingDateTo}" FontSize="14" />
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <Button Text="Show Sold Products"
+                            Style="{StaticResource FilledButton}"
+                            Command="{Binding LoadOutgoingCommand}" />
                 </VerticalStackLayout>
-
             </Border>
-        </VerticalStackLayout>
-    </ScrollView>
+
+            <!-- Totals banner -->
+            <Border Grid.Row="1"
+                    BackgroundColor="{StaticResource PrimaryDark}"
+                    StrokeThickness="0"
+                    StrokeShape="RoundRectangle 14"
+                    Padding="16,12">
+                <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" ColumnSpacing="10">
+                    <Label Grid.Row="0" Grid.Column="0"
+                           Text="Total Sold"
+                           FontSize="14"
+                           TextColor="{StaticResource WhiteText}" />
+                    <Label Grid.Row="0" Grid.Column="1"
+                           Text="{Binding OutgoingTotalAmount, StringFormat='₱{0:N2}'}"
+                           FontSize="22"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource WhiteText}" />
+                    <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                           Text="{Binding OutgoingTotalQty, StringFormat='{0:0.##} items out'}"
+                           FontSize="12"
+                           Opacity="0.85"
+                           TextColor="{StaticResource WhiteText}" />
+                </Grid>
+            </Border>
+
+            <!-- Itemized list -->
+            <Grid Grid.Row="2">
+                <CollectionView ItemsSource="{Binding OutgoingItems}"
+                                SelectionMode="None">
+
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout Orientation="Vertical" ItemSpacing="8" />
+                    </CollectionView.ItemsLayout>
+
+                    <CollectionView.Footer>
+                        <BoxView HeightRequest="12" Color="Transparent" />
+                    </CollectionView.Footer>
+
+                    <CollectionView.EmptyView>
+                        <Label Text="No outgoing products for this date range."
+                               Style="{StaticResource CaptionLabel}"
+                               FontSize="13"
+                               HorizontalOptions="Center"
+                               Margin="0,40,0,0" />
+                    </CollectionView.EmptyView>
+
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="model:OutgoingProductItem">
+                            <Border Style="{StaticResource CardStyle}" Padding="14,12">
+                                <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="10" RowSpacing="2">
+
+                                    <!-- Transaction # and date -->
+                                    <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                   Text="{Binding TransactionId, StringFormat='Transaction #{0}'}"
+                   FontSize="12" FontAttributes="Bold"
+                   TextColor="#16A085" />
+
+                                    <!-- Product + line amount -->
+                                    <Label Grid.Row="1" Grid.Column="0"
+                   Text="{Binding ProductName}"
+                   FontSize="16" FontAttributes="Bold"
+                   LineBreakMode="TailTruncation"
+                   TextColor="{StaticResource PrimaryDark}" />
+                                    <Label Grid.Row="1" Grid.Column="1"
+                   Text="{Binding TotalAmount, StringFormat='₱{0:N2}'}"
+                   FontSize="16" FontAttributes="Bold"
+                   HorizontalOptions="End"
+                   TextColor="#004D40" />
+
+                                    <!-- Qty × price + date -->
+                                    <Label Grid.Row="2" Grid.Column="0"
+                   FontSize="12"
+                   Style="{StaticResource CaptionLabel}">
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span Text="{Binding TotalQty, StringFormat='{0:0.##}'}" FontAttributes="Bold" />
+                                                <Span Text=" × " />
+                                                <Span Text="{Binding Price, StringFormat='₱{0:N2}'}" />
+                                                <Span Text="  ·  " />
+                                                <Span Text="{Binding DateTransacted}" />
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <ActivityIndicator IsRunning="{Binding IsOutgoingBusy}"
+                                   IsVisible="{Binding IsOutgoingBusy}"
+                                   VerticalOptions="Center"
+                                   HorizontalOptions="Center"
+                                   Color="{StaticResource PrimaryDark}" />
+            </Grid>
+        </Grid>
+    </Grid>
 </ContentPage>

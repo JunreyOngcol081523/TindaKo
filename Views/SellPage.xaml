@@ -4,177 +4,252 @@
              x:Class="TindaKo.Views.SellPage"
              xmlns:viewmodel="clr-namespace:TindaKo.ViewModel"
              xmlns:inputLayout="clr-namespace:Syncfusion.Maui.Toolkit.TextInputLayout;assembly=Syncfusion.Maui.Toolkit"
-             Title="Benta"
-              xmlns:editors="clr-namespace:Syncfusion.Maui.Toolkit.NumericUpDown;assembly=Syncfusion.Maui.Toolkit"
+             xmlns:editors="clr-namespace:Syncfusion.Maui.Toolkit.NumericUpDown;assembly=Syncfusion.Maui.Toolkit"
              xmlns:model="clr-namespace:TindaKo.Models"
-             x:Name="SellPageRoot">
+             Title="Benta"
+             x:Name="SellPageRoot"
+             BackgroundColor="{AppThemeBinding Light=#F4F6F8, Dark=#121212}">
 
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style x:Key="CaptionLabel" TargetType="Label">
+                <Setter Property="FontSize" Value="12" />
+                <Setter Property="TextColor"
+                        Value="{AppThemeBinding Light=#757575, Dark=#A0A0A0}" />
+            </Style>
+
+            <!-- Filled action button with a proper disabled look -->
+            <Style x:Key="ActionButton" TargetType="Button">
+                <Setter Property="TextColor" Value="White" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="CornerRadius" Value="12" />
+                <Setter Property="HeightRequest" Value="50" />
+                <Setter Property="VisualStateManager.VisualStateGroups">
+                    <VisualStateGroupList>
+                        <VisualStateGroup x:Name="CommonStates">
+                            <VisualState x:Name="Normal" />
+                            <VisualState x:Name="Disabled">
+                                <VisualState.Setters>
+                                    <Setter Property="Opacity" Value="0.45" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </Setter>
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <!-- Rows: search + cart | products (fills space) | pinned payment panel -->
     <Grid RowDefinitions="Auto,*,Auto">
-        <!-- Top Bar: Search + Cart -->
-        <Grid Grid.Row="0" 
-              Padding="10" 
-              ColumnSpacing="10" 
-              ColumnDefinitions="*, Auto">
 
-            <Grid Grid.Column="0">
-                <SearchBar Placeholder="Search product"
-                    Text="{Binding SearchText}"
-                    Grid.Column="0"
-                    VerticalOptions="Center" />
+        <!-- TOP BAR: Search + Cart -->
+        <Grid Grid.Row="0"
+              Padding="12,10,12,4"
+              ColumnDefinitions="*,Auto"
+              ColumnSpacing="10">
 
-            </Grid>
-            <!-- Cart Icon + Badge -->
-            <Border Grid.Column="1"
-                    Padding="5"
-                    HorizontalOptions="End"
-                    Stroke="Transparent">
+            <SearchBar Grid.Column="0"
+                       Placeholder="Search product"
+                       Text="{Binding SearchText}"
+                       VerticalOptions="Center" />
 
-                <Grid>
-                    <Image Source="shoppingbasket.png"
-                           HeightRequest="50"
-                           WidthRequest="50"
-                           VerticalOptions="Center" />
-
-                    <Border 
-                        BackgroundColor="{StaticResource PrimaryDark}" 
+            <!-- Cart icon + badge -->
+            <Grid Grid.Column="1" VerticalOptions="Center">
+                <Border WidthRequest="52" HeightRequest="52"
                         StrokeThickness="0"
-                        StrokeShape="RoundRectangle 10"
-                        Padding="0"
+                        StrokeShape="RoundRectangle 26"
+                        BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}">
+                    <Image Source="shoppingbasket.png"
+                           HeightRequest="30" WidthRequest="30"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center" />
+                </Border>
+
+                <Border BackgroundColor="{StaticResource PrimaryDark}"
+                        StrokeThickness="0"
+                        StrokeShape="RoundRectangle 11"
+                        MinimumWidthRequest="22"
+                        HeightRequest="22"
                         HorizontalOptions="End"
                         VerticalOptions="Start"
                         IsVisible="{Binding CartCount, Converter={StaticResource GreaterThanZeroConverter}}">
+                    <Label Text="{Binding CartCount}"
+                           TextColor="{StaticResource WhiteText}"
+                           FontSize="12"
+                           FontAttributes="Bold"
+                           Padding="6,0"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center" />
+                </Border>
 
-                        <Label Text="{Binding CartCount}"
-                               TextColor="{StaticResource WhiteText}"
-                               FontSize="12"
-                               FontAttributes="Bold"
-                               Padding="5"
-                               HorizontalOptions="Center"
-                               VerticalOptions="Center"/>
-
-                    </Border>
-
-                </Grid>
-                <Border.GestureRecognizers>
-                    <TapGestureRecognizer
-                                Command="{Binding OpenCartCommand}"/>
-                </Border.GestureRecognizers>
-            </Border>
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding OpenCartCommand}" />
+                </Grid.GestureRecognizers>
+            </Grid>
         </Grid>
-        <!--product list-->
-        <Grid Grid.Row="1">
-            <CollectionView ItemsSource="{Binding ProductList}">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="model:Product">
-                        <Border Margin="10" Padding="10" Stroke="LightGray" StrokeThickness="1">
-                            <VerticalStackLayout Spacing="5">
-                                <Label Text="{Binding ProdName}" 
-                                   FontAttributes="Bold"
-                                   TextColor="{StaticResource PrimaryDark}"
-                                       BackgroundColor="Transparent"/>
-                                <Grid ColumnDefinitions="*,*,Auto" 
-                                      VerticalOptions="Center" 
-                                      ColumnSpacing="5">
-                                    <!-- Supplier Price -->
-                                    <VerticalStackLayout  Grid.Column="0" Spacing="16">
-                                        <Label 
-                                           Text="{Binding Price, StringFormat='Price: ₱{0:N}'}"/>
 
-                                        <Label Text="{Binding Subtotal, StringFormat='Subtotal: ₱{0:N}'}" 
-                                               FontSize="13" 
-                                               TextColor="{StaticResource Gray600}"
-                                               BackgroundColor="Transparent"/>  
-                                    </VerticalStackLayout>
-                                    <!-- New Stocks Qty -->
-                                    <VerticalStackLayout Grid.Column="1">
-                                        <Label Text="Quantity" VerticalOptions="End"/>
-                                        <editors:SfNumericUpDown
-                                            Value="{Binding Quantity, Mode=TwoWay}"
-                                            AllowNull="False"
-                                            UpDownButtonColor="{StaticResource PrimaryDark}"
-                                            Minimum="0"
-                                            CustomFormat="0"
-                                            UpDownButtonAlignment="Both" 
-                                            SmallChange="1"/>
-                                    </VerticalStackLayout>
+        <!-- PRODUCT LIST -->
+        <CollectionView Grid.Row="1"
+                        ItemsSource="{Binding ProductList}"
+                        SelectionMode="None"
+                        Margin="12,0">
 
-                                    <!-- Add Button -->
-                                    <Button 
-                                        Grid.Column="2"
-                                        ImageSource="shoppingbasket.png"
-                                        BackgroundColor="Transparent"
-                                        HeightRequest="70"
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Vertical" ItemSpacing="10" />
+            </CollectionView.ItemsLayout>
+
+            <CollectionView.Header>
+                <BoxView HeightRequest="2" Color="Transparent" />
+            </CollectionView.Header>
+
+            <CollectionView.EmptyView>
+                <Label Text="No products found."
+                       Style="{StaticResource CaptionLabel}"
+                       FontSize="13"
+                       HorizontalOptions="Center"
+                       Margin="0,40,0,0" />
+            </CollectionView.EmptyView>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="model:Product">
+                    <Border Style="{StaticResource CardStyle}" Padding="14">
+                        <VerticalStackLayout Spacing="10">
+
+                            <!-- Name + price -->
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                                <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                    <Label Text="{Binding ProdName}"
+                                           FontSize="17"
+                                           FontAttributes="Bold"
+                                           LineBreakMode="TailTruncation"
+                                           TextColor="{StaticResource PrimaryDark}" />
+                                    <Label Text="{Binding Subtotal, StringFormat='Subtotal: ₱{0:N}'}"
+                                           FontSize="13"
+                                           TextColor="{StaticResource Gray600}" />
+                                </VerticalStackLayout>
+
+                                <Label Grid.Column="1"
+                                       Text="{Binding Price, StringFormat='₱{0:N}'}"
+                                       FontSize="20"
+                                       FontAttributes="Bold"
+                                       VerticalOptions="Start"
+                                       TextColor="#004D40" />
+                            </Grid>
+
+                            <!-- Quantity + Add -->
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                                <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                    <Label Text="QUANTITY" Style="{StaticResource CaptionLabel}" FontSize="11" />
+                                    <editors:SfNumericUpDown
+                                        Value="{Binding Quantity, Mode=TwoWay}"
+                                        AllowNull="False"
+                                        UpDownButtonColor="{StaticResource PrimaryDark}"
+                                        Minimum="0"
+                                        CustomFormat="0"
+                                        UpDownButtonAlignment="Both"
+                                        SmallChange="1" />
+                                </VerticalStackLayout>
+
+                                <Button Grid.Column="1"
+                                        Text="Add"
+                                        ImageSource="shoppingbasketwhite.png"
+                                        ContentLayout="Left,8"
+                                        VerticalOptions="End"
+                                        HeightRequest="48"
+                                        CornerRadius="12"
+                                        Padding="18,0"
+                                        FontAttributes="Bold"
+                                        TextColor="White"
+                                        BackgroundColor="{StaticResource Primary}"
                                         Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:SellViewModel}}, Path=AddToCartCommand}"
-                                        CommandParameter="{Binding .}"/>
-                                </Grid>
+                                        CommandParameter="{Binding .}" />
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
 
-                            </VerticalStackLayout>
-                        </Border>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-        </Grid>
+        <!-- PINNED PAYMENT PANEL -->
+        <Border Grid.Row="2"
+                BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}"
+                Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#333333}"
+                StrokeThickness="1"
+                StrokeShape="RoundRectangle 20,20,0,0"
+                Padding="16,12,16,16">
 
-        <!-- TRANSACTION & PAYMENT SECTION -->
-        <Grid Grid.Row="2" 
-              RowDefinitions="Auto,Auto,50" 
-              RowSpacing="5"
-              Padding="10" 
-              BackgroundColor="Bisque">
+            <VerticalStackLayout Spacing="10">
 
-            <!-- Payment Method + Total Row -->
-            <Grid Grid.Row="0" ColumnDefinitions="Auto,Auto,45,*,Auto" ColumnSpacing="5">
-                <!-- Radio Buttons -->
-                <RadioButton Grid.Column="0" Content="Cash" IsChecked="{Binding IsCashChecked}" GroupName="transaction"/>
-                <RadioButton Grid.Column="1" Content="Utang" IsChecked="{Binding IsCreditChecked}" GroupName="transaction"/>
+                <!-- Payment method + total -->
+                <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="4">
+                    <RadioButton Grid.Column="0"
+                                 Content="Cash"
+                                 GroupName="transaction"
+                                 IsChecked="{Binding IsCashChecked}" />
+                    <RadioButton Grid.Column="1"
+                                 Content="Utang"
+                                 GroupName="transaction"
+                                 IsChecked="{Binding IsCreditChecked}"
+                                 IsEnabled="{Binding IsAllowedUtang}" />
 
-                <!-- Spacer -->
-                <!-- Grid.Column="3" just eats space to push the total to the right -->
+                    <VerticalStackLayout Grid.Column="2" HorizontalOptions="End" Spacing="0">
+                        <Label Text="TOTAL"
+                               Style="{StaticResource CaptionLabel}"
+                               FontSize="11"
+                               HorizontalOptions="End" />
+                        <Label Text="{Binding TotalAmount, StringFormat='₱{0:N2}'}"
+                               FontSize="24"
+                               FontAttributes="Bold"
+                               TextColor="#004D40" />
+                    </VerticalStackLayout>
+                </Grid>
 
-                <!-- Total Amount -->
-                <HorizontalStackLayout Grid.Column="4" HorizontalOptions="End" Spacing="3">
-                    <Label Text="Total:" FontAttributes="Bold"/>
-                    <Label Text="{Binding TotalAmount, StringFormat='₱{0:N2}'}" 
-                   FontAttributes="Bold" TextColor="DarkGreen"/>
-                </HorizontalStackLayout>
-            </Grid>
-
-            <!-- Pangalan ng umutang -->
-            <HorizontalStackLayout Grid.Row="1" 
-                                   Spacing="5" 
-                                   Margin="0,0,0,15"
-                                   HorizontalOptions="Center">
-                <Label Text="{Binding SelectedBuyerName, StringFormat='Name of Creditor: {0}'}"
-                       FontAttributes="Bold"
-                       TextDecorations="Underline"
-                       TextColor="{StaticResource PrimaryDark}"
-                       IsVisible="{Binding IsCreditChecked}">
-                    <Label.GestureRecognizers>
+                <!-- Buyer chip (only for Utang) -->
+                <Border IsVisible="{Binding IsCreditChecked}"
+                        StrokeThickness="1"
+                        Stroke="{StaticResource PrimaryDark}"
+                        BackgroundColor="Transparent"
+                        StrokeShape="RoundRectangle 12"
+                        Padding="12,10">
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                        <VerticalStackLayout Grid.Column="0" Spacing="0">
+                            <Label Text="PANGALAN NG UUTANG"
+                                   Style="{StaticResource CaptionLabel}"
+                                   FontSize="11" />
+                            <Label Text="{Binding SelectedBuyerName}"
+                                   FontSize="16"
+                                   FontAttributes="Bold"
+                                   LineBreakMode="TailTruncation"
+                                   TextColor="{StaticResource PrimaryDark}" />
+                        </VerticalStackLayout>
+                        <Label Grid.Column="1"
+                               Text="Palitan ›"
+                               FontSize="13"
+                               FontAttributes="Bold"
+                               VerticalOptions="Center"
+                               TextColor="{StaticResource PrimaryDark}" />
+                    </Grid>
+                    <Border.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding OpenBuyerModalCommand}" />
-                    </Label.GestureRecognizers>
-                </Label>
+                    </Border.GestureRecognizers>
+                </Border>
 
-            </HorizontalStackLayout>
-
-            <!-- Buttons -->
-            <Grid Grid.Row="2" ColumnDefinitions="*,*" ColumnSpacing="2" BackgroundColor="AliceBlue">
-                <!-- Complete Transaction -->
-                <Grid Grid.Column="0" IsEnabled="{Binding IsCartHasItems}" BackgroundColor="{StaticResource Primary}">
-                    <Grid.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding CompleteTransactionCommand}" />
-                    </Grid.GestureRecognizers>
-                    <Label Text="Complete Transaction" HorizontalOptions="Center" VerticalOptions="Center" TextColor="White"/>
+                <!-- Action buttons -->
+                <Grid ColumnDefinitions="*,2*" ColumnSpacing="10">
+                    <Button Grid.Column="0"
+                            Text="Cancel"
+                            Style="{StaticResource ActionButton}"
+                            BackgroundColor="{StaticResource CancelButton}"
+                            Command="{Binding CloseSellCommand}" />
+                    <Button Grid.Column="1"
+                            Text="Complete Transaction"
+                            Style="{StaticResource ActionButton}"
+                            BackgroundColor="{StaticResource Primary}"
+                            IsEnabled="{Binding IsCartHasItems}"
+                            Command="{Binding CompleteTransactionCommand}" />
                 </Grid>
-
-                <!-- Cancel Transaction -->
-                <Grid Grid.Column="1" BackgroundColor="{StaticResource CancelButton}">
-                    <Grid.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding CloseSellCommand}" />
-                    </Grid.GestureRecognizers>
-                    <Label Text="Cancel Transaction" HorizontalOptions="Center" VerticalOptions="Center" TextColor="White"/>
-                </Grid>
-            </Grid>
-        </Grid>
-
+            </VerticalStackLayout>
+        </Border>
     </Grid>
 </ContentPage>

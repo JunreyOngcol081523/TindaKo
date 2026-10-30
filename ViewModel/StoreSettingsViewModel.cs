@@ -19,12 +19,18 @@ namespace TindaKo.ViewModel
         private string _storeEmail;
         [ObservableProperty]
         private string _storePhoneNum;
+        [ObservableProperty]
+        private bool _allowUtang;
+        [ObservableProperty]
+        private int _dueDateDays;
         public StoreSettingsViewModel()
         { 
             StoreName = Preferences.Get("StoreName", String.Empty);
             StoreAddress = Preferences.Get("StoreAddress", String.Empty);
             StoreEmail = Preferences.Get("StoreEmail", String.Empty);
             StorePhoneNum = Preferences.Get("StorePhoneNum", String.Empty);
+            AllowUtang = Preferences.Get("AllowUtang", false);
+            DueDateDays = Preferences.Get("DueDateDays", 0);
         }
         [RelayCommand]
         private async Task SaveStoreSettings()
@@ -33,6 +39,8 @@ namespace TindaKo.ViewModel
             Preferences.Set("StoreAddress", StoreAddress);
             Preferences.Set("StoreEmail", StoreEmail);
             Preferences.Set("StorePhoneNum", StorePhoneNum);
+            Preferences.Set("AllowUtang", AllowUtang);
+            Preferences.Set("DueDateDays", DueDateDays);
             await ToastHelper.ShowMessage("Store Settings Saved");
         }
     }

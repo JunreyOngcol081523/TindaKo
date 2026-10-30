@@ -152,7 +152,7 @@
                             <HorizontalStackLayout Spacing="8"
                                                    HorizontalOptions="Center"
                                                    VerticalOptions="Center">
-                                <Image Source="pesowhite.png" HeightRequest="24" />
+                                <Image Source="money_bag.png" HeightRequest="24"/>
                                 <Label Text="View Sales"
                                        VerticalOptions="Center"
                                        TextColor="{StaticResource Primary}" />
@@ -202,7 +202,7 @@
                         </Border.GestureRecognizers>
                         <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="6">
                             <Image Source="inventory.png" HeightRequest="32" />
-                            <Label Text="Incoming Stocks" Style="{StaticResource TileLabel}" />
+                            <Label Text="Incoming Stocks" Style="{StaticResource TileLabel}" FontSize="10" />
                         </VerticalStackLayout>
                     </Border>
 
