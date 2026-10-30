@@ -4,7 +4,8 @@
              xmlns:viewmodel="clr-namespace:TindaKo.ViewModel"
              x:Class="TindaKo.Views.MenuPage"
              xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
-             Title="TindaKo App">
+             Title="TindaKo App"
+             IconImageSource="tindako_logo.png">
 
     <ContentPage.Resources>
         <!-- Shared label style for the menu tiles -->

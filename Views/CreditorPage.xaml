@@ -6,6 +6,7 @@
     xmlns:viewmodel="clr-namespace:TindaKo.ViewModel"
     xmlns:converters="clr-namespace:TindaKo.Converters"
     xmlns:segmentedControl="clr-namespace:Syncfusion.Maui.Toolkit.SegmentedControl;assembly=Syncfusion.Maui.Toolkit"
+
     Title="Listahan ng Utang"
     BackgroundColor="{AppThemeBinding Light=#F4F6F8, Dark=#121212}">
 

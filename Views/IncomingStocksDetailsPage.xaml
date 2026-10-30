@@ -3,84 +3,175 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="TindaKo.Views.IncomingStocksDetailsPage"
              xmlns:viewmodel="clr-namespace:TindaKo.ViewModel"
-             Title="IncomingStocksDetailsPage">
-    <VerticalStackLayout Padding="20" Spacing="10">
-        <!--header-->
-        <VerticalStackLayout>
-            <HorizontalStackLayout HorizontalOptions="Center" Spacing="5" Margin="10">
-                <Image Source="receipt.png" HeightRequest="30"/>
-                <Label Text="Incoming Stocks Details" 
-                       FontAttributes="Bold"
-                       TextColor="{StaticResource PrimaryDark}" 
-                       FontSize="15"
-                       VerticalTextAlignment="Center"/>
-            </HorizontalStackLayout>
-            <BoxView HeightRequest="1" BackgroundColor="{StaticResource Gray300}"/>
-        </VerticalStackLayout>
-        <!-- First Row -->
-        <Grid ColumnDefinitions="*,Auto">
-            <Label Text="{Binding DateStocksIn, StringFormat='{0:MMMM dd, yyyy h:mmtt}'}"
-                   FontSize="12"
-                   TextColor="Black"
-                   FontAttributes="Italic"/>
-            <Label Text="{Binding Username}"
-                   FontSize="12"
-                   HorizontalOptions="End"
-                   TextColor="{StaticResource Gray600}"
-                   FontAttributes="Italic"/>
-        </Grid>
+             Title="Incoming Stocks Details"
+             BackgroundColor="{AppThemeBinding Light=#F4F6F8, Dark=#121212}">
 
-        <!-- Second Row -->
-        <Grid ColumnDefinitions="*,Auto"
-              RowDefinitions="*,*">
-            <Label Grid.Row="0" 
-                   Grid.Column="0" 
-                   Grid.RowSpan="2"
-                   VerticalOptions="Center"
-                   Text="{Binding TotalAmount, StringFormat='₱{0:N2}'}"
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style x:Key="CardStyle" TargetType="Border">
+                <Setter Property="BackgroundColor"
+                        Value="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}" />
+                <Setter Property="Stroke"
+                        Value="{AppThemeBinding Light=#E0E0E0, Dark=#333333}" />
+                <Setter Property="StrokeThickness" Value="1" />
+                <Setter Property="StrokeShape" Value="RoundRectangle 14" />
+            </Style>
 
-                   FontAttributes="Bold"
-                   TextColor="#004D40"/>
-            <Label Grid.Row="0" 
-                   Grid.Column="1" 
-                   Text="{Binding SupplierName}"
+            <Style x:Key="CaptionLabel" TargetType="Label">
+                <Setter Property="FontSize" Value="11" />
+                <Setter Property="TextColor"
+                        Value="{AppThemeBinding Light=#757575, Dark=#A0A0A0}" />
+            </Style>
 
-                   HorizontalOptions="End"
-                   FontAttributes="Bold"
-                   TextColor="#16A085"/>
+            <Style x:Key="ItemText" TargetType="Label">
+                <Setter Property="TextColor"
+                        Value="{AppThemeBinding Light=#212121, Dark=#F5F5F5}" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
-        </Grid>
+    <!-- Rows: summary | items (fills space) | pinned Close button -->
+    <Grid RowDefinitions="Auto,*,Auto" RowSpacing="14" Padding="16">
 
+        <!-- SUMMARY CARD -->
+        <Border Grid.Row="0" Style="{StaticResource CardStyle}" Padding="16">
+            <VerticalStackLayout Spacing="12">
 
+                <!-- Header -->
+                <HorizontalStackLayout Spacing="8" HorizontalOptions="Center">
+                    <Image Source="receipt.png"
+                           HeightRequest="26"
+                           WidthRequest="26"
+                           VerticalOptions="Center" />
+                    <Label Text="Incoming Stocks Details"
+                           FontSize="16"
+                           FontAttributes="Bold"
+                           VerticalOptions="Center"
+                           TextColor="{StaticResource PrimaryDark}" />
+                </HorizontalStackLayout>
 
-        <!-- Separator -->
-        <BoxView HeightRequest="1" Color="{StaticResource Gray300}" Margin="0,10"/>
+                <BoxView HeightRequest="1"
+                         Color="{AppThemeBinding Light=#EEEEEE, Dark=#333333}" />
 
-        <CollectionView ItemsSource="{Binding IncomingStocksProductsList}">
-            <CollectionView.Header>
-                <Grid ColumnDefinitions="2.5*,1.5*,1*,2*" Padding="5" BackgroundColor="{StaticResource Primary}">
-                    <Label TextColor="{StaticResource WhiteText}" Grid.Column="0" Text="Product Name" FontAttributes="Bold" />
-
-                    <Label TextColor="{StaticResource WhiteText}" Grid.Column="1" Text="SupplierPrice" FontAttributes="Bold" />
-                    <Label TextColor="{StaticResource WhiteText}" Grid.Column="2" Text="Qty" FontAttributes="Bold" />
-                    <Label TextColor="{StaticResource WhiteText}" Grid.Column="3" Text="Subtotal" FontAttributes="Bold" />
+                <!-- Date + user -->
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                    <Label Grid.Column="0"
+                           Text="{Binding DateStocksIn, StringFormat='{0:MMMM dd, yyyy h:mmtt}'}"
+                           FontSize="12"
+                           FontAttributes="Italic"
+                           Style="{StaticResource CaptionLabel}" />
+                    <Label Grid.Column="1"
+                           Text="{Binding Username}"
+                           FontSize="12"
+                           FontAttributes="Italic"
+                           HorizontalOptions="End"
+                           TextColor="{StaticResource Gray600}" />
                 </Grid>
-            </CollectionView.Header>
 
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <Grid ColumnDefinitions="2.5*,1.5*,1*,2*" Padding="5" RowDefinitions="Auto,*">
-                        <Label Grid.Row="0" Grid.Column="0" Text="{Binding ProdName}" />
+                <!-- Total + supplier badge -->
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                    <VerticalStackLayout Grid.Column="0" Spacing="0" VerticalOptions="Center">
+                        <Label Text="TOTAL EXPENSE" Style="{StaticResource CaptionLabel}" />
+                        <Label Text="{Binding TotalAmount, StringFormat='₱{0:N2}'}"
+                               FontSize="30"
+                               FontAttributes="Bold"
+                               TextColor="#004D40" />
+                    </VerticalStackLayout>
+                </Grid>
 
-                        <Label Grid.Row="0" Grid.Column="1" Text="{Binding SupplierPrice, StringFormat='₱{0:N2}'}" />
-                        <Label Grid.Row="0" Grid.Column="2" Text="{Binding StocksInQty}" />
-                        <Label Grid.Row="0" Grid.Column="3" Text="{Binding SubtotalAmount, StringFormat='₱{0:N2}'}" />
-                        <BoxView Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="5" HeightRequest="1" Color="LightGray" />
-                    </Grid>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
+                <!-- Supplier -->
+                <VerticalStackLayout Spacing="0">
+                    <Label Text="SUPPLIER" Style="{StaticResource CaptionLabel}" />
+                    <Label Text="{Binding SupplierName}"
+                           FontSize="17"
+                           FontAttributes="Bold"
+                           TextColor="#16A085"
+                           LineBreakMode="TailTruncation" />
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+        </Border>
 
-        <Button Text="Close" Command="{Binding CloseDetailsCommand}" BackgroundColor="{StaticResource CancelButton}"/>
-    </VerticalStackLayout>
+        <!-- ITEMS CARD -->
+        <Border Grid.Row="1"
+                Style="{StaticResource CardStyle}"
+                Padding="0">
+            <Grid RowDefinitions="Auto,*">
+
+                <!-- Fixed table header -->
+                <Grid Grid.Row="0"
+                      ColumnDefinitions="*,Auto"
+                      Padding="14,10"
+                      BackgroundColor="{StaticResource Primary}">
+                    <Label Grid.Column="0" Text="Products Received"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource WhiteText}" />
+                    <Label Grid.Column="1" Text="Subtotal"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource WhiteText}" />
+                </Grid>
+
+                <CollectionView Grid.Row="1"
+                                ItemsSource="{Binding IncomingStocksProductsList}"
+                                SelectionMode="None">
+
+                    <CollectionView.EmptyView>
+                        <Label Text="No products found."
+                               Style="{StaticResource CaptionLabel}"
+                               FontSize="13"
+                               HorizontalOptions="Center"
+                               Margin="0,30,0,0" />
+                    </CollectionView.EmptyView>
+
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid RowDefinitions="Auto,Auto">
+                                <Grid Grid.Row="0"
+                                      ColumnDefinitions="*,Auto"
+                                      ColumnSpacing="10"
+                                      Padding="14,10">
+
+                                    <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                        <Label Text="{Binding ProdName}"
+                                               FontSize="15"
+                                               FontAttributes="Bold"
+                                               LineBreakMode="TailTruncation"
+                                               Style="{StaticResource ItemText}" />
+                                        <Label Style="{StaticResource CaptionLabel}" FontSize="12">
+                                            <Label.FormattedText>
+                                                <FormattedString>
+                                                    <Span Text="{Binding StocksInQty}" FontAttributes="Bold" />
+                                                    <Span Text=" × " />
+                                                    <Span Text="{Binding SupplierPrice, StringFormat='₱{0:N2}'}" />
+                                                </FormattedString>
+                                            </Label.FormattedText>
+                                        </Label>
+                                    </VerticalStackLayout>
+
+                                    <Label Grid.Column="1"
+                                           Text="{Binding SubtotalAmount, StringFormat='₱{0:N2}'}"
+                                           FontSize="15"
+                                           FontAttributes="Bold"
+                                           VerticalOptions="Center"
+                                           TextColor="#004D40" />
+                                </Grid>
+
+                                <BoxView Grid.Row="1" HeightRequest="1"
+                                         Color="{AppThemeBinding Light=#EEEEEE, Dark=#333333}" />
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </Grid>
+        </Border>
+
+        <!-- CLOSE -->
+        <Button Grid.Row="2"
+                Text="Close"
+                Command="{Binding CloseDetailsCommand}"
+                BackgroundColor="{StaticResource CancelButton}"
+                TextColor="White"
+                FontAttributes="Bold"
+                CornerRadius="12"
+                HeightRequest="48" />
+    </Grid>
 </ContentPage>

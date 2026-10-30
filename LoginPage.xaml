@@ -9,16 +9,24 @@
         <VerticalStackLayout Padding="24,0" Spacing="14" VerticalOptions="Center">
 
             <!-- App Header -->
-            <VerticalStackLayout Spacing="2" Margin="0,0,0,10" HorizontalOptions="Center">
+            <VerticalStackLayout Spacing="6" Margin="0,0,0,10" HorizontalOptions="Center">
+
+                <Image Source="tindako_logo.png"
+           WidthRequest="120"
+           HeightRequest="120"
+           HorizontalOptions="Center"
+           Margin="0,0,0,8"
+           SemanticProperties.Description="TindaKo logo" />
+
                 <Label Text="Welcome to TindaKo!"
-                       FontSize="24"
-                       FontAttributes="Bold"
-                       TextColor="#212121"
-                       HorizontalTextAlignment="Center" />
+           FontSize="24"
+           FontAttributes="Bold"
+           TextColor="#212121"
+           HorizontalTextAlignment="Center" />
                 <Label Text="Offline POS app for small sari-sari store"
-                       FontSize="13"
-                       TextColor="#616161"
-                       HorizontalTextAlignment="Center" />
+           FontSize="13"
+           TextColor="#616161"
+           HorizontalTextAlignment="Center" />
             </VerticalStackLayout>
 
             <!-- User Role Selection (heading removed, tighter row) -->

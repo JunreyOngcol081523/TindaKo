@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodel="clr-namespace:TindaKo.ViewModel"
              x:Class="TindaKo.Views.BuyerPage"
+             xmlns:model="clr-namespace:TindaKo.Models"
              x:DataType="viewmodel:BuyerViewModel"
              Title="Select Buyer"
              BackgroundColor="{AppThemeBinding Light=#F4F6F8, Dark=#121212}">
@@ -112,7 +113,7 @@
             </CollectionView.EmptyView>
 
             <CollectionView.ItemTemplate>
-                <DataTemplate>
+                <DataTemplate x:DataType="model:Buyer">
                     <Border Style="{StaticResource CardStyle}" Padding="12">
                         <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
 

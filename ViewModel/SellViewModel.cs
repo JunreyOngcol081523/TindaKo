@@ -1,145 +1,153 @@
-﻿using CommunityToolkit.Maui.Alerts;
-using CommunityToolkit.Maui.Core;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.Diagnostics;
+using System.Globalization;
 using System.Text;
-using TindaKo.Converters;
 using TindaKo.Helpers;
 using TindaKo.Models;
 using TindaKo.Services;
 using TindaKo.Views;
-using Timer = System.Timers.Timer;
+
 namespace TindaKo.ViewModel
 {
     public partial class SellViewModel : ObservableObject
     {
-        [ObservableProperty]
-        private ObservableCollection<Product> productList = new();
+        // ───────────────────────── State ─────────────────────────
 
-        [ObservableProperty]
-        private ObservableCollection<CartItems> cartList = new();
-        private List<Product> _allProducts;
-
-        [ObservableProperty]
-        private int cartCount;
-        [ObservableProperty]
-        private string searchText;
-        private Timer _debounceTimer;
+        [ObservableProperty] private ObservableCollection<Product> productList = new();
+        [ObservableProperty] private ObservableCollection<CartItems> cartList = new();
+        [ObservableProperty] private int cartCount;
+        [ObservableProperty] private string searchText = string.Empty;
         [ObservableProperty] private decimal totalAmount;
         [ObservableProperty] private bool isCreditChecked;
         [ObservableProperty] private bool isCashChecked;
-        [ObservableProperty] private string transactionType;
-        public Buyer? SelectedBuyer { get; set; } // in SellViewModel
-        [ObservableProperty] private string selectedBuyerName;
+        [ObservableProperty] private string transactionType = "Cash";
+        [ObservableProperty] private string? selectedBuyerName;
         [ObservableProperty] private bool isCartHasItems;
         [ObservableProperty] private bool isAllowedUtang;
-        private int _dueDateDays;
+
+        public Buyer? SelectedBuyer { get; set; }
+
+        private List<Product> _allProducts = new();
+        private CancellationTokenSource? _searchCts;
+        private readonly int _dueDateDays;
+
+        // ───────────────────────── Ctor / Init ─────────────────────────
+
         public SellViewModel()
         {
-            CartList.CollectionChanged += CartList_CollectionChanged;
+            // Add / Remove / Reset / Replace -> always keep cart state in sync
+            CartList.CollectionChanged += (_, _) => RecalculateCart();
+
             IsCashChecked = true;
-            IsCartHasItems = false;
             IsAllowedUtang = Preferences.Get("AllowUtang", false);
             _dueDateDays = Preferences.Get("DueDateDays", 0);
         }
 
-        private void CartList_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        public async Task InitializeAsync() => await LoadProductsAsync();
+
+        // Single source of truth for count / total / has-items flag
+        private void RecalculateCart()
         {
-            if (e.Action == NotifyCollectionChangedAction.Add)
-            {
-                foreach (var newItem in e.NewItems)
-                {
-                    CheckCartItems();
-                }
-            }
-            else if (e.Action == NotifyCollectionChangedAction.Remove)
-            {
-                foreach (var oldItem in e.OldItems)
-                {
-                    CheckCartItems();
-                }
-            }
+            CartCount = CartList.Count;
+            TotalAmount = CartList.Sum(c => c.Price * c.Quantity);
+            IsCartHasItems = CartList.Count > 0;
         }
 
-        public async Task InitializeAsync()
-        {
-            await LoadProductsAsync();
-        }
+        // ───────────────────────── Products & Search ─────────────────────────
 
-
-
-        private async Task LoadProductsAsync()
+        private async Task LoadProductsAsync(CancellationToken token = default)
         {
             try
             {
-                if (string.IsNullOrEmpty(SearchText))
-                {
-                    _allProducts = await ProductService.GetProductsAsync(100);
-                }
-                else
-                {
-                    _allProducts = await ProductService.SearchProductsAsync(SearchText, 100);
-                }
-                ProductList = new ObservableCollection<Product>(_allProducts);
+                var products = string.IsNullOrWhiteSpace(SearchText)
+                    ? await ProductService.GetProductsAsync(100)
+                    : await ProductService.SearchProductsAsync(SearchText, 100);
+
+                // a newer search superseded this one -> drop the stale result
+                if (token.IsCancellationRequested) return;
+
+                _allProducts = products;
+                ProductList = new ObservableCollection<Product>(products);
             }
             catch (Exception ex)
             {
-
                 Debug.WriteLine($"error loading products: {ex.Message}");
             }
         }
 
-        [RelayCommand]
-        private async Task AddToCart(Product product)
+        partial void OnSearchTextChanged(string value) => _ = DebouncedSearchAsync();
+
+        private async Task DebouncedSearchAsync()
         {
+            _searchCts?.Cancel();
+            _searchCts = new CancellationTokenSource();
+            var token = _searchCts.Token;
+
+            try
+            {
+                await Task.Delay(300, token);
+                await LoadProductsAsync(token);
+            }
+            catch (OperationCanceledException) { }
+        }
+
+        // ───────────────────────── Cart ─────────────────────────
+
+        [RelayCommand]
+        private async Task AddToCart(Product? product)
+        {
+            if (product is null) return;
+
             if (product.Price <= 0 || product.Quantity <= 0)
+            {
+                await ToastHelper.ShowMessage("Lagyan ng presyo at dami.");
                 return;
+            }
+
+            if (CartList.Any(c => c.ProductId == product.ProdId))
+            {
+                await ToastHelper.ShowMessage($"{product.ProdName} ay nasa cart na.");
+                return;
+            }
+
             var remainingStocks = product.StocksIn - product.StocksOut;
             if (product.Quantity > remainingStocks)
             {
-
                 await ToastHelper.ShowMessage($"Only {remainingStocks} left in stock. Please reduce the quantity.");
                 return;
             }
 
-            if (!CartList.Any(p => p.ProductId == product.ProdId))
+            CartList.Add(new CartItems
             {
-                CartList.Add(new CartItems
-                {
-                    ProductId = product.ProdId,
-                    ProdName = product.ProdName,
-                    ProdCategory = product.Category,
-                    Price = product.Price,
-                    Quantity = product.Quantity,
-                    Subtotal = product.Subtotal
-                });
-                TotalAmount += product.Price * product.Quantity;
-                CartCount = CartList.Count;
-            }
+                ProductId = product.ProdId,
+                ProdName = product.ProdName,
+                ProdCategory = product.Category,
+                Price = product.Price,
+                Quantity = product.Quantity,
+                Subtotal = product.Price * product.Quantity
+            });
+            // CartCount / TotalAmount / IsCartHasItems -> handled by RecalculateCart
         }
 
-        partial void OnSearchTextChanged(string value)
+        [RelayCommand]
+        private void RemoveItem(CartItems? item)
         {
-            // Reset timer
-            _debounceTimer?.Stop();
-            _debounceTimer?.Dispose();
-
-            _debounceTimer = new Timer(300); // debounce time in milliseconds
-            _debounceTimer.Elapsed += (s, e) =>
-            {
-                _debounceTimer.Stop();
-                _debounceTimer.Dispose();
-
-                MainThread.BeginInvokeOnMainThread(() =>
-                {
-                    _ = LoadProductsAsync();
-                });
-            };
-            _debounceTimer.Start();
+            if (item is not null)
+                CartList.Remove(item);
         }
+
+        [RelayCommand]
+        private void OpenCart()
+        {
+            var popup = new SellPageCartPopup(this);
+            popup.Show();
+        }
+
+        // ───────────────────────── Payment type ─────────────────────────
+        // Cash / Credit are mutually exclusive and one must always be checked.
+
         partial void OnIsCashCheckedChanged(bool value)
         {
             if (value)
@@ -149,7 +157,12 @@ namespace TindaKo.ViewModel
                 SelectedBuyer = null;
                 SelectedBuyerName = string.Empty;
             }
+            else if (!IsCreditChecked)
+            {
+                IsCashChecked = true; // never allow "neither"
+            }
         }
+
         partial void OnIsCreditCheckedChanged(bool value)
         {
             if (value)
@@ -157,79 +170,106 @@ namespace TindaKo.ViewModel
                 TransactionType = "Credit";
                 IsCashChecked = false;
             }
+            else if (!IsCashChecked)
+            {
+                IsCashChecked = true; // never allow "neither"
+            }
         }
-        //choose buyer nga umutang
+
+        // choose buyer nga umutang
         [RelayCommand]
         public async Task OpenBuyerModalAsync()
         {
             var buyerPage = new BuyerPage();
-            var buyerViewModel = new BuyerViewModel();
-
-            buyerViewModel.OnBuyerSelected = (buyer) =>
+            var buyerViewModel = new BuyerViewModel
             {
-                SelectedBuyer = buyer;
-                SelectedBuyerName = buyer.Name;
+                OnBuyerSelected = buyer =>
+                {
+                    SelectedBuyer = buyer;
+                    SelectedBuyerName = buyer.Name;
+                }
             };
 
             buyerPage.BindingContext = buyerViewModel;
             await App.Navigator.Navigation.PushModalAsync(buyerPage);
         }
-        //complete transaction method
+
+        // ───────────────────────── Complete transaction ─────────────────────────
+
         [RelayCommand]
         private async Task CompleteTransactionAsync()
         {
+            // 1. Validation
+            if (CartList.Count == 0)
+            {
+                await ToastHelper.ShowError("Walang laman ang cart.");
+                return;
+            }
 
-            // Check if buyer is required
-            if (IsCreditChecked && SelectedBuyer == null)
+            if (IsCreditChecked && !IsAllowedUtang)
+            {
+                await ToastHelper.ShowError("Hindi pinapayagan ang utang.");
+                return;
+            }
+
+            if (IsCreditChecked && SelectedBuyer is null)
             {
                 await ToastHelper.ShowError("Pakilagay ang pangalan ng umutang.");
+                return;
+            }
+
+            // 2. Confirm
+            bool confirm = await App.Navigator.DisplayAlert(
+                "Kompiramahin",
+                $"Review your cart items:\n\n {BuildCartSummary()}",
+                "Tama lahat", "Hindi");
+
+            if (!confirm) return;
+
+            // 3. Save (awaited). If it fails the cart is kept so nothing is lost.
+            bool saved = await SaveTransactionAsync();
+            if (!saved)
+            {
+                await App.Navigator.DisplayAlert(
+                    "Error", "Hindi na-save ang transaksyon. Subukan ulit.", "OK");
+                return;
+            }
+
+            // 4. Next step
+            bool again = await App.Navigator.DisplayAlert(
+                "Tagumpay", "Tapos na ang transaction!\nGusto mo bang gumawa ulit?", "Oo", "Hindi");
+
+            if (again)
+            {
+                ClearForm();
+                await LoadProductsAsync(); // refresh stocks + reset row quantities
             }
             else
             {
-                bool confirm = await App.Navigator.DisplayAlert("Kompiramahin", $"Review your cart items:\n\n {BuildCartSummary()}", "Tama lahat", "Hindi");
-
-                if (confirm)
-                {
-                    SaveTransaction();
-                    bool again = await App.Navigator.DisplayAlert("Tagumpay", "Tapos na and transaction!\n Gusto mo bang gumawa ulit?", "Oo", "Hindi");
-
-                    if (again)
-                    {
-                        ClearForm();
-                    }
-                    else
-                    {
-                        await App.Navigator.Navigation.PopAsync();
-                    }
-                }
-                else
-                {
-                    return;
-                }
-
+                await App.Navigator.Navigation.PopAsync();
             }
         }
 
-        private void ClearForm()
+        private async Task<bool> SaveTransactionAsync()
         {
-            CartList.Clear();
-            TotalAmount = 0;
-            IsCashChecked = true;
-            SelectedBuyer = null;
-            SelectedBuyerName = null;
-        }
-
-        private async void SaveTransaction()
-        {
+            if (CartList.Count == 0) return false; // last line of defense
 
             try
             {
+                // Snapshot everything BEFORE any await so UI changes can't affect the save.
+                var now = DateTime.Now;
+                var buyer = SelectedBuyer;
+                var isCredit = IsCreditChecked;
+                var total = CartList.Sum(c => c.Price * c.Quantity);
+
+                if (isCredit && buyer is null) return false;
+
                 var transaction = new Transaction
                 {
-                    BuyerID = SelectedBuyer?.BuyerId,
-                    TransactionType = IsCashChecked ? "Cash" : "Credit",
-                    DateTimeTransacted = DateTime.Now.ToString("MMM dd, yyyy h:mm tt"),
-                    TotalAmount = TotalAmount,
+                    BuyerID = isCredit ? buyer!.BuyerId : null,
+                    TransactionType = isCredit ? "Credit" : "Cash",
+                    DateTimeTransacted = now.ToString("MMM dd, yyyy h:mm tt", CultureInfo.InvariantCulture),
+                    TotalAmount = total,
                     Username = Preferences.Get("username", string.Empty)
                 };
 
@@ -241,54 +281,64 @@ namespace TindaKo.ViewModel
                     Price = ci.Price,
                     Qty = ci.Quantity
                 }).ToList();
-                
+
                 await TransactionServices.SaveTransactionWithSalesAsync(transaction, soldItems);
-                if (IsCreditChecked)
+
+                if (isCredit)
                 {
                     var creditor = new Creditor
                     {
-                        CreditorName = SelectedBuyer.Name,
-                        CreditAmount = TotalAmount,
-                        CreditDate = DateTime.Now,
-                        DueDate = DateTime.Now.AddDays(_dueDateDays),
+                        CreditorName = buyer!.Name,
+                        CreditAmount = total,
+                        CreditDate = now,
+                        DueDate = now.AddDays(_dueDateDays),
                         IsPaid = false
                     };
                     await CreditorServices.SaveCreditorAsync(creditor);
                 }
+
+                return true;
             }
             catch (Exception ex)
             {
-
-                Debug.WriteLine($"[Complete Sell transaction] {ex.Message}");
+                Debug.WriteLine($"[Complete Sell transaction] {ex}");
+                return false;
             }
-            
         }
+
+        private void ClearForm()
+        {
+            CartList.Clear(); // RecalculateCart resets count, total and has-items flag
+            IsCreditChecked = false;
+            IsCashChecked = true;
+            TransactionType = "Cash";
+            SelectedBuyer = null;
+            SelectedBuyerName = string.Empty;
+        }
+
+        // ───────────────────────── Cancel ─────────────────────────
+
         [RelayCommand]
         private async Task CloseSellAsync()
         {
+            // Nothing to lose -> leave without asking
+            if (CartList.Count == 0)
+            {
+                await App.Navigator.Navigation.PopAsync();
+                return;
+            }
+
             bool answer = await App.Navigator.DisplayAlert(
                 "Kumpirmasyon",
                 "Gusto mo bang kanselahin ang kasalukuyang transaksyon ng pagbebenta?",
                 "Oo", "Hindi");
 
-
             if (answer)
-            {
                 await App.Navigator.Navigation.PopAsync();
-            }
         }
-    
-        private void CheckCartItems()
-        {
-            if (CartList.Count <= 0)
-            {
-                IsCartHasItems = false;
-            }
-            else
-            {
-                IsCartHasItems = true;
-            }
-        }
+
+        // ───────────────────────── Helpers ─────────────────────────
+
         private string BuildCartSummary()
         {
             var sb = new StringBuilder();
@@ -298,10 +348,13 @@ namespace TindaKo.ViewModel
 
             foreach (var item in CartList)
             {
-                grandTotal += item.Subtotal;
+                var subtotal = item.Price * item.Quantity;
+                grandTotal += subtotal;
 
-                sb.AppendLine(
-                    $"{item.ProdName.PadRight(20)}| {item.Price,7} | {item.Quantity,3} | {item.Subtotal,8}");
+                var name = item.ProdName ?? string.Empty;
+                if (name.Length > 20) name = name[..20];
+
+                sb.AppendLine($"{name.PadRight(20)}| {item.Price,7} | {item.Quantity,3} | {subtotal,8}");
             }
 
             sb.AppendLine(new string('-', 50));
@@ -311,75 +364,5 @@ namespace TindaKo.ViewModel
 
             return sb.ToString();
         }
-        [RelayCommand]
-        private async Task OpenCartAsync()
-        {
-            var popup = new SellPageCartPopup(this);
-            popup.Show();
-        }
-        [RelayCommand]
-        private async Task RemoveItemAsync(CartItems cartItems)
-        {
-            if (CartList.Contains(cartItems))
-            {
-                CartList.Remove(cartItems);
-                CartCount = CartList.Count; // 🔁 Sync cart count
-                TotalAmount -=cartItems.Subtotal;
-            }
-        }
     }
 }
-//public async Task AddToCart(Product product)
-//{
-//    try
-//    {
-//        if (product == null)
-//        {
-//            System.Diagnostics.Debug.WriteLine("AddToCart: product is null");
-//            return;
-//        }
-
-//        if (product.Quantity <= 0)
-//        {
-//            await Toast.Make("Please enter quantity greater than zero.", ToastDuration.Short).Show();
-//            return;
-//        }
-//        // 🔒 Check if Quantity exceeds remaining stocks
-//        var remainingStocks = product.StocksIn - product.StocksOut;
-//        if (product.Quantity > remainingStocks)
-//        {
-//            await Application.Current.MainPage.DisplayAlert(
-//                "Insufficient Stock",
-//                $"Only {remainingStocks} left in stock. Please reduce the quantity.",
-//                "OK");
-//            return;
-//        }
-
-//        var existing = CartItems.FirstOrDefault(c => c.ProdName == product.ProdName);
-//        if (existing != null)
-//        {
-//            await Toast.Make($"{product.ProdName} is already in the cart.", ToastDuration.Short).Show();
-//            return;
-//        }
-
-//        CartItems.Add(new CartItems
-//        {
-//            ProductId = product.ProdId,
-//            ProdName = product.ProdName,
-//            ProdCategory = product.Category,
-//            Price = product.Price,
-//            Quantity = product.Quantity,
-//            Subtotal = product.Price * product.Quantity
-//        });
-
-//        TotalAmount += product.Price * product.Quantity;
-
-//        // Reset quantity to avoid reusing
-//        product.Quantity = 0;
-//    }
-//    catch (Exception ex)
-//    {
-//        System.Diagnostics.Debug.WriteLine($"❌ AddToCart Exception: {ex}");
-//        await ToastHelper.ShowError("Something went wrong while adding to cart.");
-//    }
-//}
