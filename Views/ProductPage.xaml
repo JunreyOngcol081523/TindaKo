@@ -130,6 +130,13 @@
 
         <!-- ROW 1: SEARCH + LIMIT / LOAD -->
         <VerticalStackLayout Grid.Row="1" Padding="12,0" Spacing="6">
+            <!--put here a dropdown for category filtering-->
+            <Picker SelectedItem="{Binding SelectedCategoryFilter}"
+                    ItemsSource="{Binding CategoryFilters}"
+                    Title="Filter by category"
+                    FontSize="15"
+                    TextColor="{AppThemeBinding Light=#212121, Dark=#F5F5F5}" />
+
             <SearchBar Text="{Binding SearchText}"
                        Placeholder="Search product" />
 

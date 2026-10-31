@@ -9,4 +9,15 @@ public partial class ProductPage : ContentPage
 		InitializeComponent();
 		BindingContext = vm;
 	}
+
+	protected override async void OnAppearing()
+	{
+		base.OnAppearing();
+
+		if (BindingContext is ProductViewModel viewModel)
+		{
+			await viewModel.LoadCategories();
+			await viewModel.LoadProducts();
+		}
+	}
 }

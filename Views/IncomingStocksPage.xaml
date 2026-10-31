@@ -49,7 +49,7 @@
 
             <inputLayout:SfTextInputLayout Grid.Column="0"
                                            Hint="Supplier Name"
-                                           HelperText="(Optional)"
+                                           HelperText="(Required)"
                                            ContainerType="Outlined"
                                            ContainerBackground="Transparent"
                                            VerticalOptions="Center">

@@ -115,6 +115,12 @@
                         <mc:ChartView Chart="{Binding ExpensesSalesChart}"
                                       HeightRequest="200"
                                       VerticalOptions="Fill" />
+
+                        <Label Text="{Binding Profit, StringFormat='Profit: ₱{0:N2}'}"
+                               FontSize="16"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource PrimaryDark}"
+                               HorizontalOptions="Center" />
                     </VerticalStackLayout>
                 </Border>
             </VerticalStackLayout>

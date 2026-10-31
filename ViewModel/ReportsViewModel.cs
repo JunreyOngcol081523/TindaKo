@@ -33,6 +33,16 @@ namespace TindaKo.ViewModel
             get => _expensesSalesChart;
             set => SetProperty(ref _expensesSalesChart, value);
         }
+
+        [ObservableProperty]
+        private decimal salesTotal;
+
+        [ObservableProperty]
+        private decimal expensesTotal;
+
+        [ObservableProperty]
+        private decimal profit;
+
         public ObservableCollection<string> SegmentOptions { get; }
 
         [ObservableProperty]
@@ -118,8 +128,15 @@ namespace TindaKo.ViewModel
         {
             //var expenses = await IncomingStocksService.GetTotalAmountAsync(filterBy, dFrom, dTo);
             //var sales = await TransactionServices.GetTotalAmountAsync(filterBy, dFrom, dTo);
-            //var monthlyexpenses = await IncomingStocksService.GetTotalIncomingStocksAsync();
+            //var monthlyexpenses = await IncomingStocksService.GetTotalIncomingStocksAsync();Categories = await CategoriesHelper.LoadCategoriesFromJsonAsync();
             //await ToastHelper.ShowMessage($"Expenses: {expenses}, Sales: {sales}, Monthly Expenses: {monthlyexpenses}");
+
+            var expenses = await IncomingStocksService.GetTotalAmountAsync(filterBy, dFrom, dTo);
+            var sales = await TransactionServices.GetTotalAmountAsync(filterBy, dFrom, dTo);
+
+            ExpensesTotal = expenses;
+            SalesTotal = sales;
+            Profit = sales - expenses;
 
             var entries = await ChartHelper.GetExpensesSalesChartDataAsync(filterBy, dFrom, dTo);
 

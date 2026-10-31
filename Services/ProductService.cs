@@ -30,20 +30,49 @@ namespace TindaKo.Services
             await _db.UpdateAsync(product);
         }
         // CRUD Example
-        public static async Task<List<Product>> GetProductsAsync(int maxResults)
+        public static async Task<List<Product>> GetProductsAsync(int maxResults, string category = null)
         {
             await Init();
-            return await _db.Table<Product>().Take(maxResults).ToListAsync();
+
+            var query = _db.Table<Product>();
+
+            if (!string.IsNullOrWhiteSpace(category))
+                query = query.Where(product => product.Category == category);
+
+            return await query.Take(maxResults).ToListAsync();
         }
-        public static async Task<List<Product>> SearchProductsAsync(string keyword, int maxResults)
+
+        public static async Task<List<string>> GetCategoriesAsync()
         {
             await Init();
-            return await _db.Table<Product>()
-                      .Where(p =>
-                          (!string.IsNullOrEmpty(p.ProdName) && p.ProdName.ToLower().Contains(keyword.ToLower())) ||
-                          (!string.IsNullOrEmpty(p.Category) && p.Category.ToLower().Contains(keyword.ToLower())))
-                      .Take(maxResults)
-                      .ToListAsync();
+
+            var products = await _db.Table<Product>().ToListAsync();
+
+            return products
+                .Select(product => product.Category?.Trim())
+                .Where(category => !string.IsNullOrWhiteSpace(category))
+                .GroupBy(category => category, StringComparer.OrdinalIgnoreCase)
+                .Select(group => group.First())
+                .OrderBy(category => category, StringComparer.OrdinalIgnoreCase)
+                .ToList();
+        }
+
+        public static async Task<List<Product>> SearchProductsAsync(
+            string keyword,
+            int maxResults,
+            string category = null)
+        {
+            await Init();
+
+            var query = _db.Table<Product>()
+                .Where(p =>
+                    (!string.IsNullOrEmpty(p.ProdName) && p.ProdName.ToLower().Contains(keyword.ToLower())) ||
+                    (!string.IsNullOrEmpty(p.Category) && p.Category.ToLower().Contains(keyword.ToLower())));
+
+            if (!string.IsNullOrWhiteSpace(category))
+                query = query.Where(product => product.Category == category);
+
+            return await query.Take(maxResults).ToListAsync();
         }
 
         public static async Task<int> AddProductAsync(Product product) {

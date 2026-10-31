@@ -31,10 +31,14 @@ namespace TindaKo.ViewModel
         [ObservableProperty] private string searchText;
         [ObservableProperty] private ObservableCollection<Product> products;
         [ObservableProperty] private ObservableCollection<string> categories;
+        [ObservableProperty] private ObservableCollection<string> categoryFilters;
+        [ObservableProperty] private string selectedCategory;
+        [ObservableProperty] private string selectedCategoryFilter;
         [ObservableProperty] private int newStocksIn;
         [ObservableProperty] private int newStocksOut;
         [ObservableProperty] private bool formVisible;
         private bool _isBusy;
+        private const string AllCategories = "All Categories";
         public bool IsBusy
         {
             get => _isBusy;
@@ -43,15 +47,29 @@ namespace TindaKo.ViewModel
         //constructor
         public ProductViewModel()
         {
-            _ = LoadProducts();
-
-            _ = LoadCategories();
             MaxResults = Preferences.Get(nameof(MaxResults), 20);
             FormVisible = false;
         }
         public async Task LoadCategories()
         {
-            Categories = await CategoriesHelper.LoadCategoriesFromJsonAsync();
+            try
+            {
+                Categories = await CategoriesHelper.LoadCategoriesFromJsonAsync();
+                CategoryFilters = new ObservableCollection<string>(
+                    new[] { AllCategories }.Concat(Categories));
+                SelectedCategoryFilter = AllCategories;
+
+                Console.WriteLine(
+                    $"Categories loaded: {Categories.Count} - {string.Join(", ", Categories)}");
+
+                System.Diagnostics.Debug.WriteLine(
+                    $"Categories loaded: {Categories.Count} - {string.Join(", ", Categories)}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Category loading failed: {ex}");
+                System.Diagnostics.Debug.WriteLine($"Category loading failed: {ex}");
+            }
         }
         [RelayCommand]
         private async Task AddProductAsync()
@@ -86,6 +104,9 @@ namespace TindaKo.ViewModel
                 ClearTextFields();
             }
         }
+
+
+
         [RelayCommand]
         private async Task UpdateProductAsync(Product product)
         {
@@ -104,14 +125,17 @@ namespace TindaKo.ViewModel
                 IsBusy = true;
                 await Task.Delay(500);
                 List<Product> results;
+                var category = SelectedCategoryFilter == AllCategories
+                    ? null
+                    : SelectedCategoryFilter;
 
                 if (string.IsNullOrWhiteSpace(SearchText))
                 {
-                    results = await ProductService.GetProductsAsync(MaxResults); // Loads all (optionally paginate)
+                    results = await ProductService.GetProductsAsync(MaxResults, category);
                 }
                 else
                 {
-                    results = await ProductService.SearchProductsAsync(SearchText, MaxResults); // Filter at DB level
+                    results = await ProductService.SearchProductsAsync(SearchText, MaxResults, category);
                 }
 
                 Products = new ObservableCollection<Product>(results);
@@ -147,6 +171,11 @@ namespace TindaKo.ViewModel
         }
 
         partial void OnSearchTextChanged(string value)
+        {
+            _ = LoadProducts();
+        }
+
+        partial void OnSelectedCategoryFilterChanged(string value)
         {
             _ = LoadProducts();
         }
