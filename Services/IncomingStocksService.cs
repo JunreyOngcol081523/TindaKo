@@ -54,39 +54,78 @@ namespace TindaKo.Services
                 return false;
             }
         }
+        //public static async Task<decimal> GetTotalAmountAsync(string filterBy, DateTime dateFrom, DateTime dateTo)
+        //{
+        //    await Init();
+        //    DateTime startDate, endDate;
+
+        //    switch (filterBy.ToLower())
+        //    {
+        //        case "monthly":
+        //            startDate = new DateTime(dateFrom.Year, dateFrom.Month, 1); // 1st day of month
+        //            endDate = startDate.AddMonths(1).AddDays(-1);              // last day of month
+        //            break;
+
+        //        case "yearly":
+        //            startDate = new DateTime(dateFrom.Year, 1, 1);             // Jan 1
+        //            endDate = new DateTime(dateFrom.Year, 12, 31);             // Dec 31
+        //            break;
+
+        //        case "custom":
+        //            startDate = dateFrom.Date;
+        //            endDate = dateTo.Date.AddDays(1).AddTicks(-1);
+        //            break;
+
+
+        //        default:
+        //            throw new ArgumentException("Invalid filterBy value. Use 'monthly', 'yearly', or 'custom'.");
+        //    }
+
+        //    string sql = @"
+        //SELECT IFNULL(SUM(TotalAmount), 0) 
+        //FROM IncomingStocks 
+        //WHERE DateStocksIn BETWEEN ? AND ?";
+
+        //    var result = await _db.ExecuteScalarAsync<decimal>(sql, startDate, endDate);
+        //    return result;
+        //}
         public static async Task<decimal> GetTotalAmountAsync(string filterBy, DateTime dateFrom, DateTime dateTo)
         {
             await Init();
-            DateTime startDate, endDate;
+            DateTime startDate, endExclusive;
 
-            switch (filterBy.ToLower())
+            switch (filterBy?.ToLower())
             {
                 case "monthly":
                     startDate = new DateTime(dateFrom.Year, dateFrom.Month, 1); // 1st day of month
-                    endDate = startDate.AddMonths(1).AddDays(-1);              // last day of month
+                    endExclusive = startDate.AddMonths(1);
                     break;
 
                 case "yearly":
                     startDate = new DateTime(dateFrom.Year, 1, 1);             // Jan 1
-                    endDate = new DateTime(dateFrom.Year, 12, 31);             // Dec 31
+                    endExclusive = startDate.AddYears(1);
                     break;
 
                 case "custom":
                     startDate = dateFrom.Date;
-                    endDate = dateTo.Date.AddDays(1).AddTicks(-1);
+                    endExclusive = dateTo.Date.AddDays(1);
                     break;
-
 
                 default:
                     throw new ArgumentException("Invalid filterBy value. Use 'monthly', 'yearly', or 'custom'.");
             }
 
-            string sql = @"
-        SELECT IFNULL(SUM(TotalAmount), 0) 
-        FROM IncomingStocks 
-        WHERE DateStocksIn BETWEEN ? AND ?";
+            var incomingStocks = await _db.Table<IncomingStocks>().ToListAsync();
 
-            var result = await _db.ExecuteScalarAsync<decimal>(sql, startDate, endDate);
+            var matchingStocks = incomingStocks
+                .Where(s => s.DateStocksIn >= startDate && s.DateStocksIn < endExclusive)
+                .ToList();
+
+            Debug.WriteLine($"[IncomingStocks] FilterBy={filterBy}, input DateFrom={dateFrom:yyyy-MM-dd HH:mm:ss}, input DateTo={dateTo:yyyy-MM-dd HH:mm:ss}, range=[{startDate:yyyy-MM-dd HH:mm:ss}, {endExclusive:yyyy-MM-dd HH:mm:ss})");
+            Debug.WriteLine($"[IncomingStocks] Matching dates: {string.Join(", ", matchingStocks.Select(s => s.DateStocksIn.ToString("yyyy-MM-dd HH:mm:ss")))}");
+
+            var result = matchingStocks.Sum(s => s.TotalAmount);
+
             return result;
         }
 

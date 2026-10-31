@@ -29,9 +29,8 @@ namespace TindaKo.ViewModel
 
         public Buyer? SelectedBuyer { get; set; }
 
-        private List<Product> _allProducts = new();
         private CancellationTokenSource? _searchCts;
-        private readonly int _dueDateDays;
+        private int _dueDateDays;
 
         // ───────────────────────── Ctor / Init ─────────────────────────
 
@@ -41,11 +40,20 @@ namespace TindaKo.ViewModel
             CartList.CollectionChanged += (_, _) => RecalculateCart();
 
             IsCashChecked = true;
+            LoadSettings();
+        }
+
+        public async Task InitializeAsync()
+        {
+            LoadSettings(); // settings may have changed since this VM was created
+            await LoadProductsAsync();
+        }
+
+        private void LoadSettings()
+        {
             IsAllowedUtang = Preferences.Get("AllowUtang", false);
             _dueDateDays = Preferences.Get("DueDateDays", 0);
         }
-
-        public async Task InitializeAsync() => await LoadProductsAsync();
 
         // Single source of truth for count / total / has-items flag
         private void RecalculateCart()
@@ -68,7 +76,6 @@ namespace TindaKo.ViewModel
                 // a newer search superseded this one -> drop the stale result
                 if (token.IsCancellationRequested) return;
 
-                _allProducts = products;
                 ProductList = new ObservableCollection<Product>(products);
             }
             catch (Exception ex)
@@ -81,9 +88,12 @@ namespace TindaKo.ViewModel
 
         private async Task DebouncedSearchAsync()
         {
-            _searchCts?.Cancel();
+            var previous = _searchCts;
             _searchCts = new CancellationTokenSource();
             var token = _searchCts.Token;
+
+            previous?.Cancel();
+            previous?.Dispose();
 
             try
             {
@@ -199,6 +209,8 @@ namespace TindaKo.ViewModel
         [RelayCommand]
         private async Task CompleteTransactionAsync()
         {
+            LoadSettings(); // validate against the CURRENT utang setting, not the one from when the page opened
+
             // 1. Validation
             if (CartList.Count == 0)
             {
@@ -226,12 +238,16 @@ namespace TindaKo.ViewModel
 
             if (!confirm) return;
 
-            // 3. Save (awaited). If it fails the cart is kept so nothing is lost.
-            bool saved = await SaveTransactionAsync();
+            // 3. Save. The service saves sale + stock + utang as ONE database transaction,
+            //    so on failure NOTHING was saved and the cart is kept for a retry.
+            var (saved, error) = await SaveTransactionAsync();
+
             if (!saved)
             {
                 await App.Navigator.DisplayAlert(
-                    "Error", "Hindi na-save ang transaksyon. Subukan ulit.", "OK");
+                    "Error", error ?? "Hindi na-save ang transaksyon. Subukan ulit.", "OK");
+
+                await LoadProductsAsync(); // stock may have changed -> show the real numbers
                 return;
             }
 
@@ -239,70 +255,72 @@ namespace TindaKo.ViewModel
             bool again = await App.Navigator.DisplayAlert(
                 "Tagumpay", "Tapos na ang transaction!\nGusto mo bang gumawa ulit?", "Oo", "Hindi");
 
+            // The sale is finished either way -> never leave sold items sitting in the cart.
+            ClearForm();
+
             if (again)
-            {
-                ClearForm();
                 await LoadProductsAsync(); // refresh stocks + reset row quantities
-            }
             else
-            {
                 await App.Navigator.Navigation.PopAsync();
-            }
         }
 
-        private async Task<bool> SaveTransactionAsync()
+        private async Task<(bool Saved, string? Error)> SaveTransactionAsync()
         {
-            if (CartList.Count == 0) return false; // last line of defense
+            if (CartList.Count == 0) return (false, null); // last line of defense
+
+            // Snapshot everything BEFORE any await so UI changes can't affect the save.
+            var now = DateTime.Now;
+            var buyer = SelectedBuyer;
+            var isCredit = IsCreditChecked;
+            var total = CartList.Sum(c => c.Price * c.Quantity);
+            var dueDateDays = _dueDateDays;
+
+            if (isCredit && buyer is null) return (false, null);
+
+            var transaction = new Transaction
+            {
+                BuyerID = isCredit ? buyer!.BuyerId : null,
+                TransactionType = isCredit ? "Credit" : "Cash",
+                DateTimeTransacted = now.ToString("MMM dd, yyyy h:mm tt", CultureInfo.InvariantCulture),
+                TotalAmount = total,
+                Username = Preferences.Get("username", string.Empty)
+            };
+
+            var soldItems = CartList.Select(ci => new Sell
+            {
+                ProductID = ci.ProductId,
+                ProductName = ci.ProdName,
+                Category = ci.ProdCategory,
+                Price = ci.Price,
+                Qty = ci.Quantity
+            }).ToList();
+
+            Creditor? creditor = null;
+            if (isCredit)
+            {
+                creditor = new Creditor
+                {
+                    CreditorName = buyer!.Name,
+                    CreditAmount = total,
+                    CreditDate = now,
+                    DueDate = now.AddDays(dueDateDays),
+                    IsPaid = false
+                };
+            }
 
             try
             {
-                // Snapshot everything BEFORE any await so UI changes can't affect the save.
-                var now = DateTime.Now;
-                var buyer = SelectedBuyer;
-                var isCredit = IsCreditChecked;
-                var total = CartList.Sum(c => c.Price * c.Quantity);
-
-                if (isCredit && buyer is null) return false;
-
-                var transaction = new Transaction
-                {
-                    BuyerID = isCredit ? buyer!.BuyerId : null,
-                    TransactionType = isCredit ? "Credit" : "Cash",
-                    DateTimeTransacted = now.ToString("MMM dd, yyyy h:mm tt", CultureInfo.InvariantCulture),
-                    TotalAmount = total,
-                    Username = Preferences.Get("username", string.Empty)
-                };
-
-                var soldItems = CartList.Select(ci => new Sell
-                {
-                    ProductID = ci.ProductId,
-                    ProductName = ci.ProdName,
-                    Category = ci.ProdCategory,
-                    Price = ci.Price,
-                    Qty = ci.Quantity
-                }).ToList();
-
-                await TransactionServices.SaveTransactionWithSalesAsync(transaction, soldItems);
-
-                if (isCredit)
-                {
-                    var creditor = new Creditor
-                    {
-                        CreditorName = buyer!.Name,
-                        CreditAmount = total,
-                        CreditDate = now,
-                        DueDate = now.AddDays(_dueDateDays),
-                        IsPaid = false
-                    };
-                    await CreditorServices.SaveCreditorAsync(creditor);
-                }
-
-                return true;
+                await TransactionServices.SaveTransactionWithSalesAsync(transaction, soldItems, creditor);
+                return (true, null);
+            }
+            catch (InsufficientStockException ex)
+            {
+                return (false, ex.Message); // precise, user-facing message
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"[Complete Sell transaction] {ex}");
-                return false;
+                return (false, null);
             }
         }
 
@@ -334,7 +352,10 @@ namespace TindaKo.ViewModel
                 "Oo", "Hindi");
 
             if (answer)
+            {
+                ClearForm();
                 await App.Navigator.Navigation.PopAsync();
+            }
         }
 
         // ───────────────────────── Helpers ─────────────────────────

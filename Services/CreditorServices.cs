@@ -1,47 +1,40 @@
 ﻿using SQLite;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TindaKo.Models;
 
 namespace TindaKo.Services
 {
     public static class CreditorServices
     {
-        private static SQLiteAsyncConnection _db;
-        public static async Task Init()
-        {
-            _db = await DatabaseService.GetConnectionAsync();
-        }
+        // Kept for existing callers; the connection itself is owned by DatabaseService.
+        public static Task Init() => DatabaseService.GetConnectionAsync();
+
         public static async Task<List<Creditor>> GetCreditorsAsync()
         {
-            await Init();
-            return await _db.Table<Creditor>().ToListAsync();
+            var db = await DatabaseService.GetConnectionAsync();
+            return await db.Table<Creditor>().ToListAsync();
         }
+
         public static async Task<int> UpdateCreditorAsync(Creditor creditor)
         {
-            await Init();
-            return await _db.UpdateAsync(creditor);
+            var db = await DatabaseService.GetConnectionAsync();
+            return await db.UpdateAsync(creditor);
         }
+
+        /// Standalone insert. For a sale on utang, pass the Creditor to
+        /// TransactionServices.SaveTransactionWithSalesAsync instead so both are saved atomically.
         public static async Task SaveCreditorAsync(Creditor creditor)
         {
-            await Init();
-            await _db.InsertAsync(creditor);
+            var db = await DatabaseService.GetConnectionAsync();
+            await db.InsertAsync(creditor);
         }
+
         public static async Task<int> GetOverdueUnpaidCreditsCountAsync()
         {
-            await Init(); // Ensure database is initialized
-
+            var db = await DatabaseService.GetConnectionAsync();
             var today = DateTime.Today;
 
-            var overdueUnpaidCredits = await _db.Table<Creditor>()
-                .Where(c => !c.IsPaid && c.DueDate < today)
-                .ToListAsync();
-
-            return overdueUnpaidCredits.Count;
+            // counted by SQLite, no need to load the rows
+            return await db.Table<Creditor>().CountAsync(c => !c.IsPaid && c.DueDate < today);
         }
-
     }
 }

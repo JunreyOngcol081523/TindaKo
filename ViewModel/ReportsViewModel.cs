@@ -5,6 +5,7 @@ using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -115,7 +116,7 @@ namespace TindaKo.ViewModel
 
         private async Task LoadExpensesSales(string filterBy, DateTime dFrom, DateTime dTo)
         {
-            var expenses = await IncomingStocksService.GetTotalAmountAsync(filterBy, dFrom, dTo);
+            //var expenses = await IncomingStocksService.GetTotalAmountAsync(filterBy, dFrom, dTo);
             //var sales = await TransactionServices.GetTotalAmountAsync(filterBy, dFrom, dTo);
             //var monthlyexpenses = await IncomingStocksService.GetTotalIncomingStocksAsync();
             //await ToastHelper.ShowMessage($"Expenses: {expenses}, Sales: {sales}, Monthly Expenses: {monthlyexpenses}");
@@ -150,6 +151,8 @@ namespace TindaKo.ViewModel
                 return;
             }
             FilterBy = SelectedSegmentLabel ?? "Monthly";
+
+            Debug.WriteLine($"[Reports] FilterBy={FilterBy}, DateFrom={DateFrom:yyyy-MM-dd HH:mm:ss}, DateTo={DateTo:yyyy-MM-dd HH:mm:ss}");
 
             await LoadExpensesSales(FilterBy, DateFrom, DateTo);
         }

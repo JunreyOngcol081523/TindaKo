@@ -1,14 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using SQLite;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 namespace TindaKo.Models
 {
-   
-
     public class Product : ObservableObject
     {
         [PrimaryKey, AutoIncrement]
@@ -18,11 +12,18 @@ namespace TindaKo.Models
 
         public string Category { get; set; } = string.Empty;
 
+        /// Current selling price. Editing it only affects FUTURE sales
+        /// (every Sell row stores the price it was sold at).
         public decimal Price { get; set; }
+
+        /// Weighted-average supplier cost of the stock on hand.
+        /// 0 = unknown (no stock-in recorded yet). Maintained by StockReceivingService.
+        public decimal AverageCost { get; set; }
 
         public decimal StocksIn { get; set; } = 0;
 
         public decimal StocksOut { get; set; } = 0;
+
         [Ignore] // This tells SQLite to ignore this property
         public decimal CurrentStock => StocksIn - StocksOut;
 
@@ -47,17 +48,18 @@ namespace TindaKo.Models
 
     public class ProductDisplay : ObservableObject
     {
-        public ProductDisplay(Product product) { 
+        public ProductDisplay(Product product)
+        {
             ProdId = product.ProdId;
             ProdName = product.ProdName;
         }
         public ProductDisplay() { }
         public int ProdId { get; set; }
-  
+
         public string ProdName { get; set; } = string.Empty;
-        
+
         private decimal supplierPrice;
- 
+
         public decimal SupplierPrice
         {
             get => supplierPrice;
@@ -93,6 +95,4 @@ namespace TindaKo.Models
             Subtotal = SupplierPrice * NewStocksQty;
         }
     }
-
-
 }

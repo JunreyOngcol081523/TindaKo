@@ -1,61 +1,86 @@
 ﻿using SQLite;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TindaKo.Models;
 
 namespace TindaKo.Services
 {
+    /// Thrown when a sale asks for more units than are in stock.
+    /// The message is user-facing, so the ViewModel can show it as-is.
+    public class InsufficientStockException : Exception
+    {
+        public InsufficientStockException(string message) : base(message) { }
+    }
+
     public static class TransactionServices
     {
-        private static SQLiteAsyncConnection _db;
-        public static async Task Init()
-        {
-            _db = await DatabaseService.GetConnectionAsync();
-        }
+        // Single place that knows how DateTimeTransacted is stored.
+        private const string DateFormat = "MMM dd, yyyy h:mm tt";
 
-        public static async Task SaveTransactionWithSalesAsync(Transaction transaction, List<Sell> soldItems)
+        private static bool TryParseDate(string? text, out DateTime date) =>
+            DateTime.TryParseExact(text, DateFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out date);
+
+        // Kept for existing callers; the connection itself is owned by DatabaseService.
+        public static Task Init() => DatabaseService.GetConnectionAsync();
+
+        // ───────────────────────── Save ─────────────────────────
+
+        /// Saves the transaction header, its sell rows, the stock deduction and (for utang)
+        /// the creditor record as ONE database transaction: everything is saved or nothing is.
+        /// THROWS on failure (InsufficientStockException for stock problems) so the caller
+        /// can tell the user the truth and keep the cart.
+        public static async Task SaveTransactionWithSalesAsync(
+            Transaction transaction,
+            List<Sell> soldItems,
+            Creditor? creditor = null)
         {
-            try
+            ArgumentNullException.ThrowIfNull(transaction);
+
+            if (soldItems is null || soldItems.Count == 0)
+                throw new ArgumentException("Walang laman ang benta.", nameof(soldItems));
+
+            var db = await DatabaseService.GetConnectionAsync();
+
+            // Any exception thrown inside rolls EVERYTHING back and is re-thrown to the caller.
+            await db.RunInTransactionAsync(conn =>
             {
-                await Init();
-                // Insert Transaction first to get the ID
-                await _db.InsertAsync(transaction);
-
-                foreach (var sell in soldItems)
+                // 1. Check the stock against the database (not the screen) and deduct it.
+                foreach (var item in soldItems)
                 {
-                    sell.TransactionId = transaction.TransactionId; // Set FK
-                    await _db.InsertAsync(sell);
+                    if (item.ProductID == 0)
+                        throw new InvalidOperationException($"Hindi valid ang produkto: {item.ProductName}.");
 
-                    // Update StocksOut
-                    if (sell.ProductID == 0)
-                    {
-                        Debug.WriteLine("Warning: sell.ProductID is 0. Cannot fetch product.");
-                        continue;
-                    }
-                    var product = await _db.Table<Product>().FirstOrDefaultAsync(p => p.ProdId == sell.ProductID);
-                    Debug.WriteLine($"Product prodID: {product.ProdId}\n sell prodID: {sell.ProductID}");
-                    if (product != null)
-                    {
-                        product.StocksOut += sell.Qty;
-                        await _db.UpdateAsync(product);
-                    }
-                    else
-                    {
-                        Debug.WriteLine($"Warning: No product found with ProdId = {sell.ProductID}");
-                    }
+                    var product = conn.Table<Product>().FirstOrDefault(p => p.ProdId == item.ProductID)
+                        ?? throw new InvalidOperationException($"Hindi nahanap ang produkto: {item.ProductName}.");
+
+                    var remaining = product.StocksIn - product.StocksOut;
+                    if (item.Qty > remaining)
+                        throw new InsufficientStockException(
+                            $"{product.ProdName}: {remaining} na lang ang stock, pero {item.Qty} ang hinihingi.");
+
+                    item.UnitCost = product.AverageCost; // cost snapshot for profit reports (0 = unknown)
+
+                    product.StocksOut += item.Qty;
+                    conn.Update(product);
                 }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.StackTrace);
-                await App.Navigator.DisplayAlert("Error", ex.Message, "OK");
-            }
+
+                // 2. Header first so we get its generated id.
+                conn.Insert(transaction);
+
+                // 3. Sell rows.
+                foreach (var item in soldItems)
+                {
+                    item.TransactionId = transaction.TransactionId;
+                    conn.Insert(item);
+                }
+
+                // 4. Utang record, in the same transaction.
+                if (creditor != null)
+                    conn.Insert(creditor);
+            });
         }
+
+        // ───────────────────────── Queries ─────────────────────────
 
         public static async Task<List<Transaction>> GetFilteredTransactionsAsync(
             bool isFilter,
@@ -63,151 +88,120 @@ namespace TindaKo.Services
             DateTime toDate,
             string transactionType)
         {
-            await Init();
-            var allTransactions = await _db.Table<Transaction>().ToListAsync();
+            var db = await DatabaseService.GetConnectionAsync();
+            var all = await db.Table<Transaction>().ToListAsync();
 
-            return allTransactions
+            return all
                 .Where(t =>
                 {
-                    if (isFilter)
-                    {
-                        bool parsed = DateTime.TryParseExact(
-                            t.DateTimeTransacted,
-                            "MMM dd, yyyy h:mm tt",
-                            System.Globalization.CultureInfo.InvariantCulture,
-                            System.Globalization.DateTimeStyles.None,
-                            out DateTime transDate);
+                    if (!isFilter) return true;
 
-                        if (!parsed)
-                            return false;
+                    if (!TryParseDate(t.DateTimeTransacted, out var transDate))
+                        return false;
 
-                        bool isInDateRange = transDate.Date >= fromDate.Date && transDate.Date <= toDate.Date;
-                        bool matchesType = string.IsNullOrEmpty(transactionType) || t.TransactionType == transactionType;
-                        return isInDateRange && matchesType;
-                    }
-
-                    return true;
+                    bool inRange = transDate.Date >= fromDate.Date && transDate.Date <= toDate.Date;
+                    bool matchesType = string.IsNullOrEmpty(transactionType) || t.TransactionType == transactionType;
+                    return inRange && matchesType;
                 })
                 .OrderByDescending(t => t.TransactionId)
                 .ToList();
         }
+
         public static async Task<List<Sell>> GetSellsAsync(int transactionId)
         {
-            await Init();
-            var allSells = await _db.Table<Sell>().ToListAsync();
-            return allSells
-                .Where(s => s.TransactionId == transactionId).ToList();
+            var db = await DatabaseService.GetConnectionAsync();
+            // filtered by SQLite instead of loading every sell row into memory
+            return await db.Table<Sell>().Where(s => s.TransactionId == transactionId).ToListAsync();
         }
+
         public static async Task<decimal> GetTodayTotalSalesAsync()
         {
-            await Init();
-
+            var db = await DatabaseService.GetConnectionAsync();
             var today = DateTime.Today;
-            var format = "MMM dd, yyyy h:mm tt";
-            var culture = System.Globalization.CultureInfo.InvariantCulture;
 
-            var transactions = await _db.Table<Transaction>().ToListAsync();
+            var transactions = await db.Table<Transaction>().ToListAsync();
 
-            var todayTransactions = transactions
-                .Where(t => DateTime.TryParseExact(t.DateTimeTransacted, format, culture, System.Globalization.DateTimeStyles.None, out var date)
-                            && date.Date == today)
-                .ToList();
-
-            var total = todayTransactions.Sum(t => t.TotalAmount);
-            return total;
+            return transactions
+                .Where(t => TryParseDate(t.DateTimeTransacted, out var date) && date.Date == today)
+                .Sum(t => t.TotalAmount);
         }
+
         public static async Task<decimal> GetMonthlyTotalSalesAsync()
         {
-            await Init();
-
+            var db = await DatabaseService.GetConnectionAsync();
             var now = DateTime.Now;
-            var format = "MMM dd, yyyy h:mm tt";
-            var culture = System.Globalization.CultureInfo.InvariantCulture;
 
-            var transactions = await _db.Table<Transaction>().ToListAsync();
+            var transactions = await db.Table<Transaction>().ToListAsync();
 
-            var monthlyTransactions = transactions
-                .Where(t =>
-                    DateTime.TryParseExact(t.DateTimeTransacted, format, culture, System.Globalization.DateTimeStyles.None, out var date)
-                    && date.Month == now.Month
-                    && date.Year == now.Year)
-                .ToList();
-
-            var total = monthlyTransactions.Sum(t => t.TotalAmount);
-            return total;
+            return transactions
+                .Where(t => TryParseDate(t.DateTimeTransacted, out var date)
+                            && date.Month == now.Month
+                            && date.Year == now.Year)
+                .Sum(t => t.TotalAmount);
         }
 
-        //get all transactions
+        /// All transactions of one year (defaults to the current year). Returns an empty list on error.
         public static async Task<List<Transaction>> GetAllTransactionsAsync(int? year = null)
         {
             try
             {
-                await Init();
-
+                var db = await DatabaseService.GetConnectionAsync();
                 int targetYear = year ?? DateTime.Now.Year;
 
-                var allTransactions = await _db.Table<Transaction>().ToListAsync();
+                var all = await db.Table<Transaction>().ToListAsync();
 
-                var filtered = allTransactions
-                .Where(t =>
-                {
-                    if (string.IsNullOrWhiteSpace(t.DateTimeTransacted))
-                        return false;
-
-                    bool parsed = DateTime.TryParse(t.DateTimeTransacted, out var date);
-                    return parsed && date.Year == targetYear;
-                })
+                // TryParseExact + InvariantCulture: the old DateTime.TryParse used the phone's
+                // culture and could fail on a non-English device.
+                return all
+                    .Where(t => TryParseDate(t.DateTimeTransacted, out var date) && date.Year == targetYear)
                     .ToList();
-
-                return filtered;
             }
             catch (Exception ex)
             {
-
-                Debug.WriteLine(ex.Message);
-                return null;
+                Debug.WriteLine(ex);
+                return new List<Transaction>();
             }
         }
+
         public static async Task<decimal> GetTotalAmountAsync(string filterBy, DateTime dateFrom, DateTime dateTo)
         {
-            await Init();
+            var db = await DatabaseService.GetConnectionAsync();
 
-            DateTime startDate, endDate;
+            // Half-open range [start, endExclusive): the old code used "<= last day at 00:00",
+            // which dropped every sale made on the last day of a month or year.
+            DateTime start, endExclusive;
 
-            switch (filterBy.ToLower())
+            switch (filterBy.ToLowerInvariant())
             {
                 case "monthly":
-                    startDate = new DateTime(dateFrom.Year, dateFrom.Month, 1);
-                    endDate = startDate.AddMonths(1).AddDays(-1);
+                    start = new DateTime(dateFrom.Year, dateFrom.Month, 1);
+                    endExclusive = start.AddMonths(1);
                     break;
 
                 case "yearly":
-                    startDate = new DateTime(dateFrom.Year, 1, 1);
-                    endDate = new DateTime(dateFrom.Year, 12, 31);
+                    start = new DateTime(dateFrom.Year, 1, 1);
+                    endExclusive = start.AddYears(1);
                     break;
 
                 case "custom":
-                    startDate = dateFrom.Date;
-                    endDate = dateTo.Date.AddDays(1).AddTicks(-1);
+                    start = dateFrom.Date;
+                    endExclusive = dateTo.Date.AddDays(1);
                     break;
-
 
                 default:
                     throw new ArgumentException("Invalid filterBy value. Use 'monthly', 'yearly', or 'custom'.");
             }
 
-            var format = "MMM dd, yyyy h:mm tt";
-            var culture = CultureInfo.InvariantCulture;
+            var transactions = await db.Table<Transaction>().ToListAsync();
 
-            var transactions = await _db.Table<Transaction>().ToListAsync();
+            var matchingTransactions = transactions
+                .Where(t => TryParseDate(t.DateTimeTransacted, out var date) && date >= start && date < endExclusive)
+                .ToList();
 
-            var filtered = transactions.Where(t =>
-                DateTime.TryParseExact(t.DateTimeTransacted, format, culture, DateTimeStyles.None, out var date)
-                && date >= startDate && date <= endDate);
+            Debug.WriteLine($"[Transactions] FilterBy={filterBy}, input DateFrom={dateFrom:yyyy-MM-dd HH:mm:ss}, input DateTo={dateTo:yyyy-MM-dd HH:mm:ss}, range=[{start:yyyy-MM-dd HH:mm:ss}, {endExclusive:yyyy-MM-dd HH:mm:ss})");
+            Debug.WriteLine($"[Transactions] Matching dates: {string.Join(", ", matchingTransactions.Select(t => t.DateTimeTransacted))}");
 
-            return filtered.Sum(t => t.TotalAmount);
+            return matchingTransactions.Sum(t => t.TotalAmount);
         }
-
-
     }
 }

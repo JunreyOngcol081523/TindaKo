@@ -59,9 +59,12 @@ namespace TindaKo.ViewModel
 
         private async Task DebouncedSearchAsync()
         {
-            _searchCts?.Cancel();
+            var previous = _searchCts;
             _searchCts = new CancellationTokenSource();
             var token = _searchCts.Token;
+
+            previous?.Cancel();
+            previous?.Dispose();
 
             try
             {
@@ -137,75 +140,33 @@ namespace TindaKo.ViewModel
             // 3. Snapshot BEFORE any await so UI changes can't affect the save
             var items = CartList.ToList();
             var supplier = SupplierName.Trim();
-            var total = items.Sum(i => i.SupplierPrice * i.NewStocksQty);
 
-            // 4. Save the incoming-stocks record
+            // 4. Save. ONE database transaction: delivery record + product lines +
+            //    stock increase + new average cost. If it throws, NOTHING was saved,
+            //    so the cart is kept and the user can retry safely.
             try
             {
                 var incomingStocks = new IncomingStocks
                 {
                     DateStocksIn = DateTime.Now,
-                    SupplierName = supplier,
-                    TotalAmount = total
+                    SupplierName = supplier
+                    // TotalAmount is computed inside the service
                 };
 
-                bool success = await IncomingStocksService.SaveIncomingStocksAsync(
-                    incomingStocks, new ObservableCollection<ProductDisplay>(items));
-
-                if (!success)
-                {
-                    await ToastHelper.ShowError("Failed to save incoming stocks.");
-                    return; // nothing saved -> cart is kept, user can retry safely
-                }
+                await StockReceivingService.ReceiveStockAsync(incomingStocks, items);
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"[IncomingStocks] save failed: {ex}");
-                await ToastHelper.ShowError("Failed to save incoming stocks.");
+                await ToastHelper.ShowError("Failed to save incoming stocks. Nothing was changed.");
                 return;
             }
 
-            // 5. From here the record IS saved. The cart must be cleared no matter what,
-            //    otherwise a retry would log the same delivery twice.
-            var failed = new List<string>();
-
-            foreach (var item in items)
-            {
-                try
-                {
-                    var product = await ProductService.GetProductByIdAsync(item.ProdId);
-                    if (product is null)
-                    {
-                        failed.Add(item.ProdName);
-                        continue;
-                    }
-
-                    product.StocksIn += item.NewStocksQty;
-                    await ProductService.UpdateProductAsync(product);
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine($"[IncomingStocks] stock update failed for {item.ProdName}: {ex}");
-                    failed.Add(item.ProdName);
-                }
-            }
-
+            // 5. Saved. Clear the cart so the same delivery can't be logged twice.
             ClearForm();
             await LoadProductsAsync(); // refresh stock numbers + reset the input rows
 
-            if (failed.Count == 0)
-            {
-                await ToastHelper.ShowMessage("Incoming stocks saved successfully.");
-            }
-            else
-            {
-                await App.Navigator.DisplayAlert(
-                    "Saved with warnings",
-                    "The delivery was recorded, but stock was NOT updated for:\n\n"
-                    + string.Join("\n", failed)
-                    + "\n\nPlease adjust these products manually.",
-                    "OK");
-            }
+            await ToastHelper.ShowMessage("Incoming stocks saved successfully.");
         }
 
         private void ClearForm()
@@ -232,7 +193,10 @@ namespace TindaKo.ViewModel
                 "Yes", "No");
 
             if (confirmed)
+            {
+                ClearForm();
                 await App.Navigator.Navigation.PopAsync();
+            }
         }
 
         [RelayCommand]
