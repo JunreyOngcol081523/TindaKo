@@ -1,4 +1,5 @@
 using Plugin.MauiMtAdmob.Controls;
+using Plugin.MauiMtAdmob.Extra;
 
 namespace TindaKo.Controls;
 
@@ -20,12 +21,14 @@ public sealed class AdBannerView : ContentView
     {
         var adView = new MTAdView
         {
+            AdSize = BannerSize.Banner,
             HeightRequest = 50,
             HorizontalOptions = LayoutOptions.Center,
             VerticalOptions = LayoutOptions.Center
         };
 
         adView.SetBinding(MTAdView.AdsIdProperty, new Binding(nameof(AdUnitId), source: this));
+        adView.Loaded += (_, _) => adView.LoadAd(CollapsibleBannerMode.None);
         Content = adView;
     }
 }

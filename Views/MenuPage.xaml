@@ -249,6 +249,6 @@
         </ScrollView>
 
         <controls:AdBannerView Grid.Row="1"
-                               AdUnitId="ca-app-pub-8158194714551266/2438077528" />
+                               AdUnitId="ca-app-pub-3940256099942544/6300978111" />
     </Grid>
 </ContentPage>
