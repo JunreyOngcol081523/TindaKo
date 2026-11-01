@@ -249,7 +249,6 @@
             </CollectionView.ItemTemplate>
         </CollectionView>
 
-        <controls:AdBannerView Grid.Row="2"
-                               AdUnitId="ca-app-pub-8158194714551266/8298190123" />
+
     </Grid>
 </ContentPage>

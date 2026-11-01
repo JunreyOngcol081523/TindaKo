@@ -6,7 +6,7 @@
              xmlns:segmentedControl="clr-namespace:Syncfusion.Maui.Toolkit.SegmentedControl;assembly=Syncfusion.Maui.Toolkit"
              xmlns:sliders="clr-namespace:Syncfusion.Maui.Sliders;assembly=Syncfusion.Maui.Sliders"
              xmlns:model="clr-namespace:TindaKo.Models"
-             xmlns:controls="clr-namespace:TindaKo.Controls"
+
              Title="Reports"
              BackgroundColor="{AppThemeBinding Light=#F4F6F8, Dark=#121212}">
 
@@ -40,8 +40,8 @@
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <!-- Rows: tabs | period filter (shared by every tab) | tab content (fills space) -->
-    <Grid RowDefinitions="Auto,Auto,*" RowSpacing="8">
+    <!-- Rows: tab selector | tab content (fills space) -->
+    <Grid RowDefinitions="Auto,*" RowSpacing="10">
 
         <!-- TAB SELECTOR -->
         <segmentedControl:SfSegmentedControl Grid.Row="0"
@@ -251,82 +251,5 @@
                                    Color="{StaticResource PrimaryDark}" />
             </Grid>
         </Grid>
-
-        <!-- ============ TAB 4: UTANG + INVENTORY ============ -->
-        <ScrollView Grid.Row="2" IsVisible="{Binding IsUtangTab}">
-            <VerticalStackLayout Padding="12,0,12,16" Spacing="12">
-
-                <Label Text="These are current balances. The period filter does not apply here."
-                       Style="{StaticResource CaptionLabel}"
-                       FontSize="12" />
-
-                <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
-                    <Border Grid.Column="0" Style="{StaticResource CardStyle}" Padding="14">
-                        <VerticalStackLayout Spacing="2">
-                            <Label Text="UNPAID UTANG" Style="{StaticResource CaptionLabel}" />
-                            <Label Text="{Binding UnpaidTotal, StringFormat='₱{0:N2}'}" Style="{StaticResource TileValue}" />
-                            <Label Text="{Binding OverdueCount, StringFormat='{0} overdue'}"
-                                   Style="{StaticResource CaptionLabel}" />
-                        </VerticalStackLayout>
-                    </Border>
-
-                    <Border Grid.Column="1" Style="{StaticResource CardStyle}" Padding="14">
-                        <VerticalStackLayout Spacing="2">
-                            <Label Text="INVENTORY VALUE" Style="{StaticResource CaptionLabel}" />
-                            <Label Text="{Binding InventoryValue, StringFormat='₱{0:N2}'}" Style="{StaticResource TileValue}" />
-                            <Label Text="at average cost" Style="{StaticResource CaptionLabel}" />
-                        </VerticalStackLayout>
-                    </Border>
-                </Grid>
-
-                <Label Text="{Binding InventoryNote}"
-                       IsVisible="{Binding HasInventoryNote}"
-                       Style="{StaticResource CaptionLabel}"
-                       FontSize="12" />
-
-                <Border Style="{StaticResource CardStyle}" Padding="16">
-                    <VerticalStackLayout Spacing="10">
-                        <Label Text="Top Debtors" Style="{StaticResource CardTitle}" />
-
-                        <VerticalStackLayout Spacing="10"
-                                             BindableLayout.ItemsSource="{Binding TopDebtors}">
-                            <BindableLayout.ItemTemplate>
-                                <DataTemplate x:DataType="model:DebtorRow">
-                                    <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" ColumnSpacing="10">
-                                        <Label Grid.Row="0" Grid.Column="0"
-                                               Text="{Binding Name}"
-                                               FontSize="15" FontAttributes="Bold"
-                                               LineBreakMode="TailTruncation"
-                                               TextColor="{StaticResource PrimaryDark}" />
-                                        <Label Grid.Row="0" Grid.Column="1"
-                                               Text="{Binding Amount, StringFormat='₱{0:N2}'}"
-                                               FontSize="15" FontAttributes="Bold"
-                                               TextColor="#004D40" />
-                                        <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
-                                               Text="{Binding Detail}"
-                                               Style="{StaticResource CaptionLabel}"
-                                               FontSize="12" />
-                                    </Grid>
-                                </DataTemplate>
-                            </BindableLayout.ItemTemplate>
-                            <BindableLayout.EmptyView>
-                                <Label Text="No unpaid utang."
-                                       Style="{StaticResource CaptionLabel}"
-                                       FontSize="13"
-                                       HorizontalOptions="Center" />
-                            </BindableLayout.EmptyView>
-                        </VerticalStackLayout>
-                    </VerticalStackLayout>
-                </Border>
-            </VerticalStackLayout>
-        </ScrollView>
-
-        <!-- Loading indicator for the whole page -->
-        <ActivityIndicator Grid.Row="2"
-                           IsRunning="{Binding IsBusy}"
-                           IsVisible="{Binding IsBusy}"
-                           VerticalOptions="Center"
-                           HorizontalOptions="Center"
-                           Color="{StaticResource PrimaryDark}" />
     </Grid>
 </ContentPage>

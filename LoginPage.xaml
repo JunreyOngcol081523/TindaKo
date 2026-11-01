@@ -2,11 +2,10 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodel="clr-namespace:TindaKo.ViewModel"
-             xmlns:controls="clr-namespace:TindaKo.Controls"
              xmlns:inputLayout="clr-namespace:Syncfusion.Maui.Toolkit.TextInputLayout;assembly=Syncfusion.Maui.Toolkit"
              x:Class="TindaKo.LoginPage">
 
-    <Grid RowDefinitions="*,Auto">
+    <Grid RowDefinitions="*">
         <ScrollView Grid.Row="0">
             <VerticalStackLayout Padding="24,0" Spacing="14" VerticalOptions="Center">
 
@@ -97,7 +96,5 @@
             </VerticalStackLayout>
         </ScrollView>
 
-        <controls:AdBannerView Grid.Row="1"
-                               AdUnitId="ca-app-pub-8158194714551266/2122829867" />
     </Grid>
 </ContentPage>

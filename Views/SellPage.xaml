@@ -6,7 +6,6 @@
              xmlns:inputLayout="clr-namespace:Syncfusion.Maui.Toolkit.TextInputLayout;assembly=Syncfusion.Maui.Toolkit"
              xmlns:editors="clr-namespace:Syncfusion.Maui.Toolkit.NumericUpDown;assembly=Syncfusion.Maui.Toolkit"
              xmlns:model="clr-namespace:TindaKo.Models"
-              xmlns:controls="clr-namespace:TindaKo.Controls"
              Title="Benta"
              x:Name="SellPageRoot"
              BackgroundColor="{AppThemeBinding Light=#F4F6F8, Dark=#121212}">
@@ -42,7 +41,7 @@
     </ContentPage.Resources>
 
     <!-- Rows: search + cart | products (fills space) | pinned payment panel -->
-    <Grid RowDefinitions="Auto,*,Auto,Auto">
+    <Grid RowDefinitions="Auto,*,Auto">
 
         <!-- TOP BAR: Search + Cart -->
         <Grid Grid.Row="0"
@@ -253,7 +252,5 @@
             </VerticalStackLayout>
         </Border>
 
-        <controls:AdBannerView Grid.Row="3"
-                               AdUnitId="ca-app-pub-8158194714551266/6840804072" />
     </Grid>
 </ContentPage>

@@ -55,6 +55,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Remove="Controls\AdBannerView.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <MauiImage Remove="Resources\Images\appiconfg.svg" />
 	</ItemGroup>
 
@@ -68,7 +72,6 @@
 		<PackageReference Include="ClosedXML" Version="0.105.1" />
 		<PackageReference Include="CommunityToolkit.Maui" Version="12.3.0" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
-		<PackageReference Include="Plugin.MauiMTAdmob" Version="2.4.0" />
 		<PackageReference Include="Microcharts.Maui" Version="1.0.1" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.120" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.7" />
@@ -180,6 +183,10 @@
 	  <None Include=".github\upgrades\scenarios\nuget-package-upgrade\tasks\02-update-net9-packages\progress-details.md" />
 	  <None Include=".github\upgrades\scenarios\nuget-package-upgrade\tasks\03-fix-package-api-compatibility\progress-details.md" />
 	  <None Include=".github\upgrades\scenarios\nuget-package-upgrade\tasks\04-validate-net9-workspace\progress-details.md" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Controls\" />
 	</ItemGroup>
 
 </Project>

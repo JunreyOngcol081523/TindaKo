@@ -1,7 +1,6 @@
 ﻿using CommunityToolkit.Maui;
 using Microcharts.Maui;
 using Microsoft.Extensions.Logging;
-using Plugin.MauiMtAdmob;
 using Syncfusion.Maui.Core.Hosting;
 using Syncfusion.Maui.Toolkit.Hosting;
 using TindaKo.ViewModel;
@@ -17,7 +16,6 @@ namespace TindaKo
             builder
                 .UseMauiApp<App>()
                 .UseMauiCommunityToolkit()
-                .UseMauiMTAdmob()
                 .ConfigureSyncfusionToolkit()
                 .ConfigureSyncfusionCore()
                 .UseMicrocharts()

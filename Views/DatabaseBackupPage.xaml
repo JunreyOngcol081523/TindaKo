@@ -94,10 +94,7 @@
             </ScrollView>
 
         </Grid>
-            <controls:AdBannerView Grid.Row="4"
-                                   Grid.Column="0"
-                                   Grid.ColumnSpan="2"
-                                   AdUnitId="ca-app-pub-8158194714551266/7285199193" />
+
 
         </Grid>
 

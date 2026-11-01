@@ -20,8 +20,6 @@
 
         </VerticalStackLayout>
 
-        <controls:AdBannerView Grid.Row="1"
-                               AdUnitId="ca-app-pub-8158194714551266/9951725130" />
     </Grid>
 
 </ContentPage>

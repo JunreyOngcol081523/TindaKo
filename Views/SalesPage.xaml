@@ -198,7 +198,6 @@
             </Grid>
         </Border>
 
-        <controls:AdBannerView Grid.Row="3"
-                               AdUnitId="ca-app-pub-8158194714551266/2264806801" />
+
     </Grid>
 </ContentPage>
