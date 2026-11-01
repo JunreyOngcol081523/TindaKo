@@ -15,7 +15,7 @@ namespace TindaKo.Services
         public const string DbFileName = "tindako.db";
 
         /// Bump when the schema changes in a way an older app version can't read.
-        public const int SchemaVersion = 2;
+        public const int SchemaVersion = 1;
 
         private static readonly SemaphoreSlim _gate = new(1, 1);
         private static volatile bool _tablesReady;
@@ -68,7 +68,6 @@ namespace TindaKo.Services
                 await conn.CreateTableAsync<Transaction>();
                 await conn.CreateTableAsync<Buyer>();
                 await conn.CreateTableAsync<Creditor>();
-                await conn.CreateTableAsync<CreditPayment>();
                 await conn.CreateTableAsync<IncomingStocks>();
                 await conn.CreateTableAsync<IncomingStocksProductsList>();
 
@@ -259,7 +258,6 @@ namespace TindaKo.Services
                     conn.DropTable<Transaction>();
                     conn.DropTable<Buyer>();
                     conn.DropTable<Creditor>();
-                    conn.DropTable<CreditPayment>();
                     conn.DropTable<IncomingStocks>();
                     conn.DropTable<IncomingStocksProductsList>();
                 });
