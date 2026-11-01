@@ -80,8 +80,11 @@
                     CornerRadius="10"
                     StyleClass="FilledButton"
                     Command="{Binding LoginCommand}" />
-
-            <!-- Footer (moved down; keeps the hidden DB reset tap) -->
+                <Label Text="{Binding LockoutMessage}"
+       IsVisible="{Binding IsLockedOut}"
+       TextColor="Red"
+       HorizontalOptions="Center" />
+                <!-- Footer (moved down; keeps the hidden DB reset tap) -->
             <Label Text="Developed by JunreyDev"
                    FontSize="11"
                    TextColor="#9E9E9E"
