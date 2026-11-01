@@ -1,0 +1,16 @@
+{
+  "scenarioId": "nuget-package-upgrade",
+  "operationId": "124def53-cfc8-40e6-a423-a21bb8e36b3d",
+  "description": "Upgrade one or more NuGet packages from their current version to a target version across a project, several projects, a folder, a solution, or the whole repository. Use when the user wants to bump, update, or upgrade a specific NuGet package (or packages) to a given version or to the latest supported version, detect breaking API changes introduced by the new version, and fix the resulting code. User-initiated \u2014 match the user\u0027s stated package(s) and version intent.\n",
+  "startTime": "2026-11-01T01:20:37.7225716Z",
+  "lastUpdateTime": "2026-11-01T01:35:45.4571334Z",
+  "properties": {
+    "taskStates": {
+      "01-add-maui-admob": "Completed",
+      "02-update-net9-packages": "Completed",
+      "03-fix-package-api-compatibility": "Completed",
+      "04-validate-net9-workspace": "Completed"
+    }
+  },
+  "folderPath": ""
+}

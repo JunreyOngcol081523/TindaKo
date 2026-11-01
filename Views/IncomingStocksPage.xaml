@@ -6,6 +6,7 @@
              xmlns:inputLayout="clr-namespace:Syncfusion.Maui.Toolkit.TextInputLayout;assembly=Syncfusion.Maui.Toolkit"
              xmlns:picker="clr-namespace:Syncfusion.Maui.Toolkit.Picker;assembly=Syncfusion.Maui.Toolkit"
              xmlns:editors="clr-namespace:Syncfusion.Maui.Toolkit.NumericUpDown;assembly=Syncfusion.Maui.Toolkit"
+              xmlns:controls="clr-namespace:TindaKo.Controls"
              Title="Incoming Stocks"
              BackgroundColor="{AppThemeBinding Light=#F4F6F8, Dark=#121212}">
 
@@ -39,7 +40,7 @@
     </ContentPage.Resources>
 
     <!-- Rows: supplier + cart | search | product list (fills space) | pinned action bar -->
-    <Grid RowDefinitions="Auto,Auto,*,Auto">
+    <Grid RowDefinitions="Auto,Auto,*,Auto,Auto">
 
         <!-- ROW 0: SUPPLIER + CART -->
         <Grid Grid.Row="0"
@@ -224,5 +225,8 @@
                         Command="{Binding CompleteTransactionCommand}" />
             </Grid>
         </Border>
+
+        <controls:AdBannerView Grid.Row="4"
+                               AdUnitId="ca-app-pub-8158194714551266/4071170504" />
     </Grid>
 </ContentPage>

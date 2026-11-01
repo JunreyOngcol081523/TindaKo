@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodel="clr-namespace:TindaKo.ViewModel"
              xmlns:local="clr-namespace:TindaKo.Converters"
+             xmlns:controls="clr-namespace:TindaKo.Controls"
              x:Class="TindaKo.Views.SalesPage"
              Title="Sales"
              BackgroundColor="{AppThemeBinding Light=#F4F6F8, Dark=#121212}">
@@ -26,7 +27,7 @@
     </ContentPage.Resources>
 
     <!-- Rows: filters | transaction list (fills space) | pinned total -->
-    <Grid RowDefinitions="Auto,*,Auto" RowSpacing="12">
+    <Grid RowDefinitions="Auto,*,Auto,Auto" RowSpacing="12">
 
         <!-- FILTERS (compact, not scrollable) -->
         <Border Grid.Row="0"
@@ -196,5 +197,8 @@
                        TextColor="{StaticResource White}" />
             </Grid>
         </Border>
+
+        <controls:AdBannerView Grid.Row="3"
+                               AdUnitId="ca-app-pub-8158194714551266/2264806801" />
     </Grid>
 </ContentPage>

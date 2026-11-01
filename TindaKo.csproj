@@ -1,8 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net9.0-android;net9.0-ios;net9.0-maccatalyst</TargetFrameworks>
-		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net9.0-windows10.0.19041.0</TargetFrameworks>
+		<TargetFrameworks>net9.0-android</TargetFrameworks>
 		<!-- Uncomment to also build the tizen app. You will need to install tizen by following this: https://github.com/Samsung/Tizen.NET -->
 		<!-- <TargetFrameworks>$(TargetFrameworks);net9.0-tizen</TargetFrameworks> -->
 
@@ -35,12 +34,7 @@
 		<!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
 		<WindowsPackageType>None</WindowsPackageType>
 
-		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
-		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">15.0</SupportedOSPlatformVersion>
-		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
-		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
-		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
-		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">23.0</SupportedOSPlatformVersion>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -71,17 +65,23 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="ClosedXML" Version="0.105.0" />
-		<PackageReference Include="CommunityToolkit.Maui" Version="12.1.0" />
-		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+		<PackageReference Include="ClosedXML" Version="0.105.1" />
+		<PackageReference Include="CommunityToolkit.Maui" Version="12.3.0" />
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+		<PackageReference Include="Plugin.MauiMTAdmob" Version="2.4.0" />
 		<PackageReference Include="Microcharts.Maui" Version="1.0.1" />
-		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.90" />
+		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.120" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.7" />
 		<PackageReference Include="SQLitePCLRaw.lib.e_sqlite3" Version="3.53.3" Condition="'$(TargetFramework)' != 'net9.0-android'" />
-		<PackageReference Include="SQLitePCLRaw.lib.e_sqlite3.android" Version="2.1.12-pre20260709125052" Condition="'$(TargetFramework)' == 'net9.0-android'" />
-		<PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
-		<PackageReference Include="Syncfusion.Maui.Buttons" Version="30.1.42" />
-		<PackageReference Include="Syncfusion.Maui.Sliders" Version="30.2.5" />
+		<PackageReference Include="SQLitePCLRaw.lib.e_sqlite3.android" Version="2.1.14" Condition="'$(TargetFramework)' == 'net9.0-android'" />
+		<PackageReference Include="Xamarin.AndroidX.Activity.Ktx" Version="1.12.4.1" Condition="'$(TargetFramework)' == 'net9.0-android'" />
+		<PackageReference Include="Xamarin.AndroidX.Fragment.Ktx" Version="1.8.9.2" Condition="'$(TargetFramework)' == 'net9.0-android'" />
+		<PackageReference Include="Xamarin.AndroidX.Lifecycle.Runtime.Ktx" Version="2.10.0.2" Condition="'$(TargetFramework)' == 'net9.0-android'" />
+		<PackageReference Include="Xamarin.AndroidX.Lifecycle.ViewModel.Ktx" Version="2.10.0.2" Condition="'$(TargetFramework)' == 'net9.0-android'" />
+		<PackageReference Include="Xamarin.AndroidX.SavedState.SavedState.Ktx" Version="1.4.0.2" Condition="'$(TargetFramework)' == 'net9.0-android'" />
+		<PackageReference Include="sqlite-net-pcl" Version="1.11.285" />
+		<PackageReference Include="Syncfusion.Maui.Buttons" Version="35.1.42" />
+		<PackageReference Include="Syncfusion.Maui.Sliders" Version="35.1.42" />
 		<PackageReference Include="Syncfusion.Maui.Toolkit" Version="1.0.11" />
 	</ItemGroup>
 
@@ -173,6 +173,13 @@
 
 	<ItemGroup>
 	  <None Include=".github\copilot-instructions.md" />
+	  <None Include=".github\upgrades\scenarios\nuget-package-upgrade\final-report.md" />
+	  <None Include=".github\upgrades\scenarios\nuget-package-upgrade\plan.md" />
+	  <None Include=".github\upgrades\scenarios\nuget-package-upgrade\scenario-instructions.md" />
+	  <None Include=".github\upgrades\scenarios\nuget-package-upgrade\tasks\01-add-maui-admob\progress-details.md" />
+	  <None Include=".github\upgrades\scenarios\nuget-package-upgrade\tasks\02-update-net9-packages\progress-details.md" />
+	  <None Include=".github\upgrades\scenarios\nuget-package-upgrade\tasks\03-fix-package-api-compatibility\progress-details.md" />
+	  <None Include=".github\upgrades\scenarios\nuget-package-upgrade\tasks\04-validate-net9-workspace\progress-details.md" />
 	</ItemGroup>
 
 </Project>

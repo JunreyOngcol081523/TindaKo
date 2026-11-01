@@ -5,6 +5,7 @@
              xmlns:mc="clr-namespace:Microcharts.Maui;assembly=Microcharts.Maui"
              xmlns:segmentedControl="clr-namespace:Syncfusion.Maui.Toolkit.SegmentedControl;assembly=Syncfusion.Maui.Toolkit"
              xmlns:model="clr-namespace:TindaKo.Models"
+             xmlns:controls="clr-namespace:TindaKo.Controls"
              Title="Reports"
              BackgroundColor="{AppThemeBinding Light=#F4F6F8, Dark=#121212}">
 
@@ -31,7 +32,7 @@
     </ContentPage.Resources>
 
     <!-- Rows: tabs | period filter (shared by every tab) | tab content (fills space) -->
-    <Grid RowDefinitions="Auto,Auto,*" RowSpacing="8">
+    <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="8">
 
         <!-- TAB SELECTOR -->
         <segmentedControl:SfSegmentedControl Grid.Row="0"
@@ -384,5 +385,8 @@
                            VerticalOptions="Center"
                            HorizontalOptions="Center"
                            Color="{StaticResource PrimaryDark}" />
+
+        <controls:AdBannerView Grid.Row="3"
+                               AdUnitId="ca-app-pub-8158194714551266/1445007164" />
     </Grid>
 </ContentPage>

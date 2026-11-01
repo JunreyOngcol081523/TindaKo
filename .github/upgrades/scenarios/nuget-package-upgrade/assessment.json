@@ -1,0 +1,373 @@
+{
+  "settings": {
+    "components": {
+      "code": true,
+      "binaries": false
+    },
+    "targetId": ""
+  },
+  "analysisStartTime": "2026-11-01T01:21:08.9707697Z",
+  "analysisEndTime": "2026-11-01T01:21:20.3256193Z",
+  "privacyModeHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2270980",
+  "stats": {
+    "summary": {
+      "projects": 1,
+      "issues": 2,
+      "incidents": 12,
+      "effort": 1
+    },
+    "charts": {
+      "severity": {
+        "Mandatory": 0,
+        "Optional": 0,
+        "Potential": 1,
+        "Information": 11
+      },
+      "category": {
+        "Pkg": 12
+      }
+    }
+  },
+  "projects": [
+    {
+      "path": "TindaKo.csproj",
+      "startingProject": true,
+      "issues": 2,
+      "storyPoints": 1,
+      "properties": {
+        "appName": "TindaKo",
+        "projectKind": "ClassLibrary",
+        "frameworks": [
+          "net9.0-android",
+          "net9.0-ios",
+          "net9.0-maccatalyst",
+          "net9.0-windows10.0.19041.0"
+        ],
+        "languages": [
+          "C#"
+        ],
+        "tools": [
+          "MSBuild"
+        ],
+        "isSdkStyle": true,
+        "isTestProject": false,
+        "numberOfFiles": 91,
+        "numberOfCodeFiles": 91,
+        "linesTotal": 5562,
+        "linesOfCode": 5562,
+        "totalApiScanned": 0,
+        "minLinesOfCodeToChange": 0,
+        "maxLinesOfCodeToChange": 0
+      },
+      "ruleInstances": [
+        {
+          "incidentId": "1035714c-8d44-4b1e-9e67-a8aae70d8966",
+          "ruleId": "Pkg.0001",
+          "description": "Project references \u0027ClosedXML\u0027 0.105.0; proposed upgrade to 0.105.1.",
+          "projectPath": "TindaKo.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "ClosedXML, 0.105.0",
+              "protected": "ClosedXML, 0.105.0"
+            },
+            "kind": "File",
+            "path": "TindaKo.csproj",
+            "snippet": "ClosedXML, 0.105.0",
+            "protectedSnippet": "ClosedXML, 0.105.0",
+            "label": "ClosedXML 0.105.0",
+            "properties": {
+              "PackageId": "ClosedXML",
+              "PackageVersion": "0.105.0",
+              "PackageNewVersion": "0.105.1",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "d88a516a-ec71-4661-8c78-290d6154a000",
+          "ruleId": "Pkg.0001",
+          "description": "Project references \u0027CommunityToolkit.Maui\u0027 12.1.0; proposed upgrade to 12.3.0.",
+          "projectPath": "TindaKo.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "CommunityToolkit.Maui, 12.1.0",
+              "protected": "CommunityToolkit.Maui, 12.1.0"
+            },
+            "kind": "File",
+            "path": "TindaKo.csproj",
+            "snippet": "CommunityToolkit.Maui, 12.1.0",
+            "protectedSnippet": "CommunityToolkit.Maui, 12.1.0",
+            "label": "CommunityToolkit.Maui 12.1.0",
+            "properties": {
+              "PackageId": "CommunityToolkit.Maui",
+              "PackageVersion": "12.1.0",
+              "PackageNewVersion": "12.3.0",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "41963abf-c4d0-44cf-8d1d-1636c5a7784e",
+          "ruleId": "Pkg.0001",
+          "description": "Project references \u0027CommunityToolkit.Mvvm\u0027 8.4.0; proposed upgrade to 8.4.2.",
+          "projectPath": "TindaKo.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "CommunityToolkit.Mvvm, 8.4.0",
+              "protected": "CommunityToolkit.Mvvm, 8.4.0"
+            },
+            "kind": "File",
+            "path": "TindaKo.csproj",
+            "snippet": "CommunityToolkit.Mvvm, 8.4.0",
+            "protectedSnippet": "CommunityToolkit.Mvvm, 8.4.0",
+            "label": "CommunityToolkit.Mvvm 8.4.0",
+            "properties": {
+              "PackageId": "CommunityToolkit.Mvvm",
+              "PackageVersion": "8.4.0",
+              "PackageNewVersion": "8.4.2",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "4c86dc3d-c1b6-4e4a-b7a0-6c3fcd510085",
+          "ruleId": "Pkg.0001",
+          "description": "Project references \u0027Microcharts.Maui\u0027 1.0.1, but no supported upgrade version could be resolved for it; this project must stay on 1.0.1.",
+          "projectPath": "TindaKo.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Microcharts.Maui, 1.0.1",
+              "protected": "Microcharts.Maui, 1.0.1"
+            },
+            "kind": "File",
+            "path": "TindaKo.csproj",
+            "snippet": "Microcharts.Maui, 1.0.1",
+            "protectedSnippet": "Microcharts.Maui, 1.0.1",
+            "label": "Microcharts.Maui 1.0.1",
+            "properties": {
+              "PackageId": "Microcharts.Maui",
+              "PackageVersion": "1.0.1",
+              "PackageNewVersion": null,
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "bba17bcb-5a96-4604-ae31-1a28c1984296",
+          "ruleId": "Pkg.0003",
+          "description": "Package \u0027Microcharts.Maui\u0027 could not be unified to a single version across the scoped projects; no available version supports this project\u0027s target framework(s), so this project cannot be upgraded and must stay on 1.0.1.",
+          "projectPath": "TindaKo.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Microcharts.Maui, 1.0.1",
+              "protected": "Microcharts.Maui, 1.0.1"
+            },
+            "kind": "File",
+            "path": "TindaKo.csproj",
+            "snippet": "Microcharts.Maui, 1.0.1",
+            "protectedSnippet": "Microcharts.Maui, 1.0.1",
+            "label": "Microcharts.Maui 1.0.1",
+            "properties": {
+              "PackageId": "Microcharts.Maui",
+              "PackageVersion": "1.0.1",
+              "PackageNewVersion": null,
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "5d66542d-1827-4e4d-a27a-a724724b8c34",
+          "ruleId": "Pkg.0001",
+          "description": "Project references \u0027Microsoft.Maui.Controls\u0027 9.0.90; proposed upgrade to 10.0.120.",
+          "projectPath": "TindaKo.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Microsoft.Maui.Controls, 9.0.90",
+              "protected": "Microsoft.Maui.Controls, 9.0.90"
+            },
+            "kind": "File",
+            "path": "TindaKo.csproj",
+            "snippet": "Microsoft.Maui.Controls, 9.0.90",
+            "protectedSnippet": "Microsoft.Maui.Controls, 9.0.90",
+            "label": "Microsoft.Maui.Controls 9.0.90",
+            "properties": {
+              "PackageId": "Microsoft.Maui.Controls",
+              "PackageVersion": "9.0.90",
+              "PackageNewVersion": "10.0.120",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "f1f66859-53ed-4d70-af93-cf5b9e30e036",
+          "ruleId": "Pkg.0001",
+          "description": "Project references \u0027Microsoft.Extensions.Logging.Debug\u0027 9.0.7; proposed upgrade to 10.0.14.",
+          "projectPath": "TindaKo.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Microsoft.Extensions.Logging.Debug, 9.0.7",
+              "protected": "Microsoft.Extensions.Logging.Debug, 9.0.7"
+            },
+            "kind": "File",
+            "path": "TindaKo.csproj",
+            "snippet": "Microsoft.Extensions.Logging.Debug, 9.0.7",
+            "protectedSnippet": "Microsoft.Extensions.Logging.Debug, 9.0.7",
+            "label": "Microsoft.Extensions.Logging.Debug 9.0.7",
+            "properties": {
+              "PackageId": "Microsoft.Extensions.Logging.Debug",
+              "PackageVersion": "9.0.7",
+              "PackageNewVersion": "10.0.14",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "b6ab63bb-515c-4904-ae15-40b2be6b0a00",
+          "ruleId": "Pkg.0001",
+          "description": "Project references \u0027SQLitePCLRaw.lib.e_sqlite3.android\u0027 2.1.12-pre20260709125052; proposed upgrade to 2.1.14.",
+          "projectPath": "TindaKo.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "SQLitePCLRaw.lib.e_sqlite3.android, 2.1.12-pre20260709125052",
+              "protected": "SQLitePCLRaw.lib.e_sqlite3.android, 2.1.12-pre20260709125052"
+            },
+            "kind": "File",
+            "path": "TindaKo.csproj",
+            "snippet": "SQLitePCLRaw.lib.e_sqlite3.android, 2.1.12-pre20260709125052",
+            "protectedSnippet": "SQLitePCLRaw.lib.e_sqlite3.android, 2.1.12-pre20260709125052",
+            "label": "SQLitePCLRaw.lib.e_sqlite3.android 2.1.12-pre20260709125052",
+            "properties": {
+              "PackageId": "SQLitePCLRaw.lib.e_sqlite3.android",
+              "PackageVersion": "2.1.12-pre20260709125052",
+              "PackageNewVersion": "2.1.14",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "59e01615-5b5c-4598-a968-41802a1916da",
+          "ruleId": "Pkg.0001",
+          "description": "Project references \u0027sqlite-net-pcl\u0027 1.9.172; proposed upgrade to 1.11.285.",
+          "projectPath": "TindaKo.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "sqlite-net-pcl, 1.9.172",
+              "protected": "sqlite-net-pcl, 1.9.172"
+            },
+            "kind": "File",
+            "path": "TindaKo.csproj",
+            "snippet": "sqlite-net-pcl, 1.9.172",
+            "protectedSnippet": "sqlite-net-pcl, 1.9.172",
+            "label": "sqlite-net-pcl 1.9.172",
+            "properties": {
+              "PackageId": "sqlite-net-pcl",
+              "PackageVersion": "1.9.172",
+              "PackageNewVersion": "1.11.285",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "fc06bee0-31c1-42ee-88ee-fca5b7cea76d",
+          "ruleId": "Pkg.0001",
+          "description": "Project references \u0027Syncfusion.Maui.Buttons\u0027 30.1.42; proposed upgrade to 35.1.42.",
+          "projectPath": "TindaKo.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Syncfusion.Maui.Buttons, 30.1.42",
+              "protected": "Syncfusion.Maui.Buttons, 30.1.42"
+            },
+            "kind": "File",
+            "path": "TindaKo.csproj",
+            "snippet": "Syncfusion.Maui.Buttons, 30.1.42",
+            "protectedSnippet": "Syncfusion.Maui.Buttons, 30.1.42",
+            "label": "Syncfusion.Maui.Buttons 30.1.42",
+            "properties": {
+              "PackageId": "Syncfusion.Maui.Buttons",
+              "PackageVersion": "30.1.42",
+              "PackageNewVersion": "35.1.42",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "9ba651c2-1d8b-4328-90c0-82ab6e4f1c62",
+          "ruleId": "Pkg.0001",
+          "description": "Project references \u0027Syncfusion.Maui.Sliders\u0027 30.2.5; proposed upgrade to 35.1.42.",
+          "projectPath": "TindaKo.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Syncfusion.Maui.Sliders, 30.2.5",
+              "protected": "Syncfusion.Maui.Sliders, 30.2.5"
+            },
+            "kind": "File",
+            "path": "TindaKo.csproj",
+            "snippet": "Syncfusion.Maui.Sliders, 30.2.5",
+            "protectedSnippet": "Syncfusion.Maui.Sliders, 30.2.5",
+            "label": "Syncfusion.Maui.Sliders 30.2.5",
+            "properties": {
+              "PackageId": "Syncfusion.Maui.Sliders",
+              "PackageVersion": "30.2.5",
+              "PackageNewVersion": "35.1.42",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "db04b3cf-eb03-4a84-a400-f73c2b48298e",
+          "ruleId": "Pkg.0001",
+          "description": "Project references \u0027Syncfusion.Maui.Toolkit\u0027 1.0.11 (included in this upgrade).",
+          "projectPath": "TindaKo.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Syncfusion.Maui.Toolkit, 1.0.11",
+              "protected": "Syncfusion.Maui.Toolkit, 1.0.11"
+            },
+            "kind": "File",
+            "path": "TindaKo.csproj",
+            "snippet": "Syncfusion.Maui.Toolkit, 1.0.11",
+            "protectedSnippet": "Syncfusion.Maui.Toolkit, 1.0.11",
+            "label": "Syncfusion.Maui.Toolkit 1.0.11",
+            "properties": {
+              "PackageId": "Syncfusion.Maui.Toolkit",
+              "PackageVersion": "1.0.11",
+              "PackageNewVersion": "1.0.11",
+              "PackageReplacements": null
+            }
+          }
+        }
+      ],
+      "features": []
+    }
+  ],
+  "rules": {
+    "Pkg.0001": {
+      "id": "Pkg.0001",
+      "isFeature": false,
+      "description": "Project references a package included in this upgrade.\n\nThe project references one of the packages being upgraded. This finding records the reference (current and proposed version) so the assessment lists every affected project even when no breaking API changes were detected.",
+      "label": "Project references an upgraded package",
+      "severity": "Information",
+      "effort": 0
+    },
+    "Pkg.0003": {
+      "id": "Pkg.0003",
+      "isFeature": false,
+      "description": "NuGet package version diverges across the scoped projects.\n\nDifferent projects need or support different versions of the package, so a single unified upgrade version could not be selected. Review the per-project breakdown and decide whether to align the projects on a common version or upgrade them independently.",
+      "label": "NuGet package version diverges across projects",
+      "severity": "Potential",
+      "effort": 1
+    }
+  }
+}

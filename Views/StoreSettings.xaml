@@ -4,9 +4,11 @@
              x:Class="TindaKo.Views.StoreSettings"
              xmlns:viewmodels="clr-namespace:TindaKo.ViewModel"
              xmlns:editors="clr-namespace:Syncfusion.Maui.Toolkit.NumericUpDown;assembly=Syncfusion.Maui.Toolkit"
+              xmlns:controls="clr-namespace:TindaKo.Controls"
              Title="Store Settings">
-    <ScrollView>
-        <Border Style="{StaticResource CardStyle}" Margin="20">
+    <Grid RowDefinitions="*,Auto">
+        <ScrollView Grid.Row="0">
+            <Border Style="{StaticResource CardStyle}" Margin="20">
             <VerticalStackLayout Spacing="10" Margin="10">
 
                 <!-- Header -->
@@ -104,6 +106,10 @@
                 </VerticalStackLayout>
 
             </VerticalStackLayout>
-        </Border>
-    </ScrollView>
+            </Border>
+        </ScrollView>
+
+        <controls:AdBannerView Grid.Row="1"
+                               AdUnitId="ca-app-pub-8158194714551266/9951725130" />
+    </Grid>
 </ContentPage>

@@ -6,6 +6,7 @@
     xmlns:viewmodel="clr-namespace:TindaKo.ViewModel"
     xmlns:converters="clr-namespace:TindaKo.Converters"
     xmlns:segmentedControl="clr-namespace:Syncfusion.Maui.Toolkit.SegmentedControl;assembly=Syncfusion.Maui.Toolkit"
+    xmlns:controls="clr-namespace:TindaKo.Controls"
 
     Title="Listahan ng Utang"
     BackgroundColor="{AppThemeBinding Light=#F4F6F8, Dark=#121212}">
@@ -45,7 +46,7 @@
     </ContentPage.Resources>
 
     <!-- Rows: filters + totals | creditor list (fills space) -->
-    <Grid RowDefinitions="Auto,*" RowSpacing="8">
+    <Grid RowDefinitions="Auto,*,Auto" RowSpacing="8">
 
         <!-- ROW 0: FILTER, TOTAL, SEARCH -->
         <VerticalStackLayout Grid.Row="0" Padding="12,12,12,0" Spacing="10">
@@ -247,5 +248,8 @@
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
+
+        <controls:AdBannerView Grid.Row="2"
+                               AdUnitId="ca-app-pub-8158194714551266/8298190123" />
     </Grid>
 </ContentPage>

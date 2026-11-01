@@ -1,0 +1,13 @@
+Issue ID,Description,State,Severity,Story Points,Project Path,Location Kind,Path,Line,Column,Incident ID,Help Link,Assembly Name,Assembly Version,Assembly Public Key,Snippet
+Pkg.0001,Project references an upgraded package,Active,Information,0,TindaKo.csproj,File,TindaKo.csproj,,,ClosedXML 0.105.0,,,,,"ClosedXML, 0.105.0"
+Pkg.0001,Project references an upgraded package,Active,Information,0,TindaKo.csproj,File,TindaKo.csproj,,,CommunityToolkit.Maui 12.1.0,,,,,"CommunityToolkit.Maui, 12.1.0"
+Pkg.0001,Project references an upgraded package,Active,Information,0,TindaKo.csproj,File,TindaKo.csproj,,,CommunityToolkit.Mvvm 8.4.0,,,,,"CommunityToolkit.Mvvm, 8.4.0"
+Pkg.0001,Project references an upgraded package,Active,Information,0,TindaKo.csproj,File,TindaKo.csproj,,,Microcharts.Maui 1.0.1,,,,,"Microcharts.Maui, 1.0.1"
+Pkg.0003,NuGet package version diverges across projects,Active,Potential,1,TindaKo.csproj,File,TindaKo.csproj,,,Microcharts.Maui 1.0.1,,,,,"Microcharts.Maui, 1.0.1"
+Pkg.0001,Project references an upgraded package,Active,Information,0,TindaKo.csproj,File,TindaKo.csproj,,,Microsoft.Maui.Controls 9.0.90,,,,,"Microsoft.Maui.Controls, 9.0.90"
+Pkg.0001,Project references an upgraded package,Active,Information,0,TindaKo.csproj,File,TindaKo.csproj,,,Microsoft.Extensions.Logging.Debug 9.0.7,,,,,"Microsoft.Extensions.Logging.Debug, 9.0.7"
+Pkg.0001,Project references an upgraded package,Active,Information,0,TindaKo.csproj,File,TindaKo.csproj,,,SQLitePCLRaw.lib.e_sqlite3.android 2.1.12-pre20260709125052,,,,,"SQLitePCLRaw.lib.e_sqlite3.android, 2.1.12-pre20260709125052"
+Pkg.0001,Project references an upgraded package,Active,Information,0,TindaKo.csproj,File,TindaKo.csproj,,,sqlite-net-pcl 1.9.172,,,,,"sqlite-net-pcl, 1.9.172"
+Pkg.0001,Project references an upgraded package,Active,Information,0,TindaKo.csproj,File,TindaKo.csproj,,,Syncfusion.Maui.Buttons 30.1.42,,,,,"Syncfusion.Maui.Buttons, 30.1.42"
+Pkg.0001,Project references an upgraded package,Active,Information,0,TindaKo.csproj,File,TindaKo.csproj,,,Syncfusion.Maui.Sliders 30.2.5,,,,,"Syncfusion.Maui.Sliders, 30.2.5"
+Pkg.0001,Project references an upgraded package,Active,Information,0,TindaKo.csproj,File,TindaKo.csproj,,,Syncfusion.Maui.Toolkit 1.0.11,,,,,"Syncfusion.Maui.Toolkit, 1.0.11"

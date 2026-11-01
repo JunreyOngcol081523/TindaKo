@@ -2,8 +2,10 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="TindaKo.Views.ProductSettingsPage"
+             xmlns:controls="clr-namespace:TindaKo.Controls"
              Title="Product Settings">
-    <VerticalStackLayout Padding="10" Spacing="10">
+    <Grid RowDefinitions="*,Auto">
+        <VerticalStackLayout Grid.Row="0" Padding="10" Spacing="10">
 
         <!-- Border wrapping Label and Buttons -->
         <Border Padding="15" Margin="0,0,0,10" Style="{StaticResource CardStyle}">
@@ -16,6 +18,10 @@
         <!-- Loading Modal / ActivityIndicator -->
         <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
 
-    </VerticalStackLayout>
+        </VerticalStackLayout>
+
+        <controls:AdBannerView Grid.Row="1"
+                               AdUnitId="ca-app-pub-8158194714551266/9951725130" />
+    </Grid>
 
 </ContentPage>

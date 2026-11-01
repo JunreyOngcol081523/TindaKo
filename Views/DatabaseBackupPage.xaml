@@ -3,10 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="TindaKo.Views.DatabaseBackupPage"
              xmlns:viewmodel="clr-namespace:TindaKo.ViewModel"
+             xmlns:controls="clr-namespace:TindaKo.Controls"
              Title="TindaKo Database Backup">
 
         <Grid Margin="20"
-                    RowDefinitions="Auto,Auto,Auto,*"
+                    RowDefinitions="Auto,Auto,Auto,*,Auto"
                     RowSpacing="16">
             <Border Grid.Row="0" 
                         Style="{StaticResource CardStyle}"
@@ -93,12 +94,10 @@
             </ScrollView>
 
         </Grid>
-            <Grid Grid.Row="3" 
-                  Grid.Column="0" 
-                  Grid.ColumnSpan="2"
-                  VerticalOptions="End">
-                <BoxView BackgroundColor="{StaticResource Primary}" HeightRequest="40"/>
-            </Grid>
+            <controls:AdBannerView Grid.Row="4"
+                                   Grid.Column="0"
+                                   Grid.ColumnSpan="2"
+                                   AdUnitId="ca-app-pub-8158194714551266/7285199193" />
 
         </Grid>
 

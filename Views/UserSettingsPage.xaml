@@ -3,11 +3,13 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="TindaKo.Views.UserSettingsPage"
              xmlns:viewmodel="clr-namespace:TindaKo.ViewModel"
+             xmlns:controls="clr-namespace:TindaKo.Controls"
              x:Name="UserSettingsPageRef"
              Title="User Settings">
 
-    <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="20">
+    <Grid RowDefinitions="*,Auto">
+        <ScrollView Grid.Row="0">
+            <VerticalStackLayout Padding="20" Spacing="20">
 
             <HorizontalStackLayout Spacing="8">
                 <Button ImageSource="add.png"
@@ -83,7 +85,11 @@
             </CollectionView>
 
 
-        </VerticalStackLayout>
-    </ScrollView>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <controls:AdBannerView Grid.Row="1"
+                               AdUnitId="ca-app-pub-8158194714551266/9951725130" />
+    </Grid>
 
 </ContentPage>

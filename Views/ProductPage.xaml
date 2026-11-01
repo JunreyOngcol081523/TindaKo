@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="TindaKo.Views.ProductPage"
              xmlns:vm="clr-namespace:TindaKo.ViewModel"
+             xmlns:controls="clr-namespace:TindaKo.Controls"
              Title="Products"
              BackgroundColor="{AppThemeBinding Light=#F4F6F8, Dark=#121212}">
 
@@ -57,7 +58,7 @@
     </ContentPage.Resources>
 
     <!-- Rows: header + form | search + filter | product list (fills space) -->
-    <Grid RowDefinitions="Auto,Auto,*" RowSpacing="10">
+    <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="10">
 
         <!-- ROW 0: ACTION BAR + ADD-PRODUCT FORM -->
         <VerticalStackLayout Grid.Row="0" Padding="12,12,12,0" Spacing="10">
@@ -288,5 +289,8 @@
                                WidthRequest="50"
                                HeightRequest="50" />
         </Grid>
+
+        <controls:AdBannerView Grid.Row="3"
+                               AdUnitId="ca-app-pub-8158194714551266/3577888475" />
     </Grid>
 </ContentPage>
