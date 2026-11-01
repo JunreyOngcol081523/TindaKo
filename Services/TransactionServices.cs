@@ -17,7 +17,7 @@ namespace TindaKo.Services
         // Single place that knows how DateTimeTransacted is stored.
         private const string DateFormat = "MMM dd, yyyy h:mm tt";
 
-        internal static bool TryParseDate(string? text, out DateTime date) =>
+        private static bool TryParseDate(string? text, out DateTime date) =>
             DateTime.TryParseExact(text, DateFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out date);
 
         // Kept for existing callers; the connection itself is owned by DatabaseService.
