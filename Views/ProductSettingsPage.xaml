@@ -2,24 +2,33 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="TindaKo.Views.ProductSettingsPage"
-             xmlns:controls="clr-namespace:TindaKo.Controls"
              Title="Product Settings">
-    <Grid RowDefinitions="*,Auto">
-        <VerticalStackLayout Grid.Row="0" Padding="10" Spacing="10">
 
-        <!-- Border wrapping Label and Buttons -->
-        <Border Padding="15" Margin="0,0,0,10" Style="{StaticResource CardStyle}">
-            <VerticalStackLayout Spacing="10">
-                <Label Text="Para sa mabilis na paglipat ng produkto, punan ang na-download na template." />
-                <Button Text="I-download ang Template" Command="{Binding DownloadTemplateCommand}" ImageSource="download.png" />
-                <Button Text="Import Spreadsheet Template" Command="{Binding ImportTemplateCommand}" ImageSource="upload.png"/>
+    <Grid>
+        <!-- Content (now scrollable) -->
+        <ScrollView>
+            <VerticalStackLayout Padding="16" Spacing="12">
+                <Border Style="{StaticResource CardStyle}" Padding="15">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="Import Products" FontSize="18" FontAttributes="Bold" />
+                        <Label Text="Para sa mabilis na paglipat ng produkto, punan ang na-download na template." />
+                        <Button Text="I-download ang Template"
+                                ImageSource="download.png"
+                                Command="{Binding DownloadTemplateCommand}" />
+                        <Button Text="Import Spreadsheet Template"
+                                ImageSource="upload.png"
+                                Command="{Binding ImportTemplateCommand}" />
+                    </VerticalStackLayout>
+                </Border>
             </VerticalStackLayout>
-        </Border>
-        <!-- Loading Modal / ActivityIndicator -->
-        <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+        </ScrollView>
 
-        </VerticalStackLayout>
-
+        <!-- Real loading overlay: last child = on top, so it also blocks taps while busy -->
+        <Grid IsVisible="{Binding IsBusy}" BackgroundColor="#80000000">
+            <ActivityIndicator IsRunning="{Binding IsBusy}"
+                               Color="White"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center" />
+        </Grid>
     </Grid>
-
 </ContentPage>

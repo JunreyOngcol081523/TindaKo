@@ -41,6 +41,12 @@ namespace TindaKo.Services
 
             return await query.Take(maxResults).ToListAsync();
         }
+        //get all products
+        public static async Task<List<Product>> GetProductsAsync()
+        {
+            await Init();
+            return await _db.Table<Product>().ToListAsync();
+        }
 
         public static async Task<List<string>> GetCategoriesAsync()
         {

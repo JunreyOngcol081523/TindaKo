@@ -1,10 +1,9 @@
 namespace TindaKo.Views;
 
-partial class SettingsPage : TabbedPage
+public partial class SettingsPage : TabbedPage
 {
-	public SettingsPage()
-	{
-		InitializeComponent();
-		
-	}
+    public SettingsPage()
+    {
+        InitializeComponent();
+    }
 }
