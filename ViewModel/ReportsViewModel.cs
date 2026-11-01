@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using DocumentFormat.OpenXml.Spreadsheet;
-using IntelliJ.Lang.Annotations;
+
 using Microcharts;
 using SkiaSharp;
 using System.Collections.ObjectModel;

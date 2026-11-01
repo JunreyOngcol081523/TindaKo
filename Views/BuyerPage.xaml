@@ -96,7 +96,7 @@
                         SelectionMode="None">
 
             <CollectionView.Header>
-                <Label Text="Sino ang Uutang"
+                <Label Text="Pangalan"
                        Style="{StaticResource SectionTitle}"
                        Margin="4,0,0,8" />
             </CollectionView.Header>

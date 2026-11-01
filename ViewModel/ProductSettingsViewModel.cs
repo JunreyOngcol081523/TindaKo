@@ -2,7 +2,7 @@
 using CommunityToolkit.Maui.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using IntelliJ.Lang.Annotations;
+
 using System.Diagnostics;
 using System.Globalization;
 using TindaKo.Helpers;
