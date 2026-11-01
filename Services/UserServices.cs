@@ -28,6 +28,16 @@ namespace TindaKo.Services
                 await _db.InsertAsync(defaultUser);
             }
         }
+        // Retrieve user by username only
+        public static async Task<Users?> GetUserByUsernameAsync(string username)
+        {
+            await Init();
+
+            return await _db.Table<Users>()
+                .Where(u => u.UserName == username)
+                .FirstOrDefaultAsync();
+        }
+
         public static async Task<Users> GetUserAsync(string username, string password)
         {
             await Init();

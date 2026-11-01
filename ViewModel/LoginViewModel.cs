@@ -28,35 +28,71 @@ namespace TindaKo.ViewModel
         }
 
         //------------user login-------------//
+
         [RelayCommand]
         public async Task LoginAsync()
         {
-
-            if (string.IsNullOrWhiteSpace(UserName) || string.IsNullOrWhiteSpace(UserPassword) || string.IsNullOrWhiteSpace(SelectedRole))
+            if (string.IsNullOrWhiteSpace(UserName) ||
+                string.IsNullOrWhiteSpace(UserPassword) ||
+                string.IsNullOrWhiteSpace(SelectedRole))
             {
                 await ToastHelper.ShowError("Please fill in all fields.");
                 return;
             }
 
-            var user = await UserServices.GetUserAsync(UserName, UserPassword);
-            
-            if (user != null && user.UserRole == SelectedRole)
+            try
             {
+                var user = await UserServices.GetUserByUsernameAsync(UserName.Trim());
+
+                if (user == null)
+                {
+                    await ToastHelper.ShowError("Invalid username, password, or role.");
+                    return;
+                }
+
+                // Verify password using PBKDF2
+                bool passwordValid = await Task.Run(() =>
+                    PasswordHasher.Verify(UserPassword, user.UserPassword)
+                );
+
+                if (!passwordValid || user.UserRole != SelectedRole)
+                {
+                    await ToastHelper.ShowError("Invalid username, password, or role.");
+                    return;
+                }
+
+                // Upgrade legacy plaintext passwords automatically
+                if (!PasswordHasher.IsHashed(user.UserPassword))
+                {
+                    user.UserPassword = await Task.Run(() =>
+                        PasswordHasher.Hash(UserPassword)
+                    );
+
+                    await UserServices.UpdateUserAsync(user);
+                }
+
                 UserFullName = user.UserFullName;
+
                 Preferences.Set("userrole", user.UserRole);
                 Preferences.Set("remember", RememberLogin);
-                Preferences.Set("username", UserName);
-                Preferences.Set("password", UserPassword);
+                Preferences.Set("username", user.UserName);
                 Preferences.Set("userfullname", UserFullName);
+
+                // Never save plaintext passwords
+                Preferences.Remove("password");
+
                 await ToastHelper.ShowMessage($"Welcome, {user.UserName}!");
-                App.SetNavigator(new NavigationPage(new MenuPage(new MenuViewModel())));
-                
+
+                App.SetNavigator(
+                    new NavigationPage(new MenuPage(new MenuViewModel()))
+                );
             }
-            else
+            catch (Exception ex)
             {
-                await ToastHelper.ShowError("Invalid username, password, or role.");
+                await ToastHelper.ShowError($"Login failed: {ex.Message}");
             }
         }
+
 
         //-----------load remember user----------//
         private void LoadSettings() {
