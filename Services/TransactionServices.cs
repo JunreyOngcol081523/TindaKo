@@ -17,7 +17,7 @@ namespace TindaKo.Services
         // Single place that knows how DateTimeTransacted is stored.
         private const string DateFormat = "MMM dd, yyyy h:mm tt";
 
-        private static bool TryParseDate(string? text, out DateTime date) =>
+        internal static bool TryParseDate(string? text, out DateTime date) =>
             DateTime.TryParseExact(text, DateFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out date);
 
         // Kept for existing callers; the connection itself is owned by DatabaseService.
@@ -76,7 +76,10 @@ namespace TindaKo.Services
 
                 // 4. Utang record, in the same transaction.
                 if (creditor != null)
+                {
+                    creditor.TransactionId = transaction.TransactionId; // link the debt to this sale
                     conn.Insert(creditor);
+                }
             });
         }
 
@@ -194,14 +197,9 @@ namespace TindaKo.Services
 
             var transactions = await db.Table<Transaction>().ToListAsync();
 
-            var matchingTransactions = transactions
+            return transactions
                 .Where(t => TryParseDate(t.DateTimeTransacted, out var date) && date >= start && date < endExclusive)
-                .ToList();
-
-            Debug.WriteLine($"[Transactions] FilterBy={filterBy}, input DateFrom={dateFrom:yyyy-MM-dd HH:mm:ss}, input DateTo={dateTo:yyyy-MM-dd HH:mm:ss}, range=[{start:yyyy-MM-dd HH:mm:ss}, {endExclusive:yyyy-MM-dd HH:mm:ss})");
-            Debug.WriteLine($"[Transactions] Matching dates: {string.Join(", ", matchingTransactions.Select(t => t.DateTimeTransacted))}");
-
-            return matchingTransactions.Sum(t => t.TotalAmount);
+                .Sum(t => t.TotalAmount);
         }
     }
 }

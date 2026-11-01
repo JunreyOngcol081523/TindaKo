@@ -1,229 +1,220 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Globalization;
 using TindaKo.Helpers;
 using TindaKo.Models;
 using TindaKo.Services;
-using System.Timers;
 
 namespace TindaKo.ViewModel
 {
     public partial class CreditorViewModel : ObservableObject
     {
-        [ObservableProperty]
-        private ObservableCollection<Creditor> filteredCreditors;
+        public ObservableCollection<string> SegmentOptions { get; } = new() { "All", "Past Due", "Paid", "Unpaid" };
 
-        [ObservableProperty]
-        private string searchText;
+        [ObservableProperty] private ObservableCollection<Creditor> filteredCreditors = new();
+        [ObservableProperty] private string searchText = string.Empty;
+        [ObservableProperty] private int selectedSegmentIndex;
+        [ObservableProperty] private decimal totalAmount;
+        [ObservableProperty] private string totalLabel = "Balance due";
+        [ObservableProperty] private bool isBusy;
 
-        [ObservableProperty]
-        private bool isAllChecked = true;
+        private List<Creditor> _all = new();
+        private readonly Dictionary<int, CancellationTokenSource> _noteSaves = new();
 
-        [ObservableProperty]
-        private bool isPastDueChecked;
+        // Search and filter work on the list already in memory: no database call per keystroke.
+        partial void OnSelectedSegmentIndexChanged(int value) => ApplyFilter();
+        partial void OnSearchTextChanged(string value) => ApplyFilter();
 
-        [ObservableProperty]
-        private bool isPaidChecked;
-
-        [ObservableProperty]
-        private bool isUnpaidChecked;
-        [ObservableProperty]
-        private decimal totalAmount;
-        public ObservableCollection<string> SegmentOptions { get; }
-
-        [ObservableProperty]
-        private int selectedSegmentIndex;
-        [ObservableProperty]
-        private bool isBusy;
-        public CreditorViewModel()
-        {
-            _ = LoadCreditorsAsync();
-            SegmentOptions = new ObservableCollection<string>
-        {
-            "All", "Past Due", "Paid", "Unpaid"
-        };
-        }
-        partial void OnSelectedSegmentIndexChanged(int value)
-        {
-            IsAllChecked = value == 0;
-            IsPastDueChecked = value == 1;
-            IsPaidChecked = value == 2;
-            IsUnpaidChecked = value == 3;
-        }
-        partial void OnSearchTextChanged(string value)
-        {
-            _ = LoadCreditorsAsync();
-        }
-
-        partial void OnIsAllCheckedChanged(bool value)
-        {
-            if (value)
-            {
-                IsPastDueChecked = false;
-                IsPaidChecked = false;
-                IsUnpaidChecked = false;
-                _ = LoadCreditorsAsync();
-            }
-        }
-
-        partial void OnIsPastDueCheckedChanged(bool value)
-        {
-            if (value)
-            {
-                IsAllChecked = false;
-                IsPaidChecked = false;
-                IsUnpaidChecked = false;
-                _ = LoadCreditorsAsync();
-            }
-        }
-
-        partial void OnIsPaidCheckedChanged(bool value)
-        {
-            if (value)
-            {
-                IsAllChecked = false;
-                IsPastDueChecked = false;
-                IsUnpaidChecked = false;
-                _ = LoadCreditorsAsync();
-            }
-        }
-
-        partial void OnIsUnpaidCheckedChanged(bool value)
-        {
-            if (value)
-            {
-                IsAllChecked = false;
-                IsPastDueChecked = false;
-                IsPaidChecked = false;
-                _ = LoadCreditorsAsync();
-            }
-        }
+        // ───────────────────────── Load + filter ─────────────────────────
 
         [RelayCommand]
-        private async Task LoadCreditorsAsync()
+        public async Task LoadCreditorsAsync()
         {
-            var allCreditors = await CreditorServices.GetCreditorsAsync();
-            // Attach debounce handler for each creditor
-            foreach (var c in allCreditors)
-            {
-                c.NotesChanged -= DebounceAutoSave;
-                c.NotesChanged += DebounceAutoSave;
-            }
-            ApplyFilter(allCreditors);
-        }
-
-        private void ApplyFilter(List<Creditor> creditors)
-        {
-            var filtered = creditors.AsQueryable();
-
-            // Search filter
-            if (!string.IsNullOrWhiteSpace(SearchText))
-            {
-                filtered = filtered.Where(c => c.CreditorName.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
-            }
-
-            // Radio button filters
-            if (IsPastDueChecked)
-            {
-                filtered = filtered.Where(c => c.DueDate.Date < DateTime.Today && !c.IsPaid);
-            }
-            else if (IsPaidChecked)
-            {
-                filtered = filtered.Where(c => c.IsPaid);
-            }
-            else if (IsUnpaidChecked)
-            {
-                filtered = filtered.Where(c => !c.IsPaid);
-            }
-            var filteredList = filtered.OrderByDescending(c => c.DueDate).ToList();
-
-            // Set collection
-            FilteredCreditors = new ObservableCollection<Creditor>(filteredList);
-
-            // Compute total
-            TotalAmount = filteredList.Sum(c => c.CreditAmount);
-        }
-
-        [RelayCommand]
-        private async Task MarkAsPaidAsync(Creditor creditor)
-        {
-            if (creditor == null || creditor.IsPaid)
-                return;
-
-            // Update the properties
-            creditor.IsPaid = true;
-            creditor.PaidDate = DateTime.Today;
-            bool confirm = await DialogHelper.ShowConfirmAsync(
-                "Mark as Paid",
-                $"Mark {creditor.CreditorName}'s credit of ₱{creditor.CreditAmount:N2} as paid?");
-            if (!confirm) return;
-
-
-            // Reload the list with the updated values
-            await LoadCreditorsAsync();
-
+            IsBusy = true;
             try
             {
+                var fresh = await CreditorServices.GetCreditorsAsync();
 
-                // Save the update to the database
-                await CreditorServices.UpdateCreditorAsync(creditor);
-                await LoadCreditorsAsync();
-                await DialogHelper.ShowAlertAsync("Success", "Credit marked as paid!");
+                // keep expanded sections open across reloads
+                var previous = _all.ToDictionary(c => c.Id);
+
+                foreach (var c in fresh)
+                {
+                    if (previous.TryGetValue(c.Id, out var old))
+                    {
+                        c.IsNotesExpanded = old.IsNotesExpanded;
+                        c.IsHistoryExpanded = old.IsHistoryExpanded;
+                    }
+
+                    c.NotesChanged += OnNotesChanged;
+                }
+
+                _all = fresh;
+                ApplyFilter();
             }
             catch (Exception ex)
             {
-                await DialogHelper.ShowAlertAsync("Error", $"Failed to mark as paid: {ex.Message}");
-            }
-            
-        }
-        [RelayCommand]
-        public async Task MarkAsUnpaidAsync(Creditor creditor)
-        {
-            if (creditor == null || !creditor.IsPaid) return;
-            creditor.IsPaid = false;
-            creditor.PaidDate = null;
-            bool confirm = await DialogHelper.ShowConfirmAsync(
-                "Mark as Unpaid",
-                $"Mark {creditor.CreditorName}'s credit as unpaid again?");
-
-            if (!confirm) return;
-
-            try
-            {
-
-                // Save the update to the database
-                await CreditorServices.UpdateCreditorAsync(creditor);
-                await LoadCreditorsAsync();
-                await DialogHelper.ShowAlertAsync("Success", "Credit marked as unpaid again!");
-            }
-            catch (Exception ex)
-            {
-                await DialogHelper.ShowAlertAsync("Error", $"Failed to mark as unpaid: {ex.Message}");
+                Debug.WriteLine($"[Creditors] load failed: {ex}");
+                await ToastHelper.ShowError($"Failed to load utang: {ex.Message}");
             }
             finally
             {
                 IsBusy = false;
             }
         }
-        [RelayCommand]
-        public void ToggleNotes(Creditor creditor)
+
+        private void ApplyFilter()
         {
-            if (creditor == null) return;
+            var today = DateTime.Today;
+            IEnumerable<Creditor> query = _all;
 
-            creditor.IsNotesExpanded = !creditor.IsNotesExpanded;
-
-            // Refresh the item in the collection to update UI
-            var index = FilteredCreditors.IndexOf(creditor);
-            if (index >= 0)
+            if (!string.IsNullOrWhiteSpace(SearchText))
             {
-                FilteredCreditors[index] = creditor;
+                var text = SearchText.Trim();
+                query = query.Where(c => c.CreditorName.Contains(text, StringComparison.OrdinalIgnoreCase));
+            }
+
+            query = SelectedSegmentIndex switch
+            {
+                1 => query.Where(c => !c.IsPaid && c.DueDate.Date < today),
+                2 => query.Where(c => c.IsPaid),
+                3 => query.Where(c => !c.IsPaid),
+                _ => query
+            };
+
+            // unpaid first, soonest due date first
+            var list = query.OrderBy(c => c.IsPaid).ThenBy(c => c.DueDate).ToList();
+
+            FilteredCreditors = new ObservableCollection<Creditor>(list);
+
+            var settledView = SelectedSegmentIndex == 2;
+            TotalLabel = settledView ? "Total settled" : "Balance due";
+            TotalAmount = settledView ? list.Sum(c => c.CreditAmount) : list.Sum(c => c.Balance);
+        }
+
+        // ───────────────────────── Payments ─────────────────────────
+
+        [RelayCommand]
+        private void TogglePayPanel(Creditor? creditor)
+        {
+            if (creditor is null || creditor.IsPaid) return;
+
+            creditor.IsPayPanelOpen = !creditor.IsPayPanelOpen;
+
+            if (creditor.IsPayPanelOpen)
+            {
+                // pre-filled with the full balance: change it for a partial payment
+                creditor.PayAmountText = creditor.Balance.ToString("0.##", CultureInfo.CurrentCulture);
+                creditor.PayNote = string.Empty;
             }
         }
-       
+
         [RelayCommand]
-        public async Task ClearNotesAsync(Creditor creditor)
+        private async Task SavePaymentAsync(Creditor? creditor)
         {
-            if (creditor == null) return;
+            if (creditor is null || IsBusy) return;
+
+            if (!TryParseAmount(creditor.PayAmountText, out var amount) || amount <= 0)
+            {
+                await ToastHelper.ShowError("Enter a valid payment amount.");
+                return;
+            }
+
+            amount = Math.Round(amount, 2);
+
+            if (amount > creditor.Balance)
+            {
+                await ToastHelper.ShowError($"Payment is more than the balance (₱{creditor.Balance:N2}).");
+                return;
+            }
+
+            var balanceAfter = creditor.Balance - amount;
+
+            bool confirm = await DialogHelper.ShowConfirmAsync(
+                "Receive Payment",
+                $"Receive ₱{amount:N2} from {creditor.CreditorName}?\nBalance after: ₱{balanceAfter:N2}");
+
+            if (!confirm) return;
+
+            try
+            {
+                IsBusy = true;
+                await CreditorServices.AddPaymentAsync(creditor.Id, amount, creditor.PayNote);
+                await LoadCreditorsAsync();
+                await ToastHelper.ShowMessage(balanceAfter <= 0 ? "Fully paid!" : "Payment saved.");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"[Creditors] payment failed: {ex}");
+                await ToastHelper.ShowError(ex.Message);
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        [RelayCommand]
+        private async Task VoidPaymentAsync(CreditPayment? payment)
+        {
+            if (payment is null || payment.IsVoided || IsBusy) return;
+
+            bool confirm = await DialogHelper.ShowConfirmAsync(
+                "Void Payment",
+                $"Void the ₱{payment.Amount:N2} payment from {payment.DatePaid:MMM dd, yyyy}?\nThe balance will go back up.");
+
+            if (!confirm) return;
+
+            try
+            {
+                IsBusy = true;
+                await CreditorServices.VoidPaymentAsync(payment.PaymentId);
+                await LoadCreditorsAsync();
+                await ToastHelper.ShowMessage("Payment voided.");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"[Creditors] void failed: {ex}");
+                await ToastHelper.ShowError(ex.Message);
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        [RelayCommand]
+        private void ToggleHistory(Creditor? creditor)
+        {
+            if (creditor is null) return;
+            creditor.IsHistoryExpanded = !creditor.IsHistoryExpanded;
+        }
+
+        private static bool TryParseAmount(string? text, out decimal value)
+        {
+            value = 0;
+            if (string.IsNullOrWhiteSpace(text)) return false;
+
+            var t = text.Trim();
+            return decimal.TryParse(t, NumberStyles.Number, CultureInfo.CurrentCulture, out value)
+                || decimal.TryParse(t, NumberStyles.Number, CultureInfo.InvariantCulture, out value);
+        }
+
+        // ───────────────────────── Notes ─────────────────────────
+
+        [RelayCommand]
+        private void ToggleNotes(Creditor? creditor)
+        {
+            if (creditor is null) return;
+            creditor.IsNotesExpanded = !creditor.IsNotesExpanded;
+        }
+
+        [RelayCommand]
+        private async Task ClearNotesAsync(Creditor? creditor)
+        {
+            if (creditor is null) return;
 
             bool confirm = await DialogHelper.ShowConfirmAsync(
                 "Clear Notes",
@@ -233,54 +224,42 @@ namespace TindaKo.ViewModel
 
             try
             {
-                IsBusy = true;
-
-                creditor.Notes = string.Empty;
-                await CreditorServices.UpdateCreditorAsync(creditor);
-
-                // Refresh UI
-                var index = FilteredCreditors.IndexOf(creditor);
-                if (index >= 0)
-                {
-                    FilteredCreditors[index] = creditor;
-                }
-
-                await DialogHelper.ShowAlertAsync("Success", "Notes cleared!");
+                creditor.Notes = string.Empty; // the debounced save below writes it too
+                await CreditorServices.UpdateNotesAsync(creditor.Id, string.Empty);
+                await ToastHelper.ShowMessage("Notes cleared.");
             }
             catch (Exception ex)
             {
-                await DialogHelper.ShowAlertAsync("Error", $"Failed to clear notes: {ex.Message}");
-            }
-            finally
-            {
-                IsBusy = false;
+                await ToastHelper.ShowError($"Failed to clear notes: {ex.Message}");
             }
         }
-        private readonly Dictionary<int, System.Timers.Timer> _debounceTimers = new();
-        private void DebounceAutoSave(Creditor creditor)
+
+        // Debounced autosave: waits until typing pauses, then saves ONLY the Notes column.
+        private void OnNotesChanged(Creditor creditor)
         {
-            int key = creditor.Id;
-
-            if (!_debounceTimers.ContainsKey(key))
+            if (_noteSaves.Remove(creditor.Id, out var previous))
             {
-                var timer = new System.Timers.Timer(800) { AutoReset = false };
-                timer.Elapsed += async (s, e) =>
-                {
-                    await SaveNotesAsync(creditor);
-                };
-                _debounceTimers[key] = timer;
+                previous.Cancel();
+                previous.Dispose();
             }
 
-            _debounceTimers[key].Stop();
-            _debounceTimers[key].Start();
+            var cts = new CancellationTokenSource();
+            _noteSaves[creditor.Id] = cts;
+            _ = SaveNotesLaterAsync(creditor, cts.Token);
         }
 
-        private async Task SaveNotesAsync(Creditor creditor)
+        private static async Task SaveNotesLaterAsync(Creditor creditor, CancellationToken token)
         {
-            await CreditorServices.UpdateCreditorAsync(creditor);
-            // Optional: show toast / feedback
-            // await MainThread.InvokeOnMainThreadAsync(() => Toast.MakeText("Note saved").Show());
+            try
+            {
+                await Task.Delay(800, token);
+                await CreditorServices.UpdateNotesAsync(creditor.Id, creditor.Notes);
+            }
+            catch (OperationCanceledException) { }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"[Creditors] notes autosave failed: {ex}");
+            }
         }
-
     }
 }
