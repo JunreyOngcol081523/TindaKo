@@ -71,7 +71,8 @@ namespace TindaKo.Services
                 await conn.CreateTableAsync<CreditPayment>();
                 await conn.CreateTableAsync<IncomingStocks>();
                 await conn.CreateTableAsync<IncomingStocksProductsList>();
-
+                await conn.CreateTableAsync<Category>();
+                await CategoriesHelper.SeedCategoriesAsync(conn);
                 await conn.ExecuteAsync($"PRAGMA user_version = {SchemaVersion}");
             }
             catch

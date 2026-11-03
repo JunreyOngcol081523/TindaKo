@@ -95,7 +95,7 @@
                         <Label Text="CATEGORY" Style="{StaticResource CaptionLabel}" />
                         <Picker SelectedItem="{Binding ProductCategory}"
                                 ItemsSource="{Binding Categories}"
-                                Title="Select category"
+                                Title="{Binding CategoryPickerTitle}"
                                 FontSize="15"
                                 TextColor="{AppThemeBinding Light=#212121, Dark=#F5F5F5}" />
                     </VerticalStackLayout>
@@ -133,7 +133,7 @@
             <!--put here a dropdown for category filtering-->
             <Picker SelectedItem="{Binding SelectedCategoryFilter}"
                     ItemsSource="{Binding CategoryFilters}"
-                    Title="Filter by category"
+                    Title="{Binding CategoryPickerTitle}"
                     FontSize="15"
                     TextColor="{AppThemeBinding Light=#212121, Dark=#F5F5F5}" />
 

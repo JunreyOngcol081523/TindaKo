@@ -1,29 +1,183 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:TindaKo.ViewModel"
              x:Class="TindaKo.Views.ProductSettingsPage"
-             Title="Product Settings">
+             Title="Product Settings"
+             BackgroundColor="{AppThemeBinding Light=#F4F6F8, Dark=#121212}">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style x:Key="SectionTitle" TargetType="Label">
+                <Setter Property="FontSize" Value="18" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="TextColor"
+                        Value="{AppThemeBinding Light={StaticResource PrimaryDark}, Dark=#F5F5F5}" />
+            </Style>
+
+            <Style x:Key="CaptionLabel" TargetType="Label">
+                <Setter Property="FontSize" Value="12" />
+                <Setter Property="TextColor"
+                        Value="{AppThemeBinding Light=#757575, Dark=#A0A0A0}" />
+            </Style>
+
+            <Style x:Key="BodyLabel" TargetType="Label">
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="TextColor"
+                        Value="{AppThemeBinding Light=#212121, Dark=#F5F5F5}" />
+            </Style>
+
+            <!-- soft surface used for the input box and the category rows -->
+            <Style x:Key="SoftSurface" TargetType="Border">
+                <Setter Property="StrokeThickness" Value="0" />
+                <Setter Property="StrokeShape" Value="RoundRectangle 12" />
+                <Setter Property="BackgroundColor"
+                        Value="{AppThemeBinding Light=#F0F2F4, Dark=#2A2A2A}" />
+            </Style>
+
+            <Style x:Key="FilledButton" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
+                <Setter Property="TextColor" Value="White" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="CornerRadius" Value="12" />
+                <Setter Property="HeightRequest" Value="46" />
+            </Style>
+
+            <Style x:Key="OutlineButton" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="Transparent" />
+                <Setter Property="BorderColor" Value="{StaticResource PrimaryDark}" />
+                <Setter Property="BorderWidth" Value="1.5" />
+                <Setter Property="TextColor" Value="{StaticResource PrimaryDark}" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="CornerRadius" Value="12" />
+                <Setter Property="HeightRequest" Value="46" />
+            </Style>
+
+            <Style x:Key="SmallOutlineButton" TargetType="Button"
+                   BasedOn="{StaticResource OutlineButton}">
+                <Setter Property="HeightRequest" Value="38" />
+                <Setter Property="FontSize" Value="13" />
+                <Setter Property="Padding" Value="14,0" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
     <Grid>
-        <!-- Content (now scrollable) -->
         <ScrollView>
-            <VerticalStackLayout Padding="16" Spacing="12">
-                <Border Style="{StaticResource CardStyle}" Padding="15">
+            <VerticalStackLayout Padding="16" Spacing="14">
+
+                <!-- IMPORT PRODUCTS -->
+                <Border Style="{StaticResource CardStyle}" Padding="16">
                     <VerticalStackLayout Spacing="12">
-                        <Label Text="Import Products" FontSize="18" FontAttributes="Bold" />
-                        <Label Text="Para sa mabilis na paglipat ng produkto, punan ang na-download na template." />
+                        <VerticalStackLayout Spacing="2">
+                            <Label Text="Import Products" Style="{StaticResource SectionTitle}" />
+                            <Label Text="Para sa mabilis na paglipat ng produkto, punan ang na-download na template."
+                                   Style="{StaticResource CaptionLabel}" />
+                        </VerticalStackLayout>
+
                         <Button Text="I-download ang Template"
                                 ImageSource="download.png"
+                                ContentLayout="Left,8"
+                                Style="{StaticResource OutlineButton}"
                                 Command="{Binding DownloadTemplateCommand}" />
                         <Button Text="Import Spreadsheet Template"
                                 ImageSource="upload.png"
+                                ContentLayout="Left,8"
+                                Style="{StaticResource FilledButton}"
                                 Command="{Binding ImportTemplateCommand}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- CATEGORIES -->
+                <Border Style="{StaticResource CardStyle}" Padding="16">
+                    <VerticalStackLayout Spacing="12">
+                        <VerticalStackLayout Spacing="2">
+                            <Label Text="Mga Category" Style="{StaticResource SectionTitle}" />
+                            <Label Text="Dito idinadagdag at itinatama ang pangalan ng category. Kapag binago, mababago rin ang mga produktong gumagamit nito."
+                                   Style="{StaticResource CaptionLabel}" />
+                        </VerticalStackLayout>
+
+                        <!-- Add -->
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                            <Border Grid.Column="0"
+                                    Style="{StaticResource SoftSurface}"
+                                    HeightRequest="46"
+                                    Padding="12,0">
+                                <Entry Text="{Binding NewCategoryName}"
+                                       Placeholder="Bagong category (hal. Frozen Goods)"
+                                       PlaceholderColor="#9E9E9E"
+                                       MaxLength="30"
+                                       FontSize="15"
+                                       BackgroundColor="Transparent"
+                                       VerticalOptions="Center"
+                                       TextColor="{AppThemeBinding Light=#212121, Dark=#F5F5F5}"
+                                       ReturnType="Done"
+                                       ReturnCommand="{Binding AddCategoryCommand}" />
+                            </Border>
+                            <Button Grid.Column="1"
+                                    Text="Add"
+                                    ImageSource="add.png"
+                                    ContentLayout="Left,6"
+                                    Padding="16,0"
+                                    Style="{StaticResource FilledButton}"
+                                    Command="{Binding AddCategoryCommand}" />
+                        </Grid>
+
+                        <!-- Empty state -->
+                        <Border Style="{StaticResource SoftSurface}"
+                                Padding="16"
+                                IsVisible="{Binding IsCategoriesEmpty}">
+                            <Label Text="Wala pang category. Magdagdag ng una sa itaas."
+                                   Style="{StaticResource CaptionLabel}"
+                                   FontSize="13"
+                                   HorizontalOptions="Center" />
+                        </Border>
+
+                        <!-- List (BindableLayout avoids a CollectionView nested in the ScrollView) -->
+                        <VerticalStackLayout Spacing="8"
+                                             BindableLayout.ItemsSource="{Binding CategoryItems}">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Style="{StaticResource SoftSurface}" Padding="14,10">
+                                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                                            <VerticalStackLayout Grid.Column="0"
+                                                                 VerticalOptions="Center"
+                                                                 Spacing="2">
+                                                <Label Text="{Binding CategoryName}"
+                                                       Style="{StaticResource BodyLabel}"
+                                                       LineBreakMode="TailTruncation" />
+                                                <Label Text="{Binding ProductCountText}"
+                                                       Style="{StaticResource CaptionLabel}" />
+                                            </VerticalStackLayout>
+
+                                            <Button Grid.Column="1"
+                                                    Text="Edit"
+                                                    ImageSource="squarepen.png"
+                                                    ContentLayout="Left,6"
+                                                    Style="{StaticResource SmallOutlineButton}"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ProductSettingsViewModel}}, Path=EditCategoryCommand}"
+                                                    CommandParameter="{Binding .}">
+                                                <!-- "Uncategorized" can't be renamed (the service blocks it too) -->
+                                                <Button.Triggers>
+                                                    <DataTrigger TargetType="Button"
+                                                                 Binding="{Binding CategoryName}"
+                                                                 Value="Uncategorized">
+                                                        <Setter Property="IsVisible" Value="False" />
+                                                    </DataTrigger>
+                                                </Button.Triggers>
+                                            </Button>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
                     </VerticalStackLayout>
                 </Border>
             </VerticalStackLayout>
         </ScrollView>
 
-        <!-- Real loading overlay: last child = on top, so it also blocks taps while busy -->
+        <!-- Loading overlay: last child = on top, also blocks taps while busy -->
         <Grid IsVisible="{Binding IsBusy}" BackgroundColor="#80000000">
             <ActivityIndicator IsRunning="{Binding IsBusy}"
                                Color="White"

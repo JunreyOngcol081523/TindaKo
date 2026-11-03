@@ -3,6 +3,7 @@ using CommunityToolkit.Maui.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
 using TindaKo.Helpers;
@@ -15,13 +16,96 @@ namespace TindaKo.ViewModel
     {
         private const string TemplateAssetPath = "Resources/Templates/ProductTemplate.xlsx";
         private const string TemplateFileName = "ProductTemplate.xlsx";
-        private const string DefaultCategory = "Uncategorized"; // used when the Category cell is blank
         private const int MaxErrorsShown = 5;
+        private const int MaxCategoryLength = 30;   // same limit as the Add entry in the page
 
         private sealed record ParsedRow(int RowNumber, Product Product);
         private sealed record ParseResult(List<ParsedRow> Rows, List<string> Errors);
 
         [ObservableProperty] private bool isBusy;
+
+        // ------------------------------------------------------------------
+        // CATEGORIES
+        // ------------------------------------------------------------------
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(IsCategoriesEmpty))]
+        private ObservableCollection<CategoryInfo> categoryItems = new();
+
+        [ObservableProperty] private string newCategoryName = string.Empty;
+
+        public bool IsCategoriesEmpty => CategoryItems.Count == 0;
+
+        public async Task LoadCategoriesAsync()
+        {
+            var list = await CategoryService.GetCategoriesWithCountAsync();
+            CategoryItems = new ObservableCollection<CategoryInfo>(list);
+        }
+
+        [RelayCommand]
+        private async Task AddCategoryAsync()
+        {
+            if (IsBusy) return;
+            IsBusy = true;
+            try
+            {
+                var error = await CategoryService.AddCategoryAsync(NewCategoryName);
+                if (error != null)
+                {
+                    await ToastHelper.ShowError(error);
+                    return;                              // keep what the user typed
+                }
+
+                NewCategoryName = string.Empty;
+                await LoadCategoriesAsync();
+                await ToastHelper.ShowMessage("Category added");
+            }
+            catch (Exception ex)
+            {
+                await ToastHelper.ShowError(ex.Message);
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        [RelayCommand]
+        private async Task EditCategoryAsync(CategoryInfo? item)
+        {
+            if (item == null || IsBusy) return;
+
+            var input = await App.Navigator.DisplayPromptAsync(
+                "I-edit ang category",
+                item.ProductCount > 0
+                    ? $"Mababago rin ang {item.ProductCountText} na gumagamit nito."
+                    : "Bagong pangalan:",
+                accept: "I-save", cancel: "Kanselahin",
+                initialValue: item.CategoryName, maxLength: MaxCategoryLength);
+
+            if (input == null) return;                   // cancelled
+
+            IsBusy = true;
+            try
+            {
+                var error = await CategoryService.EditCategoryAsync(item.CategoryId, input);
+                if (error != null)
+                {
+                    await ToastHelper.ShowError(error);
+                    return;
+                }
+
+                await LoadCategoriesAsync();
+                await ToastHelper.ShowMessage("Category updated");
+            }
+            catch (Exception ex)
+            {
+                await ToastHelper.ShowError(ex.Message);
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
 
         // ------------------------------------------------------------------
         // DOWNLOAD TEMPLATE
@@ -97,14 +181,30 @@ namespace TindaKo.ViewModel
 
                 // Skip products that already exist (re-importing the same file must not double your stock).
                 var existingNames = await GetExistingNamesAsync();
+
+                // Existing categories, matched case-insensitively so "snacks" reuses "Snacks".
+                var knownCategories = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                foreach (var c in await CategoryService.GetCategoriesAsync())
+                    knownCategories[c] = c;
+
+                var newCategories = new List<string>();   // categories this import will create
                 var toInsert = new List<ParsedRow>();
+
                 foreach (var row in parsed.Rows)
                 {
                     if (existingNames.Contains(row.Product.ProdName.Trim()))
+                    {
                         errors.Add($"Row {row.RowNumber}: '{row.Product.ProdName}' already exists");
-                    else
-                        toInsert.Add(row);
+                        continue;
+                    }
+
+                    row.Product.Category = ResolveCategory(row.Product.Category, knownCategories, newCategories);
+                    toInsert.Add(row);
                 }
+
+                // create the new categories first, so no product points to a category that doesn't exist
+                foreach (var name in newCategories)
+                    await CategoryService.AddCategoryAsync(name);
 
                 int added = 0;
                 foreach (var row in toInsert)
@@ -127,6 +227,9 @@ namespace TindaKo.ViewModel
                 }
 
                 var summary = $"Added: {added}\nSkipped: {errors.Count}";
+                if (newCategories.Count > 0)
+                    summary += $"\nNew categories: {string.Join(", ", newCategories)}";
+
                 if (errors.Count > 0)
                 {
                     summary += "\n\n" + string.Join("\n", errors.Take(MaxErrorsShown));
@@ -134,6 +237,7 @@ namespace TindaKo.ViewModel
                         summary += $"\n...and {errors.Count - MaxErrorsShown} more";
                 }
 
+                await LoadCategoriesAsync();   // refresh the list on this page
                 await ToastHelper.ShowMessage(summary, "Import Complete");
             }
             catch (Exception ex)
@@ -168,6 +272,9 @@ namespace TindaKo.ViewModel
                 if (name.Length == 0) { errors.Add($"Row {n}: product name is empty"); continue; }
                 if (!namesInFile.Add(name)) { errors.Add($"Row {n}: '{name}' is listed twice in the file"); continue; }
 
+                if (category.Length > MaxCategoryLength)
+                { errors.Add($"Row {n}: '{name}' has a category longer than {MaxCategoryLength} characters"); continue; }
+
                 if (!TryReadDecimal(row.Cell(3), out var price) || price <= 0)
                 { errors.Add($"Row {n}: '{name}' has an invalid price"); continue; }
 
@@ -183,7 +290,7 @@ namespace TindaKo.ViewModel
                 rows.Add(new ParsedRow(n, new Product
                 {
                     ProdName = name,
-                    Category = category.Length == 0 ? DefaultCategory : category,
+                    Category = category,          // raw text; resolved against the Category table after parsing
                     Price = price,
                     StocksIn = stocksIn,
                     StocksOut = stocksOut
@@ -191,6 +298,24 @@ namespace TindaKo.ViewModel
             }
 
             return new ParseResult(rows, errors);
+        }
+
+        // Maps the sheet's category text to an existing category (stored spelling),
+        // or registers it as new. Blank becomes "Uncategorized".
+        private static string ResolveCategory(
+            string? raw,
+            Dictionary<string, string> known,
+            List<string> created)
+        {
+            var name = CategoryNormalizer.Normalize(raw);
+
+            if (known.TryGetValue(name, out var existing))
+                return existing;
+
+            name = CategoryNormalizer.ToDisplayCase(name);
+            known[name] = name;      // later rows with the same text reuse this spelling
+            created.Add(name);
+            return name;
         }
 
         // Reads real numeric cells first; falls back to text like "₱1,200.50".
