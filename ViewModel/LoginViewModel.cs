@@ -80,7 +80,7 @@ namespace TindaKo.ViewModel
                 }
 
                 failedAttempts = 0;
-
+                Session.Start(user.UserName);
                 // Upgrade a legacy plaintext password. A failure here must not block a valid login.
                 if (!PasswordHasher.IsHashed(user.UserPassword))
                 {

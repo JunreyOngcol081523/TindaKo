@@ -4,7 +4,6 @@
              x:Class="TindaKo.Views.SellPage"
              xmlns:viewmodel="clr-namespace:TindaKo.ViewModel"
              xmlns:inputLayout="clr-namespace:Syncfusion.Maui.Toolkit.TextInputLayout;assembly=Syncfusion.Maui.Toolkit"
-             xmlns:editors="clr-namespace:Syncfusion.Maui.Toolkit.NumericUpDown;assembly=Syncfusion.Maui.Toolkit"
              xmlns:model="clr-namespace:TindaKo.Models"
              Title="Benta"
              x:Name="SellPageRoot"
@@ -120,50 +119,62 @@
                             <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
                                 <VerticalStackLayout Grid.Column="0" Spacing="2">
                                     <Label Text="{Binding ProdName}"
-                                           FontSize="17"
-                                           FontAttributes="Bold"
-                                           LineBreakMode="TailTruncation"
-                                           TextColor="{StaticResource PrimaryDark}" />
-                                    <Label Text="{Binding Subtotal, StringFormat='Subtotal: ₱{0:N}'}"
-                                           FontSize="13"
-                                           TextColor="{StaticResource Gray600}" />
+                               FontSize="17"
+                               FontAttributes="Bold"
+                               LineBreakMode="TailTruncation"
+                               TextColor="{StaticResource PrimaryDark}" />
+                                    <Label Text="{Binding Category}"
+                               Style="{StaticResource CaptionLabel}" />
                                 </VerticalStackLayout>
 
                                 <Label Grid.Column="1"
-                                       Text="{Binding Price, StringFormat='₱{0:N}'}"
-                                       FontSize="20"
-                                       FontAttributes="Bold"
-                                       VerticalOptions="Start"
-                                       TextColor="#004D40" />
+                           Text="{Binding Price, StringFormat='₱{0:N}'}"
+                           FontSize="20"
+                           FontAttributes="Bold"
+                           VerticalOptions="Start"
+                           TextColor="#004D40" />
                             </Grid>
 
-                            <!-- Quantity + Add -->
+                            <!-- Stock + Add to Cart -->
                             <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
-                                <VerticalStackLayout Grid.Column="0" Spacing="2">
-                                    <Label Text="QUANTITY" Style="{StaticResource CaptionLabel}" FontSize="11" />
-                                    <editors:SfNumericUpDown
-                                        Value="{Binding Quantity, Mode=TwoWay}"
-                                        AllowNull="False"
-                                        UpDownButtonColor="{StaticResource PrimaryDark}"
-                                        Minimum="0"
-                                        CustomFormat="0"
-                                        UpDownButtonAlignment="Both"
-                                        SmallChange="1" />
+                                <VerticalStackLayout Grid.Column="0" VerticalOptions="Center" Spacing="0">
+                                    <Label Text="STOCK" Style="{StaticResource CaptionLabel}" FontSize="11" />
+                                    <Label Text="{Binding CurrentStock, StringFormat='{0:0.###}'}"
+                               FontSize="16"
+                               FontAttributes="Bold"
+                               TextColor="#004D40">
+                                        <Label.Triggers>
+                                            <DataTrigger TargetType="Label"
+                                             Binding="{Binding CurrentStock}"
+                                             Value="0">
+                                                <Setter Property="TextColor" Value="#C0392B" />
+                                            </DataTrigger>
+                                        </Label.Triggers>
+                                    </Label>
                                 </VerticalStackLayout>
 
                                 <Button Grid.Column="1"
-                                        Text="Add"
-                                        ImageSource="shoppingbasketwhite.png"
-                                        ContentLayout="Left,8"
-                                        VerticalOptions="End"
-                                        HeightRequest="48"
-                                        CornerRadius="12"
-                                        Padding="18,0"
-                                        FontAttributes="Bold"
-                                        TextColor="White"
-                                        BackgroundColor="{StaticResource Primary}"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:SellViewModel}}, Path=AddToCartCommand}"
-                                        CommandParameter="{Binding .}" />
+                            Text="Add to Cart"
+                            ImageSource="shoppingbasketwhite.png"
+                            ContentLayout="Left,8"
+                            HeightRequest="48"
+                            CornerRadius="12"
+                            Padding="18,0"
+                            FontAttributes="Bold"
+                            TextColor="White"
+                            BackgroundColor="{StaticResource Primary}"
+                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:SellViewModel}}, Path=AddToCartCommand}"
+                            CommandParameter="{Binding .}">
+                                    <!-- out of stock: can't be added -->
+                                    <Button.Triggers>
+                                        <DataTrigger TargetType="Button"
+                                         Binding="{Binding CurrentStock}"
+                                         Value="0">
+                                            <Setter Property="IsEnabled" Value="False" />
+                                            <Setter Property="Opacity" Value="0.45" />
+                                        </DataTrigger>
+                                    </Button.Triggers>
+                                </Button>
                             </Grid>
                         </VerticalStackLayout>
                     </Border>

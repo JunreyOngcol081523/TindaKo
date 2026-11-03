@@ -72,6 +72,7 @@ namespace TindaKo
             builder.Services.AddSingleton<StoreSettingsViewModel>();
             builder.Services.AddSingleton<IncomingStocksLogsPage>();
             builder.Services.AddSingleton<IncomingStocksLogsViewModel>();
+            builder.Services.AddSingleton<QuantityPopupViewModel>();
         }
     }
 }

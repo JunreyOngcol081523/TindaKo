@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<sfPopup:SfPopup xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                 xmlns:sfPopup="clr-namespace:Syncfusion.Maui.Toolkit.Popup;assembly=Syncfusion.Maui.Toolkit"
+                 x:Class="TindaKo.Views.QuantityPopup"
+                 AutoSizeMode="Height"
+                 WidthRequest="320"
+                 ShowCloseButton="True"
+                 HeaderHeight="56">
+
+    <sfPopup:SfPopup.PopupStyle>
+        <sfPopup:PopupStyle CornerRadius="18"
+                            PopupBackground="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}"
+                            HeaderBackground="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}" />
+    </sfPopup:SfPopup.PopupStyle>
+
+    <sfPopup:SfPopup.HeaderTemplate>
+        <DataTemplate>
+            <HorizontalStackLayout HorizontalOptions="Center"
+                                   VerticalOptions="Center"
+                                   Spacing="10">
+                <Image Source="shoppingbasket.png"
+                       HeightRequest="28"
+                       WidthRequest="28"
+                       VerticalOptions="Center" />
+                <Label Text="Quantity"
+                       FontSize="18"
+                       FontAttributes="Bold"
+                       VerticalOptions="Center"
+                       TextColor="{StaticResource PrimaryDark}" />
+            </HorizontalStackLayout>
+        </DataTemplate>
+    </sfPopup:SfPopup.HeaderTemplate>
+
+    <sfPopup:SfPopup.ContentTemplate>
+        <DataTemplate>
+            <VerticalStackLayout Padding="18,4,18,18" Spacing="14">
+
+                <VerticalStackLayout.Resources>
+                    <Style x:Key="StepButton" TargetType="Button">
+                        <Setter Property="BackgroundColor" Value="Transparent" />
+                        <Setter Property="BorderColor" Value="{StaticResource PrimaryDark}" />
+                        <Setter Property="BorderWidth" Value="1.5" />
+                        <Setter Property="TextColor" Value="{StaticResource PrimaryDark}" />
+                        <Setter Property="FontSize" Value="26" />
+                        <Setter Property="FontAttributes" Value="Bold" />
+                        <Setter Property="Padding" Value="0" />
+                        <Setter Property="WidthRequest" Value="52" />
+                        <Setter Property="HeightRequest" Value="52" />
+                        <Setter Property="CornerRadius" Value="26" />
+                    </Style>
+                    <Style x:Key="ConfirmButton" TargetType="Button">
+                        <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
+                        <Setter Property="TextColor" Value="White" />
+                        <Setter Property="FontAttributes" Value="Bold" />
+                        <Setter Property="CornerRadius" Value="12" />
+                        <Setter Property="HeightRequest" Value="50" />
+                        <Setter Property="VisualStateManager.VisualStateGroups">
+                            <VisualStateGroupList>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal" />
+                                    <VisualState x:Name="Disabled">
+                                        <VisualState.Setters>
+                                            <Setter Property="Opacity" Value="0.45" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateGroupList>
+                        </Setter>
+                    </Style>
+                </VerticalStackLayout.Resources>
+
+                <!-- Product info -->
+                <VerticalStackLayout Spacing="2">
+                    <Label Text="{Binding ProductName}"
+                           FontSize="18"
+                           FontAttributes="Bold"
+                           LineBreakMode="TailTruncation"
+                           TextColor="{StaticResource PrimaryDark}" />
+                    <Label Text="{Binding Price, StringFormat='₱{0:N2} bawat isa'}"
+                           FontSize="13"
+                           TextColor="{AppThemeBinding Light=#757575, Dark=#A0A0A0}" />
+                    <Label Text="{Binding StockLeft, StringFormat='May stock: {0:0.###}'}"
+                           FontSize="13"
+                           TextColor="{AppThemeBinding Light=#757575, Dark=#A0A0A0}" />
+                </VerticalStackLayout>
+
+                <!-- [-]  [ qty ]  [+] -->
+                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                    <Button Grid.Column="0"
+                            Text="−"
+                            Style="{StaticResource StepButton}"
+                            Command="{Binding DecreaseCommand}" />
+
+                    <Border Grid.Column="1"
+                            StrokeThickness="0"
+                            StrokeShape="RoundRectangle 12"
+                            HeightRequest="52"
+                            Padding="8,0"
+                            BackgroundColor="{AppThemeBinding Light=#F0F2F4, Dark=#2A2A2A}">
+                        <Entry Text="{Binding QuantityText}"
+                               Keyboard="Numeric"
+                               FontSize="22"
+                               FontAttributes="Bold"
+                               HorizontalTextAlignment="Center"
+                               VerticalOptions="Center"
+                               MaxLength="9"
+                               BackgroundColor="Transparent"
+                               TextColor="{AppThemeBinding Light=#212121, Dark=#F5F5F5}"
+                               ReturnType="Done"
+                               ReturnCommand="{Binding ConfirmCommand}"
+                               Focused="OnQtyFocused" />
+                    </Border>
+
+                    <Button Grid.Column="2"
+                            Text="+"
+                            Style="{StaticResource StepButton}"
+                            Command="{Binding IncreaseCommand}" />
+                </Grid>
+
+                <Label Text="{Binding ErrorText}"
+                       IsVisible="{Binding HasError}"
+                       FontSize="13"
+                       HorizontalOptions="Center"
+                       TextColor="#C0392B" />
+
+                <!-- Live subtotal -->
+                <Grid ColumnDefinitions="*,Auto">
+                    <Label Grid.Column="0"
+                           Text="Subtotal"
+                           FontSize="14"
+                           VerticalOptions="Center"
+                           TextColor="{AppThemeBinding Light=#757575, Dark=#A0A0A0}" />
+                    <Label Grid.Column="1"
+                           Text="{Binding Subtotal, StringFormat='₱{0:N2}'}"
+                           FontSize="22"
+                           FontAttributes="Bold"
+                           TextColor="#004D40" />
+                </Grid>
+
+                <Button Text="{Binding ConfirmText}"
+                        Style="{StaticResource ConfirmButton}"
+                        IsEnabled="{Binding CanConfirm}"
+                        Command="{Binding ConfirmCommand}" />
+            </VerticalStackLayout>
+        </DataTemplate>
+    </sfPopup:SfPopup.ContentTemplate>
+</sfPopup:SfPopup>

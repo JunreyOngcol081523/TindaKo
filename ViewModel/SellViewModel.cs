@@ -105,40 +105,58 @@ namespace TindaKo.ViewModel
 
         // ───────────────────────── Cart ─────────────────────────
 
+        // CHANGED: no more per-row quantity. The button opens a quantity popup instead.
+        // The command is still called AddToCartCommand, so the XAML binding is unchanged.
         [RelayCommand]
-        private async Task AddToCart(Product? product)
+        private async Task AddToCartAsync(Product? product)
         {
             if (product is null) return;
 
-            if (product.Price <= 0 || product.Quantity <= 0)
+            if (product.Price <= 0)
             {
-                await ToastHelper.ShowMessage("Lagyan ng presyo at dami.");
+                await ToastHelper.ShowMessage("Walang presyo ang produktong ito.");
                 return;
             }
 
-            if (CartList.Any(c => c.ProductId == product.ProdId))
+            var stockLeft = product.StocksIn - product.StocksOut;
+            if (stockLeft <= 0)
             {
-                await ToastHelper.ShowMessage($"{product.ProdName} ay nasa cart na.");
+                await ToastHelper.ShowMessage($"Wala nang stock ang {product.ProdName}.");
                 return;
             }
 
-            var remainingStocks = product.StocksIn - product.StocksOut;
-            if (product.Quantity > remainingStocks)
-            {
-                await ToastHelper.ShowMessage($"Only {remainingStocks} left in stock. Please reduce the quantity.");
-                return;
-            }
+            // already in the cart? open the popup with its current quantity so it can be changed
+            var inCart = CartList.FirstOrDefault(c => c.ProductId == product.ProdId);
 
-            CartList.Add(new CartItems
+            var vm = new QuantityPopupViewModel(
+                productName: product.ProdName,
+                price: product.Price,
+                stockLeft: stockLeft,
+                initialQuantity: inCart?.Quantity ?? 1,
+                confirmText: inCart is null ? "Add to Cart" : "Update Cart",
+                onConfirm: qty => SetCartQuantity(product, qty));
+
+            new QuantityPopup(vm).Show();
+        }
+
+        // NEW: adds the product to the cart, or replaces its line when it's already there
+        private void SetCartQuantity(Product product, decimal quantity)
+        {
+            var line = new CartItems
             {
                 ProductId = product.ProdId,
                 ProdName = product.ProdName,
                 ProdCategory = product.Category,
                 Price = product.Price,
-                Quantity = product.Quantity,
-                Subtotal = product.Price * product.Quantity
-            });
-            // CartCount / TotalAmount / IsCartHasItems -> handled by RecalculateCart
+                Quantity = quantity,
+                Subtotal = product.Price * quantity
+            };
+
+            var existing = CartList.FirstOrDefault(c => c.ProductId == product.ProdId);
+            if (existing is null)
+                CartList.Add(line);
+            else
+                CartList[CartList.IndexOf(existing)] = line;   // Replace also triggers RecalculateCart
         }
 
         [RelayCommand]
@@ -259,7 +277,7 @@ namespace TindaKo.ViewModel
             ClearForm();
 
             if (again)
-                await LoadProductsAsync(); // refresh stocks + reset row quantities
+                await LoadProductsAsync(); // refresh the stock numbers
             else
                 await App.Navigator.Navigation.PopAsync();
         }
@@ -283,7 +301,7 @@ namespace TindaKo.ViewModel
                 TransactionType = isCredit ? "Credit" : "Cash",
                 DateTimeTransacted = now.ToString("MMM dd, yyyy h:mm tt", CultureInfo.InvariantCulture),
                 TotalAmount = total,
-                Username = Preferences.Get("username", string.Empty)
+                Username = Session.Username
             };
 
             var soldItems = CartList.Select(ci => new Sell
@@ -365,7 +383,7 @@ namespace TindaKo.ViewModel
             var sb = new StringBuilder();
             decimal grandTotal = 0;
 
-            sb.AppendLine("Product Name       |  Price  | Qty | Subtotal");
+            sb.AppendLine("Product Name       |  Price  |  Qty  | Subtotal");
 
             foreach (var item in CartList)
             {
@@ -375,7 +393,8 @@ namespace TindaKo.ViewModel
                 var name = item.ProdName ?? string.Empty;
                 if (name.Length > 20) name = name[..20];
 
-                sb.AppendLine($"{name.PadRight(20)}| {item.Price,7} | {item.Quantity,3} | {subtotal,8}");
+                // CHANGED: quantity can be a decimal now (2.5), so show up to 3 decimals without trailing zeros
+                sb.AppendLine($"{name.PadRight(20)}| {item.Price,7} | {item.Quantity,5:0.###} | {subtotal,8}");
             }
 
             sb.AppendLine(new string('-', 50));
