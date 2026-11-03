@@ -8,14 +8,32 @@ namespace TindaKo.Models
         [PrimaryKey, AutoIncrement]
         public int ProdId { get; set; }
 
-        public string ProdName { get; set; } = string.Empty;
+        private string prodName = string.Empty;
+        public string ProdName
+        {
+            get => prodName;
+            set => SetProperty(ref prodName, value);
+        }
 
-        public string Category { get; set; } = string.Empty;
+        private string category = string.Empty;
+        public string Category
+        {
+            get => category;
+            set => SetProperty(ref category, value);
+        }
 
         /// Current selling price. Editing it only affects FUTURE sales
         /// (every Sell row stores the price it was sold at).
-        public decimal Price { get; set; }
-
+        private decimal price;
+        public decimal Price
+        {
+            get => price;
+            set
+            {
+                if (SetProperty(ref price, value))
+                    OnPropertyChanged(nameof(Subtotal));   // Subtotal = Price * Quantity
+            }
+        }
         /// Weighted-average supplier cost of the stock on hand.
         /// 0 = unknown (no stock-in recorded yet). Maintained by StockReceivingService.
         public decimal AverageCost { get; set; }
@@ -44,6 +62,8 @@ namespace TindaKo.Models
         [Ignore]
         public decimal Subtotal => Price * Quantity;
 
+        // kept so the ViewModel code I gave you compiles unchanged
+        public void RefreshAll() => OnPropertyChanged(string.Empty);
     }
 
     public class ProductDisplay : ObservableObject
