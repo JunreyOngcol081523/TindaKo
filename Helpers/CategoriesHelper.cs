@@ -10,16 +10,12 @@ namespace TindaKo.Helpers
     
     public static class CategoriesHelper
     {
-        public static async Task<ObservableCollection<string>> LoadCategoriesFromJsonAsync()
+        public static async Task<ObservableCollection<string>> LoadCategoriesAsync()
         {
-            return await CreateDefaultCategories();
+            return await CategoryService.GetCategoriesAsync().ContinueWith(t => new ObservableCollection<string>(t.Result));
         }
 
-        private static async Task<ObservableCollection<string>> CreateDefaultCategories()
-        {
-            var categories = await ProductService.GetCategoriesAsync();
-            return new ObservableCollection<string>(categories);
-        }
+
         internal static async Task SeedCategoriesAsync(SQLiteAsyncConnection conn)
         {
             try

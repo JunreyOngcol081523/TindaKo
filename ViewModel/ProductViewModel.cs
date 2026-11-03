@@ -50,11 +50,13 @@ namespace TindaKo.ViewModel
             MaxResults = Preferences.Get(nameof(MaxResults), 20);
             FormVisible = false;
         }
+
+
         public async Task LoadCategories()
         {
             try
             {
-                Categories = await CategoriesHelper.LoadCategoriesFromJsonAsync();
+                Categories = await CategoriesHelper.LoadCategoriesAsync();
                 CategoryFilters = new ObservableCollection<string>(
                     new[] { AllCategories }.Concat(Categories));
                 SelectedCategoryFilter = AllCategories;
@@ -71,6 +73,7 @@ namespace TindaKo.ViewModel
                 System.Diagnostics.Debug.WriteLine($"Category loading failed: {ex}");
             }
         }
+
         [RelayCommand]
         private async Task AddProductAsync()
         {
